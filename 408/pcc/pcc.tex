@@ -355,7 +355,7 @@
     
     小数补码比原码多表示一个-1，整数补码比原码多表示一个-2。
 
-    变形补码：又称模4补码，双符号位的补码小数，符号位00表示正，11表示负。
+    变形补码：又称模4补码，双符号位的补码小数，符号位00表示正，11表示负。模4补码的符号位的存储仅仅需要\textbf{一位}而不是两位，因为任何一个正确的模4补码，符号位的两位都是相同的，如果不同表示发生了溢出。
 
     补码真值互转：整数直接按原码转换，负数则各位取反加1。
 
@@ -466,6 +466,8 @@
       \item 10：表示结果负溢出。
     \end{itemize}
     \item 采用一位符号位根据数据位的进位情况判断溢出
+    
+    当最高符号位的进位和数值位的进位不同时，说明发生溢出。
   \end{itemize}
 \end{enumerate}
 
@@ -487,7 +489,86 @@
 
 char类型为8位无符号整数，转为int时高位补0即可。
 
+\subsubsection{数据的存储和排列}
+
+\begin{enumerate}
+  \item {\kaishu 数据的“大端方式”和“小端方式”存储}
+  \begin{itemize}
+    \item 大端：低字节放高地址
+    \item 小端：低字节放低地址
+  \end{itemize}
+  \item {\kaishu 数据按“边界对齐”方式存储}
+  
+  \textbf{注意}：题目涉及\textbf{结构体}的，一定要留意对齐方式（一般都是边界对齐的）！
+\end{enumerate}
+
 \subsection{浮点数的表示与运算}
+
+\subsubsection{浮点数的表示}
+
+\begin{enumerate}
+  \item {\kaishu 浮点数的表示格式}
+  
+  通常，浮点数可表示为
+  \begin{equation*}
+    N=(-1)^S\times M\times R^E
+  \end{equation*}
+  其中：
+  \begin{itemize}
+    \item $S$决定浮点数的符号，可取0或1。
+    \item $M$是尾数，是一个二进制定点小数，通常用原码表示。
+    \item $E$是阶码，是一个二进制定点整数，通常用移码表示。
+    \item $R$是隐含的基数，可取2、4、16等。
+  \end{itemize}
+  \item {\kaishu 浮点数的表示范围}
+  
+  \begin{itemize}
+    \item 数据产生上溢（正上溢、负上溢）时，计算机必须停机处理溢出。
+    \item 数据产生下溢（正下溢、负下溢）时，计算机将其当作机器零处理。
+  \end{itemize}
+  \item {\kaishu 浮点数的规格化}
+  
+  \begin{itemize}
+    \item 左规：尾数的最高位不是有效位，即尾数为$0.0\cdots$时，进行左规，尾数每左移一次，阶码减一（仅基数为2时）。
+    \item 右规：尾数的有效位进到小数点前面时，进行右规，尾数右移一位，阶码加一（仅基数为2时）。
+  \end{itemize}
+
+  基数不同，浮点数的规格化形式也不同。基数为2时，原码规格化数的尾数最高位一定是1；基数为4时，原码规格化形式的尾数最高两位不全为0。
+  \item {\kaishu IEEE 754标准}
+  
+  IEEE 754规定：浮点数的基数隐含为2，尾数采用隐藏位策略的原码表示，阶码用移码表示。
+  \begin{table}
+    \centering
+    \caption{IEEE 754浮点数的格式}
+    \includegraphics[width=0.7\textwidth]{./images/ieee754.png}
+  \end{table}
+  对于短浮点数，偏置值为127；对于长浮点数，偏置值为1023。存储阶码之前，要先把真值加上偏置值；反之在解析真值时，需要将阶码减去偏置值。
+
+  规格化的二进制浮点数，数值最高位总是1，因此此位省略，尾数实际上能多表示一位有效位。
+  \item {\kaishu 定点、浮点表示的区别}
+\end{enumerate}
+
+\subsubsection{浮点数的加减运算}
+
+分为以下几步：
+\begin{enumerate}
+  \item {\kaishu 对阶}
+  
+  原则是小阶向大阶对齐，即将阶码数小的浮点数的阶码逐位增加1，同时尾数逐位右移，直到两个数阶码相等为止。
+  \item {\kaishu 尾数求和}
+  \item {\kaishu 规格化}
+  
+  尾数求和的结果不一定是规格化的，因此需要规格化。
+  \item {\kaishu 舍入}
+  
+  为保证精度，一般将右移移出的位保留下来，在最后得出结果时舍入成IEEE 754格式。
+  \begin{itemize}
+    \item 0舍1入法：类似四舍五入。若保留下来的最高位为1，则在尾数的末位加1，否则就舍去。
+    \item 恒置1法：无脑将右移后的尾数末位置为1。
+    \item 截断法：直接截断，最简单。
+  \end{itemize}
+  \item {\kaishu 溢出判断}
+\end{enumerate}
 
 \section{存储系统}
 
