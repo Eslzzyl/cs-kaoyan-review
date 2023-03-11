@@ -597,7 +597,7 @@ char类型为8位无符号整数，转为int时高位补0即可。
   \item {\kaishu 按存取方式分类}
   \begin{itemize}
     \item 随机存储器（RAM）：又分静态RAM和动态RAM
-    \item 只读存储器（ROM）：可与RAM共同作为主存的一部分，统一构成主存的地址域。同样支持随机访问。
+    \item 只读存储器（ROM）：可与RAM共同作为主存的一部分，统一构成主存的地址域。\textbf{同样支持随机访问}。
     \item 串行访问存储器。包括：
     \begin{itemize}
       \item 顺序存取存储器（如磁带）
@@ -618,12 +618,142 @@ char类型为8位无符号整数，转为int时高位补0即可。
   \item 存储容量。=存储字数$\times$字长
   \item 单位成本。
   \item 存储速度。
+  \begin{itemize}
+    \item 存取时间：启动一次存储器操作到完成该操作所经历的时间。
+    \item 存取周期：又称读写周期或访问周期，是指存储器进行一次完整的读写操作所需的全部时间，即连续两次独立访问存储器操作之间所需的最小时间间隔。
+    \item 主存带宽：表示每秒从主存进出信息的最大数量。
+  \end{itemize}
+  存取周期通常大于存取时间。因为存储器在读写操作之后往往需要一段恢复内部状态的复原时间。
 \end{enumerate}
 
-与存储速度有关的几个概念：
+\subsubsection{多级层次的存储系统}
+
+存储系统层次结构主要体现在Cache-主存层和主存-辅存层。
+
 \begin{itemize}
-  \item 存取时间
+  \item 主存和Cache之间的数据调动由硬件自动完成，对所有程序员都是透明的。
+  \item 主存和辅存之间的数据调动由硬件和操作系统共同完成，对应用程序员是透明的。
 \end{itemize}
+
+\subsection{主存储器}
+
+\subsubsection{SRAM芯片和DRAM芯片}
+
+DRAM的常见刷新方式：
+\begin{itemize}
+  \item 集中刷新：在一个规定的\textbf{刷新周期}内，对所有行进行刷新。这段时间 RAM 无法读写，也即存在死区。
+  \item 分散刷新：将刷新分散到每个存取周期中进行。无死区，但存取周期变长。
+  \item 异步刷新：二者的结合。顺序刷新各行。也有死区，但是死区时间变短。
+\end{itemize}
+
+DRAM的刷新单位是行，刷新时不需要选片，因为所有芯片同时被刷新。
+
+SRAM和DRAM的比较见表\ref{sram_and_dram}。
+
+\begin{table}
+  \centering
+  \caption{SRAM和DRAM各自的特点}
+  \label{sram_and_dram}
+  \includegraphics[width=0.7\textwidth]{./images/sram_and_dram.png}
+\end{table}
+
+\subsubsection{只读存储器ROM}
+
+ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
+
+\subsubsection{主存储器的基本组成}
+
+本节易考“芯片最少需要多少引脚”的问题。
+
+对于SRAM，地址线的条数是存储单元数量的对数（行列信号同时传输），而数据线的条数就是一个存储单元的长度，此外还要附加若干条片选线（根据芯片数量确定，一片芯片时片选线为一位宽）和读写控制线。读写控制线一般为2条（WE、RD）。
+
+对于DRAM，一般采用地址复用技术。地址线的数量应当减半，同时片选线数量应该加倍，因为分出了行通选线和列通选线（先行后列）。其他和SRAM一致。
+
+\begin{problem}
+  某一SRAM芯片，其容量为$1024\times 8$位，除电源和接地端外，该芯片的引脚的最小数目为 \uline{21}。
+\end{problem}
+
+\begin{solution}
+  地址线10条，数据线8条，片选线1条，读写控制线2条，共21条。
+\end{solution}
+
+\begin{problem}
+  某一DRAM芯片，采用地址复用技术，容量为$1024\times 8$位，除电源线和接地端外，该芯片的引脚数最少是 \uline{17}。
+\end{problem}
+
+\begin{solution}
+  地址线5（$10\div 2$）条，数据线8条，片选线2条（行通选+列通选），控制线2条，共17条。
+\end{solution}
+
+\subsubsection{多模块存储器}
+
+\begin{enumerate}
+  \item {\kaishu 单体多字存储器}
+  
+  一次并行读出$m$个字，要求指令和数据必须连续存放。
+  \item {\kaishu 多体并行存储器}
+  \begin{itemize}
+    \item 高位交叉编址（顺序方式）
+    
+    不能提高存储器的吞吐率。
+    \item 低位交叉编址（408常用的名字是“交叉方式”）
+    
+    假设模块存取一个字的存取周期为$T$，总线传送周期为$r$，为实现流水线方式存取（某个模块被再次访问时已经准备好），存储器交叉模块数应大于等于
+    \begin{equation*}
+      m=\frac{T}{r}
+    \end{equation*}
+    其中$m$称为交叉存取度。每隔$r$时间延迟后启动下一个模块。这样，连续存取$m$个字所需的时间为
+    \begin{equation*}
+      t_1=T+(m-1)r
+    \end{equation*}
+    而顺序方式连续读取$m$个字所需的时间为$t_2=mT$。
+  \end{itemize}
+\end{enumerate}
+
+\subsection{主存储器与CPU的连接}
+
+\subsubsection{连接原理}
+
+略
+
+\subsubsection{主存容量的扩展}
+
+\begin{enumerate}
+  \item {\kaishu 位扩展法}
+  
+  各芯片连接地址线的方式相同，但连接数据线的方式不同，在某一时刻选中所有的芯片，所以片选信号要连接到所有的芯片。
+  \item {\kaishu 字扩展法}
+  
+  各芯片连接地址线的方式相同，连接数据线的方式也相同，在某一时刻只需选中部分芯片，所以将片选信号直接连接到相应的芯片，或者通过译码器连接。
+  \item {\kaishu 字位同时扩展法}
+\end{enumerate}
+
+注意：MAR的位数应该和CPU支持的内存大小保持一致，而不是和系统安装的内存大小保持一致。
+
+\subsubsection{存储芯片的地址分配和片选}
+
+\begin{enumerate}
+  \item {\kaishu 线选法}
+  \item {\kaishu 译码片选法}
+\end{enumerate}
+
+\begin{problem}
+  【2018统考】假定DRAM芯片中存储阵列的行数为$r$、列数为$c$，对于一个2K$\times$1位的DRAM芯片，为保证其地址引脚数最少，并尽量减小刷新开销，则$r$、$c$的取值分别是（\ \ ）
+  \begin{enumerate}
+    \item [A. ] 2048, 1
+    \item [B. ] 64, 32
+    \item [C. ] 32, 64
+    \item [D. ] 1, 2048
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+  C。为什么不选D？注意到DRAM采用行列地址线复用技术，这要求地址线需要和行数及列数中较大的那个保持一致。也就是说，行数和列数不能差得太多。
+\end{solution}
+
+\subsection{外部存储器}
+
+略
 
 \section{指令系统}
 
