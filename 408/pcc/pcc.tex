@@ -753,7 +753,104 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 
 \subsection{外部存储器}
 
+磁盘的平均存储时间=寻道时间+旋转延迟时间+传输时间。其中寻道时间和旋转延迟时间通常取平均值。
+
+磁盘地址=驱动器号+柱面号+盘面号+扇区号。
+
+磁盘的读写操作是串行的，不可能在同一时刻既读又写。
+
+\subsection{高速缓冲存储器}
+
+\subsubsection{程序访问的局部性原理}
+
 略
+
+\subsubsection{Cache的基本工作原理}
+
+\begin{itemize}
+  \item CPU和Cache之间的数据交换以\textbf{字}为单位
+  \item Cache与主存之间的数据交换则以\textbf{Cache块}为单位
+\end{itemize}
+
+设某个程序执行期间，Cache的总命中次数为$N_c$，访问主存的总次数为$N_m$，则命中率为
+\begin{equation*}
+  H=\frac{N_c}{N_c+N_m}
+\end{equation*}
+
+设$t_c$为命中时的Cache访问时间，$t_m$为未命中时的访问时间，$1-H$表示未命中率，则Cache-主存系统的平均访问时间$T_a$为
+\begin{equation*}
+  T_a=Ht_c+(1-H)t_m
+\end{equation*}
+
+\subsubsection{Cache和主存的映射方式}
+
+\begin{itemize}
+  \item 为了说明当前Cache块对应主存中的哪一块，需要为每个Cache块添加一个\textbf{标记（tag）}。
+  \item 为了说明Cache行中的信息是否有效，需要为每个Cache行添加一个\textbf{有效位（valid bit）}。
+\end{itemize}
+
+地址映射有如下三种方法：
+\begin{enumerate}
+  \item {\kaishu 直接映射}
+  
+  \begin{equation*}
+    \text{Cache行号}=\text{主存块号}\ \  mod\ \  \text{Cache总行数}
+  \end{equation*}
+  假设Cache有$2^c$行，主存有$2^m$块。上式表明，主存块号的低$c$位正好是它要装入的Cache行号。给每个Cache行设置一个长为$t=m-c$的标记（tag），当主存某块调入Cache后，就将其块号的高$t$位设置在对应Cache行的标记中。
+  \item {\kaishu 全相联映射}
+  
+  \begin{itemize}
+    \item 优点：灵活，Cache块的冲突概率低，空间利用率高，命中率也高；
+    \item 缺点：标记的比较速度慢，实现成本高，通常需要采用昂贵的\textbf{按内容寻址}的相联存储器进行地址映射。
+  \end{itemize}
+  \item {\kaishu 组相联映射}
+  
+  将Cache分成若干个大小相等的组，组间采用直接映射，组内采用全相联映射。这是对上面两种方式的折中。
+
+  组相联的成本接近直接映射，性能接近全相联映射。
+\end{enumerate}
+
+\subsubsection{Cache中主存块的替换算法}
+
+可结合《操作系统》复习。
+
+常见算法：
+\begin{itemize}
+  \item 随机算法
+  \item 先进先出算法（FIFO）
+  \item 近期最少使用算法（LRU）
+  \item 最不经常使用算法
+\end{itemize}
+
+\subsubsection{Cache写策略}
+
+\begin{itemize}
+  \item 写命中
+  \begin{itemize}
+    \item 写直达法（write-through）：写命中时，数据同时写入Cache和主存。
+    \begin{itemize}
+      \item 优点：简单，能随时保持主存数据的正确性。
+      \item 缺点：增加了访存次数，降低了Cache的效率。
+    \end{itemize}
+    \item 写回法（write-back）：写命中时，仅仅把数据写入Cache，而不立即写入主存。仅当此块被换出时才写回主存。
+    \begin{itemize}
+      \item 优点：减少了访存次数。
+      \item 缺点：存在不一致的隐患。需要为每个Cache行设置一个脏位。
+    \end{itemize}
+  \end{itemize}
+  \item 写不命中
+  \begin{itemize}
+    \item 写分配法（write-allocate）：加载主存中的块到Cache中，然后更新这个Cache块。
+    \item 写不分配法（not-write-through）：只写入主存，不动Cache。
+  \end{itemize}
+  写不分配经常和写直达法搭配，写分配经常和写回法搭配。
+\end{itemize}
+
+\subsection{虚拟存储器}
+
+\subsubsection{虚拟存储器的基本概念}
+
+
 
 \section{指令系统}
 
