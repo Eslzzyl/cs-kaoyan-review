@@ -1105,10 +1105,129 @@ CPU=运算器+控制器
 
 \begin{enumerate}
   \item {\kaishu 运算器}
-  
-  
+  \begin{itemize}
+    \item 算术逻辑单元ALU
+    \item 暂存寄存器
+    \item 累加寄存器ACC
+    \item 通用寄存器组
+    \item 程序状态字寄存器
+    \item 移位器
+    \item 计数器
+  \end{itemize}
   \item {\kaishu 控制器}
+  \begin{itemize}
+    \item 程序计数器PC
+    \item 指令寄存器IR
+    \item 指令译码器
+    \item 存储器地址寄存器MAR
+    \item 存储器数据寄存器MDR
+    \item 时序系统，都由统一时钟分频得到。
+    \item 微操作信号发生器
+  \end{itemize}
+  控制器有硬布线控制器和微程序控制器两种。
 \end{enumerate}
+
+CPU内部的寄存器可以分成两类：
+\begin{itemize}
+  \item 用户可见的寄存器，可以编程，如通用寄存器组、程序状态字寄存器。
+  \item 用户不可见的寄存器，对用户透明，不可编程，如MAR、MDR、IR。
+\end{itemize}
+
+所谓的$n$位CPU中，$n$指的是\textbf{数据总线线数}。
+
+\begin{problem}
+  在一条无条件跳转指令的指令周期内，PC的值被修改（\ \ ）次。
+  \begin{enumerate}
+    \item [A. ] 1
+    \item [B. ] 2
+    \item [C. ] 3
+    \item [D. ] 无法确定
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+  B。取值周期结束后，PC值自动加1；执行周期中，PC值修改为要跳转到的地址，因此被修改两次。
+\end{solution}
+
+\subsection{指令执行过程}
+
+\subsubsection{指令周期}
+
+CPU从主存中\textbf{取出并执行}一条指令的时间称为\textbf{指令周期}。
+
+指令周期通常用若干机器周期来表示，一个机器周期又包含若干个时钟周期（又叫节拍）。时钟周期是CPU操作的最基本单位。
+
+每个指令周期内的机器周期数可以不等，每个机器周期内的时钟周期也可以不等。
+
+一个完整的指令周期依次是：
+\begin{itemize}
+  \item 取指 FE
+  \item 间址 IND
+  \item 执行 EX
+  \item 中断 INT
+\end{itemize}
+
+注意：中断周期中的进栈操作是将SP减1，这和传统意义上的进栈操作相反，原因是计算机中的堆栈向低地址增加。
+
+\subsubsection{指令周期的数据流}
+
+\begin{enumerate}
+  \item {\kaishu 取指周期}
+  
+  取指令的同时，PC+1。
+  \item {\kaishu 间址周期}
+  \item {\kaishu 执行周期}
+  \item {\kaishu 中断周期}
+  
+  进栈操作是先修改栈顶指针，再存入数据。
+\end{enumerate}
+
+\subsubsection{指令执行方案}
+
+\begin{enumerate}
+  \item {\kaishu 单指令周期}：对所有指令都用相同的时间执行，指令是串行执行的。每条指令都用一个时钟周期执行完成，因此时钟周期取决于执行时间最长的指令。
+  \item {\kaishu 多指令周期}：对不同指令使用不同数量的时钟周期执行，但指令仍然是串行执行的。
+  \item {\kaishu 流水线方案}：略
+\end{enumerate}
+
+\begin{problem}
+  采用DMA方式传递数据时，每传送一个数据就要占用 \uline{存取周期}。
+\end{problem}
+
+\textbf{在指令长度相同的情况下}，所有指令的取指操作是相同的。
+
+指令字长一般都取存储字长的整数倍，若指令字长等于存储字长的两倍，则需要两次访存，取指周期等于机器周期的两倍。若指令字长等于存储字长，则取指周期等于机器周期。
+
+\subsection{数据通路的功能和基本结构}
+
+\subsubsection{数据通路的功能}
+
+数据在功能部件之间传送的路径称为数据通路。
+
+\subsubsection{数据通路的基本结构}
+
+有以下几种：
+\begin{enumerate}
+  \item {\kaishu CPU内部单总线方式}，将所有寄存器的输入、输出端都连接到一条公共通路上，结构简单，但有很多冲突。
+  \item {\kaishu CPU内部多总线方式}。
+  \item {\kaishu 专用数据通路方式}。不用共享总线，而是根据数据通路设计特定的连线，性能很好，但硬件量很大。
+\end{enumerate}
+
+单总线结构中，ALU的两个输入端不能都连接到总线，而是一端连总线，另一端通过一个寄存器间接地连接总线。输出端也必须通过一个寄存器间接连接总线。
+
+\begin{problem}
+  【2016统考】单周期处理器中所有指令的指令周期为一个时钟周期。下列关于单周期处理器的叙述中，错误的是（\ \ ）
+  \begin{enumerate}
+    \item [A. ] 可以采用单总线结构数据通路
+    \item [B. ] 处理器时钟频率较低
+    \item [C. ] 在指令执行过程中控制信号不变
+    \item [D. ] 每条指令的CPI为1
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+  A。单总线结构每个时钟周期只能完成一个操作，但一条指令无疑需要多个操作，因此不能用于单周期处理器。
+\end{solution}
 
 \section{总线}
 
