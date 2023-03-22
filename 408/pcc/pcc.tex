@@ -1152,10 +1152,13 @@ CPU内部的寄存器可以分成两类：
 \subsection{指令执行过程}
 
 \subsubsection{指令周期}
+\label{instruction_cycle}
 
 CPU从主存中\textbf{取出并执行}一条指令的时间称为\textbf{指令周期}。
 
 指令周期通常用若干机器周期来表示，一个机器周期又包含若干个时钟周期（又叫节拍）。时钟周期是CPU操作的最基本单位。
+
+访问一次存储器的时间是固定的，因此通常用存取周期作为机器周期。机器周期是人为规定的。
 
 每个指令周期内的机器周期数可以不等，每个机器周期内的时钟周期也可以不等。
 
@@ -1229,7 +1232,257 @@ CPU从主存中\textbf{取出并执行}一条指令的时间称为\textbf{指令
   A。单总线结构每个时钟周期只能完成一个操作，但一条指令无疑需要多个操作，因此不能用于单周期处理器。
 \end{solution}
 
+\subsection{控制器的功能和工作原理}
+
+\subsubsection{控制器的结构和功能}
+
+控制器的功能有：
+\begin{enumerate}
+  \item 从主存中取出一条指令，并指出下一条指令在主存中的位置。
+  \item 对指令进行译码或测试，产生相应的操作控制信号，以便启动规定的动作。
+  \item 指挥并控制CPU、主存、输入和输出设备之间的数据流动方向。
+\end{enumerate}
+
+\subsubsection{硬布线控制器}
+
+又称组合逻辑控制器。
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{./images/cu_with_id_and_clock_input.png}
+  \caption{带指令译码器和节拍输入的控制单元图}
+\end{figure}
+
+CU的输入来自操作码译码电路ID、节拍发生器、状态标志，以及其他来自控制总线的中断请求、DMA请求等，并将输出发送到控制总线。
+
+指令周期、机器周期、时钟周期：回顾\ref{instruction_cycle}节。
+
+每个时钟周期（节拍）内，机器可以完成一个或几个需要同时执行的操作。
+
+CPU的控制方式:
+\begin{itemize}
+  \item 同步控制方式，所有的控制信号同步到一个统一的系统时钟。控制电路简单，但运行速度慢。
+  \item 异步控制方式：完全不同步，各个部件按照自身的速度工作，通过应答方式联络。速度快，但控制电路复杂。
+  \item 联合控制方式：二者的折中。对于不同的微操作采用大部分同步、小部分异步的方法。
+\end{itemize}
+
+\subsubsection{微程序控制器}
+
+将每条机器指令编写成一个\textbf{微程序}，每个微程序包含若干\textbf{微指令}，每条伪指令对应一个或几个\textbf{微操作命令}。
+
+存放微指令的控制存储器的单元地址称为\textbf{微地址}。一条微指令通常包含：
+\begin{itemize}
+  \item {\bf 操作控制字段}，又称微操作码字段，用于产生某一步操作所需的各种操作控制信号。
+  \item {\bf 顺序控制字段}，又称微地址码字段，用于控制产生下一条微指令的地址。
+\end{itemize}
+
+\textbf{微周期}是指执行一条微指令需要的时间，一般就是一个时钟周期。
+
+存在类似主存的\textbf{控制存储器}（CM），用于存放微程序，集成在CPU内部，\textbf{用ROM实现}。
+
+区分以下寄存器：
+\begin{itemize}
+  \item 地址寄存器MAR
+  \item 微地址寄存器CMAR，用于存放待读/写的微指令的地址
+  \item 指令寄存器IR
+  \item 微指令寄存器CMDR（或$\mu$IR），用于存放读出的微指令
+\end{itemize}
+
+微程序的个数=机器指令数+对应取指、间址和中断周期等公共的微程序数。也即各条指令的特异部分+公共操作。
+
+\begin{itemize}
+  \item 微指令的\textbf{编码方式}：
+  \begin{itemize}
+    \item 直接编码方式
+    \item 字段直接编码方式
+    \item 字段间接编码方式
+  \end{itemize}
+  编码的目标是在保证速度的情况下，尽量缩短微指令字长。
+  \item 微指令的\textbf{地址形成方式}：
+  \begin{itemize}
+    \item 直接由微指令的下地址字段指出，又称断定方式。
+    \item 根据机器指令的操作码形成。
+  \end{itemize}
+  \item 微指令的\textbf{格式}：
+  \begin{itemize}
+    \item 水平型微指令：微程序短，速度快；微指令长，编写微程序麻烦。
+    \item 垂直型微指令：微指令短，简单规整，容易编写微程序；微程序长，速度慢。
+    \item 混合型微指令：在垂直型的基础上增加一些不太复杂的并行操作。
+  \end{itemize}
+\end{itemize}
+
+\subsection{异常和中断机制}
+
+\subsubsection{异常和中断的基本概念}
+
+\begin{itemize}
+  \item CPU内部产生的意外事件称为\textbf{异常}（内中断）
+  \item 来自CPU外部的设备向CPU发出的请求称为\textbf{中断}（外中断）
+\end{itemize}
+
+二者的处理过程基本上是一样的。
+
+\subsubsection{异常和中断的分类}
+
+\begin{itemize}
+  \item 异常的分类
+  \begin{itemize}
+    \item 故障（Fault）：如指令译码时的无效操作码、缺页、除0等。
+    \item 自陷（Trap）：人为设置，CPU在执行到Trap之后，进行相应的处理，然后返回。如单步调试、系统调用等。
+    \item 终止（Abort）：计算机无法继续执行的硬件故障。随机发生，发生后必须调出终端服务程序来重启系统。
+  \end{itemize}
+  \item 中断的分类
+  \begin{itemize}
+    \item 可屏蔽中断：通过中断请求线INTR向CPU发出的中断请求。CPU可以通过在中断控制器中设置相应的屏蔽字来屏蔽掉这类中断。
+    \item 不可屏蔽中断：通过不可屏蔽中断请求线NMI发出的请求，一般是非常紧急的硬件故障，如系统掉电。
+  \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+  \item 异常中的Fault和Trap属于\textbf{软件中断}。
+  \item 异常中的Abort和外中断属于\textbf{硬件中断}。
+\end{itemize}
+
+中断和异常的区别：
+\begin{itemize}
+  \item 异常一般是由特定指令在执行过程中产生的，而中断和指令没有关系，也不阻止指令的完成。
+  \item 异常的检测由CPU自身完成，不依赖外部信号；中断则是从请求线传进来的信号。
+\end{itemize}
+
+\subsubsection{异常和中断响应过程}
+
+可分为几步：关中断、保存断点和程序状态、识别异常和中断并转到相应的处理程序。
+
+\begin{enumerate}
+  \item 关中断：指的是禁止相应新的中断。通常是将中断允许（IF）触发器置0。若置1表示开中断。
+  \item 保存断点和程序状态：通常保存在栈中，以支持异常/中断的嵌套。程序状态字寄存器PSWR也需要保存。
+  \item 识别异常和中断并转到相应的处理程序：注意区分软件识别方式和硬件识别方式，见下。
+\end{enumerate}
+
+软件识别和硬件识别：
+\begin{itemize}
+  \item 软件识别：CPU设置一个异常状态寄存器，记录异常的原因。OS使用统一的查询程序，按照优先级顺序查询该寄存器，先查到的先处理。
+  \item 硬件识别：又叫向量中断。异常/中断处理程序的首地址叫\textbf{中断向量}，所有中断向量都存在\textbf{中断向量表}中
+\end{itemize}
+异常主要用软件识别，中断处理两种都用。
+
+\subsection{指令流水线}
+
+\subsubsection{指令流水线的基本概念}
+
+处理机并行性：
+\begin{itemize}
+  \item 时间并行：将一个任务分解为若干个子任务，每个子任务在不同的部件上并行执行，即流水线技术。
+  \item 空间并行：在一个处理机内设置多个执行相同任务的功能部件，令其并行工作，即超标量处理器技术。
+\end{itemize}
+
+流水线技术不能缩短单条指令的执行时间，但整个程序的执行效率能够大幅提高。
+
+\subsubsection{流水线的基本实现}
+
+貌似没什么新东西，硬件系统综合设计已经覆盖了全部内容
+
+\subsubsection{流水线的冒险与处理}
+
+赢！体系结构覆盖了本节全部内容
+
+\begin{itemize}
+  \item 结构冒险
+  \item 数据冒险
+  \begin{itemize}
+    \item RAW相关
+    \item WAR相关
+    \item WAW相关
+  \end{itemize}
+  \item 控制冒险
+\end{itemize}
+
+解决数据冒险的方式：流水线暂停、数据前推、编译时指令重排
+
+\subsubsection{流水线的性能指标}
+
+\begin{enumerate}
+  \item 吞吐率
+  
+  指单位时间内流水线完成的任务数量。
+
+  公式没看太懂，用时再补
+  \item 加速比
+  
+  \begin{equation*}
+    S_p=\frac{m}{1+(m-1)/n}
+  \end{equation*}
+  其中，$m$是流水线段数，$n$是执行指令的条数。
+  \item 效率
+  
+  \begin{equation*}
+    E=\frac{n}{m+n-1}=\frac{S_p}{m}
+  \end{equation*}
+  $m$、$n$含义同上。
+\end{enumerate}
+
+\subsubsection{高级流水线技术}
+
+\begin{itemize}
+  \item 超标量流水线技术：又称动态多发射技术。每个时钟周期可并发多条指令。需要配置多个功能部件。多数超标量CPU都会使用乱序执行。
+  \item 超长指令字技术：又称静态多发射技术，由编译程序挖掘并发性，将多条指令组成一条超长的指令。同样需要配置多个功能部件。
+  \item 超流水线技术
+\end{itemize}
+
+\subsection{多处理器的基本概念}
+
+应该是考纲新增考点，2022考过一题。
+
+这节基本上照抄的《体系结构 量化研究方法》。
+
+\subsubsection{SISD、SIMD、MIMD}
+
+\begin{itemize}
+  \item SISD 单指令单数据流
+  \item SIMD 单指令多数据流
+  \item MISD 多指令单数据流（实际上不存在）
+  \item MIMD 多指令多数据流
+\end{itemize}
+
+\subsubsection{硬件多线程的基本概念}
+
+\begin{itemize}
+  \item 细粒度多线程：多个线程轮流执行指令，线程执行的指令是不相关的，可以乱序并行执行。
+  \item 粗粒度多线程：仅当一个程序需要停顿较长时间时（如cache miss），才切换线程。线程切换的开销比细粒度多线程高。
+  \item 同时多线程 SMT：在同一个时钟周期中发射多个不同线程的多条指令执行。
+\end{itemize}
+
+现代x86处理器的Hyper-threading技术就是基于SMT的。
+
+\subsubsection{多核处理器的基本概念}
+
+\subsubsection{共享内存多处理器的基本概念}
+
 \section{总线}
+
+\subsection{总线概述}
+
+\subsubsection{总线基本概念}
+
+\begin{itemize}
+  \item {\bf 定义}
+  \item {\bf 总线设备}
+  \begin{itemize}
+    \item 主设备：获得总线控制权的设备
+    \item 从设备：相应从主设备发来的总线命令的设备
+  \end{itemize}
+  \item {\bf 总线特性}
+  \begin{itemize}
+    \item 机械特性
+    \item 电气特性
+    \item 功能特性
+    \item 时间特性
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{总线的分类}
+
+
 
 \section{输入/输出系统}
 
