@@ -1320,6 +1320,8 @@ CPU的控制方式:
   \item 来自CPU外部的设备向CPU发出的请求称为\textbf{中断}（外中断）
 \end{itemize}
 
+异常都不能屏蔽，中断有的可以，有的不能。
+
 二者的处理过程基本上是一样的。
 
 \subsubsection{异常和中断的分类}
@@ -1337,6 +1339,12 @@ CPU的控制方式:
     \item 不可屏蔽中断：通过不可屏蔽中断请求线NMI发出的请求，一般是非常紧急的硬件故障，如系统掉电。
   \end{itemize}
 \end{itemize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{./images/interrupt.png}
+  \caption{异常和中断的联系与区别}
+\end{figure}
 
 \begin{itemize}
   \item 异常中的Fault和Trap属于\textbf{软件中断}。
@@ -1433,7 +1441,7 @@ CPU的控制方式:
 
 应该是考纲新增考点，2022考过一题。
 
-这节基本上照抄的《体系结构 量化研究方法》。
+这节基本上照抄的《体系结构 量化研究方法》。还需要再看。
 
 \subsubsection{SISD、SIMD、MIMD}
 
@@ -1482,8 +1490,232 @@ CPU的控制方式:
 
 \subsubsection{总线的分类}
 
+\begin{itemize}
+  \item 片内总线：CPU内部的总线
+  \item 系统总线：计算机中各个功能部件（CPU、主存、I/O接口）之间的连线。又分：
+  \begin{itemize}
+    \item 数据总线：双向
+    \item 地址总线：单向
+    \item 控制总线
+  \end{itemize}
+  \item I/O总线：主要用于连接低速I/O设备，如USB、PCI总线。
+  \item 通信总线：也叫外部总线。用于在计算机系统之间或计算机和其他设备之间进行通信。
+\end{itemize}
 
+\subsubsection{系统总线的结构}
+
+\begin{itemize}
+  \item 单总线结构：将所有设备挂在同一组总线上。连接情况见图\ref{single-bus-structure}。
+  \begin{itemize}
+    \item 优点：结构简单、成本低，容易接入新设备。
+    \item 缺点：带宽低，负载重，不能并发传输。
+  \end{itemize}
+  \item 双总线结构：有两条总线：主存总线和I/O总线。连接情况见图\ref{double-bus-structure}。
+  \begin{itemize}
+    \item 优点：将低速的I/O设备分离出来，实现了存储器总线和I/O主线的分离。
+    \item 缺点：需要增加I/O通道等硬件设备。
+  \end{itemize}
+  \item 三总线结构：包括主存总线、I/O总线和DMA总线。连接情况见图\ref{triple-bus-structure}。
+  \begin{itemize}
+    \item 优点：提高了I/O设备的性能，提高了系统吞吐量。
+    \item 系统工作效率较低。
+  \end{itemize}
+\end{itemize}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{./images/single-bus-structure.png}
+  \caption{单总线结构}
+  \label{single-bus-structure}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{./images/double-bus-structure.png}
+  \caption{双总线结构}
+  \label{double-bus-structure}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{./images/triple-bus-structure.png}
+  \caption{三总线结构}
+  \label{triple-bus-structure}
+\end{figure}
+
+\subsubsection{常见的总线标准}
+
+很长，有12个之多。只选了其中的一部分内容。详细可见王道2024组成原理P281-282
+
+\begin{enumerate}
+  \item ISA，最早的微型计算机系统总线，应用在IBM的AT机上。
+  \item EISA，扩展的ISA，完全兼容ISA，为32位系统设计。
+  \item VESA，32位局部总线，主要用于多媒体信息如图像的传输。
+  \item PCI，32位或64位总线，支持即插即用，和处理器频率无关。
+  \item AGP，用于传输视频和三维图形数据。
+  \item PCIe，即PCI-Express，全面取代PCI和AGP。
+  \item USB，支持即插即用、热插拔。
+  \item SATA，由Intel、IBM、Dell提出的硬盘接口规范。
+\end{enumerate}
+
+\subsubsection{总线性能指标}
+
+\begin{enumerate}
+  \item 总线传输周期，指一次总线操作所需的时间。由若干个总线时钟周期构成。
+  \item 总线时钟周期，就是机器的时钟周期。
+  \item 总线工作频率，是总线传输周期的倒数。
+  \item 总线时钟频率，是总线时钟周期的倒数。
+  \item 总线宽度
+  \item 总线带宽，=总线工作频率$\times$(总线宽度/8)
+  \item 总线复用
+  \item 信号线数，指地址总线、数据总线和控制总线加在一起的线路数量。
+\end{enumerate}
+
+\subsection{总线事务和定时}
+
+\subsubsection{总线事务}
+
+\begin{enumerate}
+  \item 请求阶段。主设备发出传输请求，并获得总线控制权。
+  \item 仲裁阶段。总线仲裁机构决定下一个传输周期交给谁。
+  \item 寻址阶段。主设备通过总线指定从设备，启动从模块。
+  \item 传输阶段。进行数据交换，可单向或双向。一般一次只能传输一个字长的数据。
+  \item 释放阶段。主设备让出总线。
+\end{enumerate}
+
+猝发（突发）式数据传输允许在传输阶段传输多个连续单元，每个时钟周期仍然只传送一个字长，但可以持续传输而无需反复申请和释放。
+
+\subsubsection{同步定时方式}
+
+使用统一时钟的同步方式。
+
+\begin{itemize}
+  \item 优点：速度快，控制简单。
+  \item 缺点：不能及时进行数据校验，可靠性差。对于各个部件存取时间相差较大的系统效果不佳。
+\end{itemize}
+
+\subsubsection{异步定时方式}
+
+没有同步，完全靠双方握手实现通信。
+
+\begin{itemize}
+  \item 优点：灵活，适合各个部件存取时间相差较大的系统。
+  \item 缺点：控制稍复杂，速度稍慢。
+\end{itemize}
+
+异步方式又可分为：
+\begin{itemize}
+  \item 不互锁方式。主设备发出请求信号后，无需等待应答，一段时间后自行撤销信号。从设备亦然。
+  \item 半互锁方式。主设备需要等待应答，从设备不需要。
+  \item 全互锁方式。都需要。
+\end{itemize}
+
+\subsection{本章小结}
+
+\begin{problem}
+  引入总线结构的好处是？
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}
+    \item 简化了系统结构，便于设计和制造。
+    \item 大大减少了连线数目，便于布线和减小体积。系统可靠性高。
+    \item 便于接口设计。
+    \item 便于系统的扩充。
+    \item 便于设备的软件设计。
+    \item 便于故障的诊断和维修。
+  \end{enumerate}
+\end{solution}
 
 \section{输入/输出系统}
+
+\subsection{I/O系统基本概念}
+
+本节已从新大纲中删除。此处仅选择少部分内容记录。
+
+\subsubsection{I/O系统}
+
+\subsubsection{I/O控制方式}
+
+\begin{itemize}
+  \item 程序查询方式
+  \item 程序中断方式
+  \item DMA方式
+  \item 通道方式
+\end{itemize}
+
+前两者适合低速设备，后两者适合高速设备。
+
+\subsubsection{外部设备}
+
+\subsection{I/O接口}
+
+\subsubsection{I/O接口的功能}
+
+\begin{itemize}
+  \item 进行地址译码和设备选择
+  \item 实现主机和外设的通信联络控制
+  \item 实现数据缓冲
+  \item 信号格式的转换
+  \item 传送控制命令和状态信息
+\end{itemize}
+
+\subsubsection{I/O接口的类型}
+
+\begin{itemize}
+  \item 根据（接口和外设之间的）数据传输方式可分为：
+  \begin{itemize}
+    \item 并行接口
+    \item 串行接口
+  \end{itemize}
+  \item 按主机的控制方式可分为：
+  \begin{itemize}
+    \item 程序查询接口
+    \item 中断接口
+    \item DMA接口
+  \end{itemize}
+  \item 按功能选择的灵活性可分为：
+  \begin{itemize}
+    \item 可编程接口
+    \item 不可编程接口
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{I/O端口及其编址}
+
+I/O端口的编址方式：
+\begin{itemize}
+  \item {\kaishu 统一编址}，又叫存储器映射方式。把I/O端口当作存储器的单元进行地址分配。无需设置I/O指令，直接通过访存指令即可访问I/O端口。
+  \item {\kaishu 独立编址}，又叫I/O映射方式。需要设置I/O指令。
+\end{itemize}
+
+\subsection{I/O方式}
+
+这节王道书写的稀烂，可以看唐朔飞课本。
+
+\subsubsection{程序查询方式}
+
+CPU和I/O设备串行工作，效率很低。
+
+\subsubsection{程序中断方式}
+
+有一种中断屏蔽字的应用题，待补。
+
+\subsubsection{DMA方式}
+
+\subsection{本章小结}
+
+\begin{problem}
+  CPU响应中断应具备哪些条件？
+\end{problem}
+
+\begin{solution}
+  \begin{enumerate}
+    \item 在CPU内部设置的中断屏蔽触发器是开放的。
+    \item 外设有中断请求时，中断请求触发器必须是”1“状态。
+    \item 外设（接口）的中断允许触发器是”1“状态。
+  \end{enumerate}
+  具备上述三个条件时，CPU在现行指令结束的最后一个状态周期响应中断。
+\end{solution}
 
 \end{document}

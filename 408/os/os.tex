@@ -1,0 +1,331 @@
+% draft会跳过文档中的所有图片。正式导出时需要删掉draft参数。
+\documentclass[12pt, a4paper, oneside]{ctexart}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{mathrsfs}
+\usepackage{geometry}
+\usepackage{framed}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{indentfirst}
+\usepackage{authblk}
+\usepackage{multicol}
+% \usepackage{draftwatermark}       % 需要应用水印时取消注释
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
+\usepackage{ulem}
+\usetikzlibrary{positioning, shapes.geometric}
+
+% 分栏线宽
+\columnseprule=0.4pt
+
+% 定制第二级无序列表的点样式
+\setlist[itemize,2]{label=$\diamond$}
+
+\pagestyle{fancy}
+
+\fancyhf{}      % 清空页眉页脚设置
+\fancyhead[L] {
+    % 工大计算机系logo
+    \includegraphics[height=7mm]{./images/logo1.jpg}
+}
+\fancyhead[C]{《操作系统》复习}
+\fancyhead[R]{\leftmark}    % 右侧页眉：当前章标题
+
+% 页脚居中放置页码
+\fancyfoot[C]{\thepage}
+
+% 设置章节标题自动编号的格式
+\ctexset{
+  section/number=\chinese{section},
+%   subsection/name={,},
+%   subsection/number=\chinese{subsection}
+}
+
+% 行距。ctexart默认值为1.3
+\linespread{1.2}
+
+\lstset{
+  language=pascal,
+  basicstyle=\ttfamily,
+  frame=single,
+  numbers=left
+}
+
+% \SetWatermarkText{Eslzzyl整理}            % 设置水印内容
+% \SetWatermarkLightness{0.9}             % 设置水印透明度 0-1
+% \SetWatermarkScale{0.8}                   % 设置水印大小 0-1
+
+\renewcommand{\headrulewidth}{1pt}  %页眉线宽，设为0可以去页眉线
+\renewcommand{\footrulewidth}{1pt}  %脚注线的宽度
+
+\definecolor{shadecolor}{RGB}{241, 241, 255}
+
+\title{
+    \includegraphics[width=0.3\textwidth]{images/hfut-badge.pdf}
+    
+    \vspace{20pt}
+    《操作系统》总复习
+}
+\author{Eslzzyl}
+\date{\today}
+
+\newcounter{problemname}
+\newenvironment{problem}{\begin{shaded}\stepcounter{problemname}\par\noindent\textbf{例题\arabic{problemname}. }}{\end{shaded}\par}
+\newenvironment{solution}{\begin{shaded}\par\noindent\textbf{解答：}}{\end{shaded}\par}
+% \newenvironment{solution}{\par\noindent\textbf{答案. }}{\par}
+% \newenvironment{note}{\par\noindent\textbf{例题\arabic{problemname}的注记. }}{\\\par}
+\newenvironment{note}{\par\noindent\textbf{注记. }}{\par}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\vspace{20pt}
+% 如果在目录处有备注，可以写在这里。
+
+\newpage
+
+\section{计算机系统概述}
+
+本章主要是选择题。
+
+\subsection{操作系统的基本概念}
+
+\subsubsection{操作系统的概念}
+
+计算机系统自上而下可分为4层：
+\begin{enumerate}
+  \item 用户
+  \item 应用程序
+  \item 操作系统
+  \item 硬件
+\end{enumerate}
+
+操作系统的\textbf{定义}：操作系统是一组管理和控制计算机软件和硬件资源，合理组织计算机系统工作流程,以及方便用户使用的\textbf{程序的集合}。
+
+OS是计算机系统中最基本的系统软件。
+
+\subsubsection{操作系统的特征}
+
+四大基本特征：
+\begin{itemize}
+  \item {\bf 并发（Concurrence）}
+  \begin{itemize}
+    \item 并发：多个事件在同一时间间隔内发生。
+    \item 并行：多个事件在同一时刻发生。
+  \end{itemize}
+  操作系统的并发性是通过分时得以实现的。
+  \item {\bf 共享（Sharing）}
+  \begin{itemize}
+    \item 互斥共享方式
+    \item 同时访问方式
+  \end{itemize}
+  \item {\bf 虚拟（Virtual）}
+  
+  虚拟技术有两种实现方式：
+  \begin{itemize}
+    \item 时分复用技术，如处理器的分时共享；
+    \item 空分复用技术，如虚拟存储器。
+  \end{itemize}
+  \item {\bf 异步（Asynchronism）}
+  
+  多道程序环境下，程序的执行是走走停停的，即以不可知的速度向前推进，这就是进程的异步性。OS必须保证在相同的运行环境下，进程多次运行的结果是一致的。
+\end{itemize}
+
+\subsubsection{操作系统的目标和功能}
+
+\begin{enumerate}
+  \item 系统资源的\textbf{管理}者
+  \begin{itemize}
+    \item 处理机管理，也就是对进程的管理，包括
+    \begin{itemize}
+      \item 进程控制
+      \item 进程同步
+      \item 进程通信
+      \item 死锁处理
+      \item 处理机调度
+    \end{itemize}
+    \item 存储器管理
+    \begin{itemize}
+      \item 内存分配与回收
+      \item 地址映射
+      \item 内存保护和共享
+      \item 内存扩充
+    \end{itemize}
+    \item 文件管理
+    \begin{itemize}
+      \item 文件存储空间的管理
+      \item 目录管理
+      \item 文件读写管理和保护
+    \end{itemize}
+    \item 设备管理
+    \begin{itemize}
+      \item 缓冲管理
+      \item 设备分配
+      \item 设备处理
+      \item 虚拟设备
+    \end{itemize}
+  \end{itemize}
+  \item 作为用户和硬件系统之间的\textbf{接口}
+  \begin{itemize}
+    \item 命令接口
+    \begin{itemize}
+      \item 联机方式：交互式
+      \begin{itemize}
+        \item 字符式
+        \item 图形用户接口GUI
+      \end{itemize}
+      \item 脱机方式：批处理式
+    \end{itemize}
+    \item 程序接口：由一组系统调用组成
+  \end{itemize}
+  \item 实现对计算机资源的\textbf{扩充}
+\end{enumerate}
+
+\subsection{操作系统发展历程}
+
+推动OS发展的主要动力：
+\begin{itemize}
+  \item 不断提高计算机资源利用率
+  \item 方便用户
+  \item 器件的不断更新换代
+  \item 计算机体系结构的发展
+  \item 不断提出新的应用需求
+\end{itemize}
+
+\subsubsection{无操作系统时代}
+
+对计算机的所有操作采用人工操作方式完成。人工操作方式的缺点：
+\begin{itemize}
+  \item 用户独占全机
+  \item CPU等待人工操作
+\end{itemize}
+
+由于以上两点，昂贵的机器资源在大部分时间内处于空闲状态，非常浪费。
+
+优点：交互性好，即用户可以得到机器的立即响应。
+
+\subsubsection{单道批处理系统}
+
+\textbf{批处理系统}：在计算机上加载一个专门监控软件,在其控制下,计算机
+能够自动地、成批地处理一个或多个用户的一批作业。
+
+批处理系统的特点：
+\begin{itemize}
+  \item 系统吞吐量大
+  \item 资源利用率高
+  \item 平均周转时间短
+  \item 无交互能力（缺点）
+\end{itemize}
+
+\textbf{单道批处理系统}：先把一批作业输入到磁带上，在监控程序的控制下使这批作业一个接一个地处理。
+内存中始终只保持一道作业。
+
+代表系统：IBM的FMS（Fortran Monitoring System），1960s
+
+一定程度上改善了资源浪费，但失去了交互性。单个程序独占系统，程序I/O时CPU空等。
+
+单道批处理系统的特点：自动性、顺序性、单道性
+
+\subsubsection{多道批处理系统}
+
+出现的动力是希望提高资源利用率和系统吞吐量。
+
+代表系统（也是第一个）：IBM的OS/360，1960s
+
+由作业调度程序按照一定的算法，从后备队列中选择若干个作业调入内存，使它们共享CPU资源。
+
+相比单道批处理系统，多道批处理系统的资源利用率更高，但仍然没有交互性。
+
+特点：多道性、无序性、调度性、宏观上并行、微观上串行
+
+\subsubsection{分时系统}
+
+出现的动力是改善交互性。
+
+分时系统：在一台主机上连接若干个终端，允许多个用户通过终端以交互方式共享主机资源。
+
+代表系统：CTSS(1962)、Multics(1964)
+
+特点：
+\begin{itemize}
+  \item 多路性：众多联机用户可以同时使用同一台计算机
+  \item 独立性：各终端用户感觉到自己独占了计算机
+  \item 及时性：用户的请求能在很短时间内得到响应
+  \item 交互性：用户与计算机之间可进行“会话”
+\end{itemize}
+
+\subsubsection{实时系统}
+
+实时计算：系统的正确性不仅由计算的逻辑结果来确定，而且还取决于产生结果的时间。
+
+常见的实时系统：
+\begin{itemize}
+  \item 工业控制系统、武器控制系统
+  \item 信息查询系统
+  \item 多媒体系统
+  \item 嵌入式系统
+\end{itemize}
+
+代表系统：WinCE，嵌入式Linux，ucOSII，VxWorks等
+
+特点：实时性、高安全性、高可靠性（效率放第二位）、整体性强、会话能力要求不高
+
+\subsubsection{网络操作系统和分布式计算机系统}
+
+网络操作系统：将网络中的多台计算机连接起来。
+
+分布式计算机系统：用于管理分布式计算机系统的操作系统。
+
+\subsection{操作系统运行环境}
+
+\subsubsection{处理器运行模式}
+
+\begin{itemize}
+  \item {\kaishu 特权指令}，指不允许用户直接使用的指令。
+  \item {\kaishu 非特权指令}，指允许用户直接使用的指令。
+\end{itemize}
+
+CPU的运行模式：
+\begin{itemize}
+  \item {\kaishu 用户态}（目态）
+  \item {\kaishu 内核态}（核心态、管态）
+\end{itemize}
+
+CPU在内核态可以执行特权指令，在用户态则只能执行非特权指令。应用程序运行在用户态，操作系统内核运行在内核态。
+
+大多数操作系统内核包括：
+\begin{itemize}
+  \item 时钟管理
+  \item 中断机制
+  \item 原语
+  \item 系统控制的数据结构及处理
+\end{itemize}
+
+\subsubsection{中断和异常的概念}
+
+可直接参考组成原理相关内容。
+
+\subsubsection{系统调用}
+
+
+
+\section{进程与线程}
+
+\section{内存管理}
+
+\section{文件管理}
+
+\section{输入输出（I/O）管理}
+
+\end{document}
