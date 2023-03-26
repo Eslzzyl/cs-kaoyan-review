@@ -1166,7 +1166,77 @@ PCB包括如下4部分内容：
 
 \subsubsection{虚拟内存的基本概念}
 
+存储管理的两个基本问题：
+\begin{itemize}
+  \item 有的作业很大，不能完整装入内存。
+  \item 作业很多，不能全部放入内存，但它们又要求同时运行。
+\end{itemize}
 
+程序运行的局部性原理：
+\begin{itemize}
+  \item 时间局部性：刚执行过的指令在不久后很可能再次被执行，或程序刚访问过的数据很可能再次被访问。典型原因是程序中的循环。
+  \item 空间局部性：程序刚访问过某存储单元，则附近的存储单元也很可能被访问。典型原因是程序的顺序执行。
+\end{itemize}
+
+\textbf{定义}：虚拟存储器是指具有请求调入功能和置换功能，能从逻辑上对内存容量加以扩充的一种存储器系统。其逻辑容量由内存容量和外存容量之和决定，运行速度接近内存速度，而每位的成本由接近外存。
+
+特征：
+\begin{itemize}
+  \item 多次性。程序无须一次性全部装入内存，而是可以分多次装入。
+  \item 对换性。程序和数据无须常驻内存，在必要时可以换入换出。
+  \item 虚拟性。能从逻辑上扩展内存容量，使用户看到的容量远大于实际容量。
+\end{itemize}
+
+实现方法：
+\begin{itemize}
+  \item 请求分页系统
+  \item 请求分段系统
+  \item 请求段页系统
+\end{itemize}
+
+需要的硬件支持：
+\begin{itemize}
+  \item 一定容量的内存和外存。
+  \item 页表/段表机制，作为主要的数据结构。
+  \item 中断机构。
+  \item 地址变换机构。
+\end{itemize}
+
+\subsubsection{请求分页管理方式}
+
+为了应对页不在内存的情况，针对基本分页系统的页表结构进行扩充，形成如图\ref{page_request_system}的结构。
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\textwidth]{./images/page_request_system.png}
+  \caption{请求分页系统中的页表项}
+  \label{page_request_system}
+\end{figure}
+
+\begin{itemize}
+  \item 状态位P：标示当前页面是否在主存。
+  \item 访问字段A：记录一段时间内被访问的次数，供置换算法参考。
+  \item 修改位M，标示该页面在被调入内存后是否被修改过。
+  \item 外存地址：指出该页面在外存的地址。
+\end{itemize}
+
+请求分页系统的地址变换过程：图\ref{page_request_address_translation}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\textwidth]{./images/page_request_address_translation.png}
+  \caption{请求分页系统中的地址变换过程}
+  \label{page_request_address_translation}
+\end{figure}
+
+\subsubsection{页框分配}
+
+给一个进程分配的物理页框的集合，叫做这个进程的\textbf{驻留集}。
+
+内存分配策略：
+\begin{itemize}
+  \item 
+\end{itemize}
 
 \section{文件管理}
 
