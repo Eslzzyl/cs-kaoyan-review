@@ -1429,6 +1429,375 @@ FCB包含如下信息：
   \item 文件的存储空间管理，讲的是空闲盘块的管理。
 \end{itemize}
 
+\subsection{目录}
+
+\subsubsection{目录的基本概念}
+
+FCB的有序集合叫做文件目录。一个FCB就是一个文件目录项。
+
+目录管理通过树形结构来解决和实现。
+
+\subsubsection{目录结构}
+
+\begin{enumerate}
+  \item {\bf 单级目录结构}
+  
+  在整个文件系统中只建立一张目录表，每个文件占一个目录项。整个文件系统中不允许有重名的文件。不适用于多用户系统。查找速度慢、不便于共享。
+
+  \item {\bf 两级目录结构}
+  
+  将目录按照用户分类，分为主文件目录 MFD（整个系统设置一个）和用户文件目录 UFD（每个用户一个）两级。MFD记录用户名和用户的UFD所在的位置，UFD记录具体的FCB。
+
+  提高了检索速度，解决了多用户的文件重名问题，文件系统可以在目录上实现访问限制。但是也缺乏灵活性。
+
+  \item {\bf 树形目录结构}
+  
+  这是从两级目录推广而来的。其结构广为人知，不再详述（王道书上有简单的解释）
+
+  \item {\bf 无环图目录结构}
+  
+  树形目录便于实现文件分类，但不便于文件共享。对树形结构加以改造，让一些共享的结点独立出来，各个目录通过引用计数和写时复制来引用节点。仅当最后一个引用被撤销后，共享结点才被删除。
+\end{enumerate}
+
+\subsubsection{目录的操作}
+
+\begin{itemize}
+  \item 搜索。用户需要访问文件时，从目录中找到该文件。
+  \item 创建文件。即创建目录项，下同。
+  \item 删除文件。
+  \item 创建目录。在树形目录中还可以再创建目录。
+  \item 删除目录。有不删除非空目录和删除非空目录两种。
+  \item 移动目录。
+  \item 显示目录。即\verb|ls|。
+  \item 修改目录。即修改目录项的信息。
+\end{itemize}
+
+\subsubsection{目录实现}
+
+本节带有星号。
+
+常用的两种方法：
+\begin{enumerate}
+  \item {\bf 线性表}
+  
+  实现简单，查找比较费时。
+
+  \item {\bf 哈希表}
+  
+  性能好，但需要避免冲突。
+\end{enumerate}
+
+目录查询需要大量磁盘I/O，为了提高性能，可以将当前目录复制到内存，以加速查找。
+
+\subsubsection{文件共享}
+
+常用的两种方法：硬链接和软链接。它们都属于静态共享。动态共享是有多个进程同时读写文件。
+\begin{enumerate}
+  \item {\bf 基于索引结点的共享（硬链接）}
+  
+  做一个索引结点，指向要共享的文件。每个引用文件的目录都在对应的目录项中放置指向索引节点的指针。此时目录项中不再保存元数据，而是保存在索引结点中。索引结点中还有引用计数。
+
+  文件有一个所有者。所有者不再使用文件时，不能直接删除文件，而是将引用计数减一。如果直接删除文件，则其他引用文件的目录将会出现悬空指针。
+
+  \item {\bf 基于符号链接的共享（软链接）}
+  
+  做一个\verb|LINK|类型的新文件，放到要共享的目录中。该文件只保存了真正文件的路径。如果要访问文件，则通过\verb|LINK|中的文件路径查找文件。这就是所谓的符号链接。
+
+  文件所有者不再使用文件时，可以简单地删除。其他引用者发现\verb|LINK|中的路径不存在时，自动删除\verb|LINK|，也就不会产生悬空指针。
+\end{enumerate}
+
+\subsection{文件系统}
+
+\textcolor{red}{本节包含大量2022考纲新增考点。}
+
+\subsubsection{文件系统结构}
+
+自底向上依次是：
+\begin{enumerate}
+  \item 设备。
+  \item I/O控制。包括设备驱动程序和中断处理程序。驱动程序将输入的命令翻译成底层硬件的特定指令，硬件控制器利用这些指令和系统交互。驱动程序告诉控制器对设备的什么位置采取什么操作。
+  \item 基本文件系统。负责向对应的设备驱动程序发送通用命令，以读取和写入磁盘的物理块。
+  \item 文件组织模块。主要是将文件的逻辑地址转换为物理地址。
+  \item 逻辑文件系统。管理元数据，包括文件系统的结构、目录结构等。此外还负责文件保护。
+  \item 应用程序。
+\end{enumerate}
+
+见：图\ref{fs-layer}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.15\textwidth]{./images/fs-layer.png}
+  \caption{文件系统的层次结构}
+  \label{fs-layer}
+\end{figure}
+
+\subsubsection{文件系统布局}
+
+一块磁盘可能有多个分区，每个分区上都有一个独立的文件系统。
+
+见：图\ref{fs-layout}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\textwidth]{./images/fs-layout.png}
+  \caption{一个可能的文件系统布局}
+  \label{fs-layout}
+\end{figure}
+
+\begin{itemize}
+  \item 主引导记录（MBR）：位于0号扇区，用来引导计算机。MBR后面的分区表，给出每个分区的起始地址和结束地址。系统启动时，BIOS读入并执行MBR。MBR做的第一件事就是确定活动分区，读入引导块。
+  \item 引导块：是每个分区的第一个块。
+  \item 超级块：包含FS的所有关键信息，如块的数量和大小、空闲块的数量和指针、空闲FCB的数量和FCB指针等。计算机启动时或文件系统首次被使用时，超级块被读入内存。
+\end{itemize}
+
+\subsubsection{外存空闲空间管理}
+
+包含文件系统的分区也叫\textbf{卷（volume）}。卷可以是磁盘的一部分，也可以是整个磁盘，也可以是多个磁盘组成的RAID。
+
+在一个卷中，存放文件数据的空间和存放FCB的空间是分离的。
+
+对文件存储设备的管理实质上是对空闲块的组织和管理。
+
+\begin{enumerate}
+  \item {\bf 空闲表法}
+  
+  这种方式和内存的动态分配很类似。属于连续分配方式，为每个文件分配连续的存储空间。系统建立一张空闲表，空闲区按照起始盘块号递增的次序排列。
+
+  \begin{table}[!ht]
+    \centering
+    \caption{空闲表}
+    \label{idle-table}
+    \begin{tabular}{c|c|c}
+    \hline
+      \textbf{序号} & \textbf{第一个空闲盘块号} & \textbf{空闲盘块数} \\ \hline
+      1 & 2 & 4 \\ \hline
+      2 & 9 & 13 \\ \hline
+      3 & 15 & 5 \\ \hline
+      4 & \dots & \dots \\ \hline
+    \end{tabular}
+  \end{table}
+
+  空闲区的分配方式有首次适应算法和最佳适应算法等。回收时也要考虑合并的问题。
+
+  \item {\bf 空闲链表法}
+  
+  将所有空闲盘区拉成一条空闲链。根据基本元素是空闲块还是空闲区，可分为：
+  \begin{itemize}
+    \item {\bf 空闲盘块链}。用户需要盘块时，从链首分配相应数量的块给用户。用户返还时，将盘块放到盘块链的末尾。逻辑简单，但可能需要多次分配，而且链会很长。
+    \item {\bf 空闲盘区链}。一般是用首次适应算法。优缺点恰好和上面相反。
+  \end{itemize}
+
+  \vspace*{10pt}
+
+  上面提到的两种方法都不适合大型文件系统，因为表会太长。
+
+  \item {\bf 位示图法}
+  
+  是一张$m\times n$的表，利用二进制的一位来表示一个盘块的使用情况。0表示空闲，1表示占用。位示图的行列可能从1开始编号，也可能从0开始，要特别注意。下面的例子是从1开始编号的。
+
+  \begin{itemize}
+    \item {\bf 盘块的分配}
+    
+    从头开始查找，直到找到需要的个数个空闲块。假设某空闲块是第$i$行第$j$列，则盘块号为
+    \begin{equation*}
+      b=n(i-1)+j
+    \end{equation*}
+    分配后勿忘将map[i,j]置为1。
+
+    \item {\bf 盘块的回收}
+    
+    \begin{eqnarray*}
+      i=(b-1)\ \text{DIV}\ n + 1 \\
+      j=(b-1)\ \text{MOD}\ n + 1
+    \end{eqnarray*}
+    勿忘将map[i,j]置为0。
+  \end{itemize}
+
+  \item {\bf 成组链接法}
+  
+  UNIX使用的方法。结合了空闲表和空闲链表的特点，兼具二者优点，又克服了表太长的缺点。
+
+  王道书原理没看懂
+
+\end{enumerate}
+
+\subsubsection{虚拟文件系统 VFS}
+
+\subsubsection{分区和安装}
+
 \section{输入输出（I/O）管理}
+
+本章考题比较简单，占比不大。
+
+\subsection{I/O管理概述}
+
+\subsubsection{I/O设备}
+
+这一块内容比较混乱。
+
+\begin{enumerate}
+  \item {\bf 设备的分类}
+  
+  按照\textbf{信息交换的单位}分类，I/O设备可分为
+  \begin{itemize}
+    \item {\bf 块设备}，以块为单位交换数据，属于有结构类型，如磁盘。可以随机寻址，速率较高。
+    \item {\bf 字符设备}，以字符为单位交换数据，属于无结构类型，如终端、打印机等。不可寻址，速率较低。多采用中断I/O。
+  \end{itemize}
+  
+  按照\textbf{传输速率}分类，又可分为
+  \begin{itemize}
+    \item {\bf 低速设备}，如键盘鼠标。
+    \item {\bf 中速设备}，如激光打印机。
+    \item {\bf 高速设备}，如磁盘机、光盘机。
+  \end{itemize}
+
+  \item {\bf I/O接口}
+  
+  I/O接口（设备控制器）位于CPU与设备之间。包括三部分：
+  \begin{itemize}
+    \item {\bf 设备控制器与CPU的接口}，包括数据线、地址线和控制线。
+    \item {\bf 设备控制器与设备的接口}，一个设备控制器可以连接多个设备，因此有多个接口。每个接口都有数据、控制和状态三种类型的信号。
+    \item {\bf I/O逻辑}，通过一组控制线与CPU交互，用于实现对设备的控制。
+  \end{itemize}
+
+  \item {\bf I/O端口}
+  
+  是指设备控制器中可被CPU直接访问的寄存器。包括三类：
+  \begin{itemize}
+    \item {\bf 数据寄存器}，实现CPU和外设之间的数据缓冲。
+    \item {\bf 状态寄存器}，获取执行结果和设备的状态信息。
+    \item {\bf 控制寄存器}，由CPU写入，以便启动命令或更改设备模式。
+  \end{itemize}
+
+  为了实现CPU与I/O端口的通信，可用两种方式：
+  \begin{itemize}
+    \item {\bf 独立编址}，为每个端口分配一个I/O端口号，所有端口号形成一个端口空间。只有OS使用特定的I/O指令才能访问。
+    \item {\bf 统一编址}，为每个端口分配唯一的内存地址，通常靠近地址空间的顶端。可通过访问内存的方式访问端口。
+  \end{itemize}
+
+  \subsubsection{I/O控制方式}
+
+  共4种
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{./images/io-control.png}
+    \caption{I/O控制方式}
+  \end{figure}
+  \begin{enumerate}
+    \item {\bf 程序直接控制方式}
+    
+    就是轮询，逻辑简单，CPU和I/O设备串行工作，效率低下。
+
+    \item {\bf 中断驱动方式}
+    \item {\bf DMA方式}
+    
+    基本传输单位是数据块，数据块直接从设备传入内存（或者反之）。仅在传送一个或多个数据块的开始或结束时，才需要CPU干预。整块数据的传送是在DMA控制器的控制下完成的。
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.7\textwidth]{./images/dma-controller.png}
+      \caption{DMA控制器}
+    \end{figure}
+
+    \item {\bf 通道控制方式}
+  \end{enumerate}
+\end{enumerate}
+
+\subsubsection{I/O软件结构}
+
+\begin{figure}
+  \centering
+  \begin{tabular}{|c|}
+    \hline
+    用户层I/O软件 \\ \hline
+    设备独立性软件 \\ \hline
+    设备驱动程序 \\ \hline
+    中断处理程序 \\ \hline
+    硬件 \\ \hline
+  \end{tabular}
+  \caption{I/O层次结构}
+  \label{io-layer}
+\end{figure}
+
+见：图\ref{io-layer}
+
+设备独立性也叫设备无关性，是指应用程序独立于具体使用的物理设备的特性。为此引入逻辑设备与物理设备的概念。应用程序调用的是逻辑设备，然后将逻辑设备映射为物理设备。
+
+使用逻辑设备名的好处是：
+\begin{itemize}
+  \item 增加设备分配的灵活性
+  \item 容易实现I/O重定向
+\end{itemize}
+
+\subsubsection{应用程序I/O接口}
+
+\begin{itemize}
+  \item 字符设备接口，指的是数据的存取和传输是以字符为单位的设备，如键盘、打印机等。速率低，不可寻址，通常用中断方式。
+  \item 块设备接口，典型设备是磁盘。速率较高、可寻址，通常用DMA方式。
+  \item 网络设备接口
+  \item 阻塞/非阻塞I/O。大部分OS提供的I/O接口都采用阻塞I/O。
+\end{itemize}
+
+\subsection{设备独立性软件}
+
+\subsubsection{告诉缓存与缓冲区}
+
+\begin{enumerate}
+  \item {\bf 磁盘高速缓存}
+  
+  实际上是内存中的一块区域。可以是单独开辟的空间，也可以利用未分配的内存。
+
+  \item {\bf 缓冲区}
+  
+  缓冲区可以用硬件实现，但由于成本原因，多采用内存缓冲区。
+
+  若题目未明确说明，则通常认为缓冲区的大小和工作区的大小相等。
+  
+  假设从磁盘把一块数据输入到缓冲区的时间为$T$，操作系统将该缓冲区中的数据传送到用户区的时间为$M$，CPU对这一块数据的处理时间为$C$。
+
+  根据系统设置缓冲器的个数，可分为以下4种（王道电子书P303）：
+  \begin{itemize}
+    \item {\bf 单缓冲}
+    
+    分$T>C$和$T<C$两种情况讨论，可得出：单缓冲区处理每块数据的用时为$\max(C,T)+M$。
+
+    \item {\bf 双缓冲}
+    
+    分$T<C+M$和$T>C+M$两种情况讨论，可得出：双缓冲区处理一块数据的用时为$\max(C+M, T)$。
+
+    当两台机器之间只配置了单缓冲时，二者只能半双工通信。当两台机器之间配置了双缓冲时，二者可以全双工通信。
+
+    \item {\bf 循环缓冲}
+    
+    若干个缓冲区构成一个循环队列。有两个指针in和out。
+    \begin{itemize}
+      \item 对于输入，in指向第一个空缓冲区，out指向第一个满缓冲区。
+      \item 对于输出，正好相反。
+    \end{itemize}
+    
+    \item {\bf 缓冲池}
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{设备分配与回收}
+
+\begin{enumerate}
+  \item {\bf 设备分配概述}
+  
+  设备分配的总原则是让设备尽可能地忙碌，但又要避免由不合理的分配方式造成的死锁。
+  \begin{itemize}
+    \item {\bf 独占式使用设备}
+    \item {\bf 分时式共享使用设备}
+    \item {\bf 以SPOOLing方式使用外部设备}
+  \end{itemize}
+
+  \item {\bf 设备分配的数据结构}
+  
+  \begin{itemize}
+    \item {\bf 设备控制表 DCT}
+    \item {\bf 系统设备表 SDT}
+    \item {\bf 控制器控制表 COCT}
+    \item {\bf 通道控制表 CHCT}
+  \end{itemize}
+\end{enumerate}
 
 \end{document}
