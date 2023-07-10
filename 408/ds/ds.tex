@@ -3,6 +3,7 @@
 
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{amsopn}
 \usepackage{bm}
 \usepackage{graphicx}
 \usepackage{mathrsfs}
@@ -60,7 +61,7 @@
 \linespread{1.2}
 
 \lstset{
-  language=pascal,
+  language=c,
   basicstyle=\ttfamily,
   frame=single,
   numbers=left
@@ -100,6 +101,232 @@
 % 如果在目录处有备注，可以写在这里。
 
 \newpage
+
+\section{绪论}
+
+\subsection{数据结构的基本概念}
+
+\subsubsection{基本概念和术语}
+
+\begin{itemize}
+  \item {\bf 数据}，是信息的载体，是计算机程序加工的原料。
+  \item {\bf 数据元素}，是数据的基本单位，如一个学生记录。可由若干个数据项组成，如包含学号、姓名、性别等数据项。
+  \item {\bf 数据对象}，是具有\textbf{相同性质}的数据元素的集合。
+  \item {\bf 数据类型}，是一个值的集合和定义在此集合上的一组操作的总称。
+  \begin{itemize}
+    \item 原子类型：不可再分的数据类型。
+    \item 结构类型：可以再分的数据类型。
+    \item 抽象数据类型
+  \end{itemize}
+  \item {\bf 数据结构}，是相互之间存在一种或多种特定关系的数据元素的集合。数据结构包括三方面内容：
+  \begin{itemize}
+    \item 逻辑结构，决定算法的设计
+    \item 存储结构，又叫映像，决定算法的实现
+    \item 数据的运算
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{数据结构三要素}
+
+\begin{enumerate}
+  \item {\bf 数据的逻辑结构}
+  
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{./images/logical-structure.png}
+    \caption{数据的逻辑结构}
+    \label{logical-structure}
+  \end{figure}
+  
+  逻辑结构可分为线性结构和非线性结构。见图\ref{logical-structure}。
+
+  \begin{itemize}
+    \item {\bf 集合}：结构中的元素之间除了“同属一个集合”之外，没有别的关系。
+    \item {\bf 线性结构}：元素之间存在一对一的关系。
+    \item {\bf 树形结构}：元素之间存在一对多的关系。
+    \item {\bf 图状结构或网状结构}：元素之间存在多对多的关系。
+  \end{itemize}
+
+  \item {\bf 数据的存储结构}
+  
+  存储结构是用计算机语言实现的逻辑结构。
+  \begin{itemize}
+    \item {\bf 顺序存储}
+    \item {\bf 链式存储}
+    \item {\bf 索引存储}
+    \item {\bf 散列存储}
+  \end{itemize}
+
+  \item {\bf 数据的运算}
+\end{enumerate}
+
+\subsection{算法和算法评价}
+
+\subsubsection{算法的基本概念}
+
+算法（Algorithm）是对特定问题求解步骤的一种描述。有以下5个重要特性：
+\begin{enumerate}
+  \item {\bf 有穷性}，算法必须在有限个步骤之后结束，且每一步必须消耗有限的时间。
+  \item {\bf 确定性}，同一个算法对同一个输入必定得出相同的输出。
+  \begin{itemize}
+    \item 随机类算法不违反确定性，因为计算机是伪随机，对于同一个随机种子，生成的随机数序列总是一致的。
+  \end{itemize}
+  \item {\bf 可行性}
+  \item {\bf 输入}，算法有0个或更多个输入。
+  \item {\bf 输出}，算法有一个或更多个输出。
+\end{enumerate}
+
+设计一个好的算法应该考虑：
+\begin{itemize}
+  \item 正确性
+  \item 可读性
+  \item 健壮性
+  \item 高效率与低存储量需求
+\end{itemize}
+
+\subsubsection{算法效率的度量}
+
+\begin{enumerate}
+  \item {\bf 时间复杂度}
+  
+  通常采用算法中基本运算的频度来分析时间复杂度。
+
+  一般总是考虑在最坏情况下的时间复杂度。
+
+  常见的渐进时间复杂度：
+  \begin{equation*}
+    O(1)<O(\log_2 n)<O(n)<O(n\log_2 n)<O(n^2)<O(n^3)<O(n!)<O(n^n)
+  \end{equation*}
+  \item {\bf 空间复杂度}
+  
+  算法\textbf{原地工作}是指算法所需的辅助空间为常量，即$O(1)$。
+\end{enumerate}
+
+\section{线性表}
+
+\subsection{线性表的定义和基本操作}
+
+\subsubsection{线性表的定义}
+
+线性表是具有相同数据类型的$n$（$n\geq 0$）个数据元素的有限序列，其中$n$为表长。
+\begin{equation*}
+  L=(a_1,a_2,\cdots,a_i,a_{i+1},\cdots,a_n)
+\end{equation*}
+
+线性表的特点：
+\begin{itemize}
+  \item 表中元素的个数有限。
+  \item 元素具有逻辑上的顺序性。
+  \item 元素都是数据元素。
+  \item 元素的数据类型都相同，占有相同大小的存储空间。
+  \item 元素具有抽象性，不关心元素中保存的是什么内容。
+\end{itemize}
+
+线性表是逻辑结构，顺序表和链表是物理结构。
+
+\subsubsection{线性表的基本操作}
+
+\begin{itemize}
+  \item \verb|InitList(&L)|：初始化表，构造一个空的线性表。
+  \item \verb|Length(L)|：返回表的长度
+  \item \verb|LocateElem(L, e)|：按值查找
+  \item \verb|GetElem(L, i)|，按位置查找
+  \item \verb|ListInsert(&L, i, e)|：插入
+  \item \verb|ListDelete(&L, i, &e)|：删除
+  \item \verb|PrintList(L)|：输出表
+  \item \verb|Empty(L)|：判空，空返回\verb|true|
+  \item \verb|DestroyList(&L)|：销毁表
+\end{itemize}
+
+\subsection{线性表的顺序表示}
+
+注意线性表的下标是从1开始算，数组的下标是从0开始算。
+
+时间复杂度分析（平均）：
+\begin{itemize}
+  \item 随机访问：$O(1)$
+  \item 插入：$O(n)$
+  \item 删除：$O(n)$
+  \item 顺序查找：$O(n)$
+\end{itemize}
+
+\subsection{线性表的链式表示}
+
+链表往往引入头结点，有如下好处：
+\begin{itemize}
+  \item 在链表的第一个位置上的操作和其他位置一致，无需进行特殊处理。
+  \item 无论链表是否为空，头指针都指向一个节点，这样空表和非空表的处理得到了统一。
+\end{itemize}
+
+建立新链表：
+\begin{itemize}
+  \item 头插：在头部插入节点，形成的链表的顺序是反的。
+  \item 尾插：在尾部插入节点，顺序正常，但需要添加额外的尾指针。
+\end{itemize}
+
+时间复杂度分析：
+\begin{itemize}
+  \item 建立新链表（头插/尾插）：$O(n)$
+  \item 按序号查找：$O(n)$
+  \item 按值查找：$O(n)$
+  \item 按值删除：主要耗费在查找上。$O(n)$
+  \item 按值插入：同上
+  \item 求表长：$O(n)$
+\end{itemize}
+
+插入元素时，往往要先找到元素所在的位置，然后执行后插。查找的复杂度是$O(n)$，后插的复杂度仅为$O(1)$。因此：
+\begin{itemize}
+  \item 当给出插入位置的值时，总复杂度为$O(n)$；
+  \item 当给出插入位置的地址时，总复杂度为$O(1)$。
+\end{itemize}
+
+有时需要前插，此时要找到目标结点的前面一个节点。对于单链表，必须按照顺序向后查找。此时无论给出的是值还是地址，总复杂度都为$O(n)$；但有一种优化方法：在目标结点的后继插入，然后交换目标结点和新插入结点的值。此时已知地址时，总复杂度为$O(1)$。
+
+类似地，删除结点时，必须得知前驱结点，这样才能正确设置链接关系。但如果直接将后继结点的值赋予待删除结点，然后删除后继结点，这样也能有$O(1)$时间复杂度。
+
+\subsubsection{双链表}
+
+\subsubsection{循环链表}
+
+循环单链表的判空条件不是头结点的指针是否为空，而是它是否等于头指针。
+
+循环单链表少用头指针而多用尾指针。因为尾指针的\verb|next|就是头结点。
+
+\subsubsection{静态链表}
+
+静态链表是用数组实现的链表。不太方便，但是适合没有指针的语言。
+
+\subsubsection{顺序表的链表的比较}
+
+\begin{itemize}
+  \item {\bf 存取（读写）方式}
+  
+  顺序表既能顺序读取，又能随机读取；链表只能顺序读取。
+
+  \item {\bf 逻辑结构与物理结构}
+  
+  逻辑上都是线性表，但顺序表的结点物理上也是连续的，链表的结点靠指针维持连续性。
+
+  \item {\bf 查找、插入和删除操作}
+  \begin{itemize}
+    \item 对于按值查找，若表无序，则二者均为$O(n)$；若有序，则顺序表可用二分查找，$O(\log_2 n)$。
+    \item 对于按序号查找，顺序表可以随机访问，$O(1)$；链表则为$O(n)$。
+  \end{itemize}
+
+  对于插入和删除操作，顺序表的平均复杂度为$O(n)$，链表为$O(1)$。
+
+  \item {\bf 空间分配}
+  
+  顺序表的分配比较繁琐，链表的分配灵活高效。
+\end{itemize}
+
+\section{栈、队列和数组}
+
+本章多为选择题。
+
+\subsection{栈}
+
+\subsubsection{栈的基本概念}
 
 
 
