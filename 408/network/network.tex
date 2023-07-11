@@ -120,8 +120,8 @@
     \item 从组成部分上看
     \begin{itemize}
         \item 硬件：主机（端系统）+通信链路+交换设备+通信处理机+……
-        \item 软件
-        \item 协议
+        \item 软件：多属于应用层
+        \item 协议：是计网的核心
     \end{itemize}
     \item 从工作方式上看
     \begin{itemize}
@@ -143,12 +143,14 @@
 
 五大功能：
 \begin{enumerate}
-    \item 数据通信：最基本的功能。
-    \item 资源共享：是软件、数据、硬件的共享，提高这些资源的利用率。
-    \item 分布式处理：将单一计算机的负荷分摊给其他计算机，利用空闲资源，提高系统利用率。
-    \item 提高可靠性：多台机器可以通过网络相互替代。
-    \item 负载均衡：将负载均衡地分配
+    \item {\bf 数据通信}：最基本的功能。
+    \item {\bf 资源共享}：是软件、数据、硬件的共享，提高这些资源的利用率。
+    \item {\bf 分布式处理}：将单一计算机的负荷分摊给其他计算机，利用空闲资源，提高系统利用率。
+    \item {\bf 提高可靠性}：多台机器可以通过网络相互替代。
+    \item {\bf 负载均衡}：将负载均衡地分配
 \end{enumerate}
+
+此外还有电子化办公与服务、远程教育、娱乐等等功能。
 
 \subsubsection{计算机网络的分类}
 
@@ -160,14 +162,14 @@
         \item 局域网（LAN）：覆盖大楼、校园或厂区，不超过数公里。
         \item 个人区域网（PAN）：就是个人热点
     \end{itemize}
-    如果CPU的距离非常近（<1m），那么一般认为是多处理器系统而非网络。
+    如果CPU的距离非常近（<1m），那么一般认为是多处理器系统而非计算机网络。
     \item 按传输技术分类
     \begin{itemize}
-        \item 广播式网络：多用于局域网，也用于广域网中的无线、卫星通信。
+        \item 广播式网络：多用于局域网，也用于广域网中的无线、卫星通信。可以不要网络层。
         \item 点对点网络：广域网基本上都是点对点的。
         \item 二者的重要区别在于是否使用存储转发、路由选择机制。若是，则属于点对点网络。
     \end{itemize}
-    \item 按拓扑结构分类
+    \item 按拓扑结构分类（主要指的是通信子网的拓扑结构）
     \begin{itemize}
         \item 总线形网络：建网方便，但高负载时效率低下，总线对故障敏感
         \item 星形网络：依赖中央设备
@@ -211,13 +213,15 @@
 
 \subsubsection{计算机网络的标准化工作}
 
-略
+\textcolor{red}{本节不在新版大纲内。}
+
+最早出现的计算机网络是1968年的ARPAnet。
 
 \subsubsection{计算机网络的性能指标}
 \label{performance_index}
 
 \begin{enumerate}
-    \item {\bf 带宽（Bandwidth）}：在计网中，单位是比特/秒，表示网络的通信线路所能传输数据的能力。原指信号的频带宽度，单位是赫。
+    \item {\bf 带宽（Bandwidth）}：在计网中，单位是比特/秒，表示网络的通信线路所能传输数据的能力。原指信号的频带宽度，单位是赫兹。
     \item {\bf 时延（Delay）}：数据从链路的一端传送到另一端所需要的总时间。包括4部分：
     \begin{itemize}
         \item 发送时延（传输时延）：节点将分组的所有比特发送到链路的时间。
@@ -256,7 +260,7 @@
 
 \subsubsection{计算机网络分层结构}
 
-把计算机网络的各层、层间接口及其协议的集合称为网络的\textbf{体系结构}
+把计算机网络的各层、层间接口及其协议的集合称为网络的\textbf{体系结构}。
 
 每层的报文分为两部分：SDU和PCI，它们共同组成PDU。
 \begin{itemize}
@@ -275,6 +279,8 @@
     \text{n-SDU}+\text{n-PCI}=\text{n-PDU}=\text{(n-1)-SDU}
 \end{equation*}
 
+编号是从最底层开始的。
+
 分层思想的优点：
 \begin{itemize}
     \item 耦合度低(独立性强)
@@ -285,7 +291,7 @@
 \subsubsection{计算机网络协议、接口、服务的概念}
 
 \begin{enumerate}
-    \item 协议：是规则的集合，是对等实体之间的共识。
+    \item {\bf 协议}：是规则的集合，是对等实体之间的共识。
     
     协议=语法+语义+同步（也称时序）
     \begin{itemize}
@@ -293,11 +299,22 @@
         \item 语义：协议元素的含义。
         \item 时序：通信双方执行的顺序和规则。
     \end{itemize}
-    \item 接口
+    \item {\bf 接口}
     \begin{itemize}
         \item 相邻两层的实体通过服务访问点（SAP）进行交互。
     \end{itemize}
-    \item 服务
+    \item {\bf 服务}
+    
+    两层之间需要交换一些命令，这些命令在OSI参考模型中称为\textbf{服务原语}，有四类：
+    \begin{itemize}
+        \item 请求（Request）
+        \item 指示（Indication）
+        \item 响应（Response）
+        \item 证实（Confirmation）
+    \end{itemize}
+    有应答服务包含全部4类原语，无应答服务只有前两种。
+
+    服务可以按如下三种方式进行分类：
     \begin{itemize}
         \item 面向连接服务与无连接服务
         \item 可靠服务和不可靠服务
@@ -340,6 +357,7 @@ OSI参考模型:
         \item 传输单位：报文段（TCP）或用户数据报（UDP）
         \item 功能：为端到端连接提供可靠的传输服务，是通信子网和资源子网的分界层。
         \item 典型协议：TCP、UDP
+        \item \textcolor{red}{只有传输层及以上的通信才能叫端到端。“端”指的是应用程序的端口。}
     \end{itemize}
     \item 会话层
     \begin{itemize}
@@ -369,7 +387,7 @@ TCP/IP模型和OSI模型的比较：
     \item OSI精确定义了服务、协议和接口三大概念，TCP/IP则没有明确区分。
     \item OSI是先有模型后有协议，TCP/IP则反之。
     \item OSI是理论上的国际标准，TCP/IP是事实上的国际标准。
-    \item （常考）OSI在网络层支持无连接和面向连接的通信，但在传输层仅有面向连接的通信。TCP/IP在网际层仅有一种无连接的通信，但传输层支持无连接和面向连接两种方式。
+    \item （\textcolor{red}{常考}）OSI在网络层支持无连接和面向连接的通信，但在传输层仅有面向连接的通信。TCP/IP在网际层仅有一种无连接的通信，但传输层支持无连接和面向连接两种方式。
 \end{itemize}
 
 另有一种综合了二者优点的五层结构协议模型，纯粹用于学术研究，没有实际意义。三种模型的比较见图\ref{compare_of_three_architectures}。
@@ -390,7 +408,7 @@ TCP/IP模型和OSI模型的比较：
 \subsubsection{基本概念}
 
 \begin{enumerate}
-    \item 数据、信号与码元
+    \item {\bf 数据、信号与码元}
     \begin{itemize}
         \item 数据：传送信息的实体，传输方式可分为串行传输和并行传输，又分：
         \begin{itemize}
@@ -404,7 +422,7 @@ TCP/IP模型和OSI模型的比较：
         \end{itemize}
         \item 码元：用一个固定时长的信号波形表示一位$k$进制数字。例如二进制编码时有两种码元，一种代表0，一种代表1。
     \end{itemize}
-    \item 信源、信道与信宿
+    \item {\bf 信源、信道与信宿}
     \begin{itemize}
         \item 这三者是一个数据通信系统的主要组成部分。
         \item 信源是产生和发送数据的源头
@@ -429,7 +447,7 @@ TCP/IP模型和OSI模型的比较：
         % \end{tikzpicture}
         \caption{单向通信系统模型}
     \end{figure}
-    \item 速率、波特与带宽
+    \item {\bf 速率、波特与带宽}
     \begin{itemize}
         \item 速率指的是数据传输速率，可以用如下两种方式表示：
         \begin{itemize}
@@ -461,30 +479,34 @@ TCP/IP模型和OSI模型的比较：
     \end{itemize}
 \end{itemize}
 
-\subsubsection{奈奎斯特定理}
+\subsubsection{奈奎斯特定理和香农定理}
 
-码间串扰现象：信道通过高频分量的效果往往较差，从而导致接收端接收到的信号波形失去码元之间的清晰界限。
-
-奈奎斯特（Nyquist）定理指出：在理想低通（无噪声，带宽有限）的信道中，为了避免码间串扰，极限码元传输速率为$2W$波特，其中$W$是理想低通信道的带宽。
-
-根据奈奎斯特定理，可以得出如下结论：
 \begin{enumerate}
-    \item 在任何信道中，码元传输速率是有上限的。若超过此上限，就会出现严重的码间串扰问题。
-    \item 频道的频带越宽，传输码元的极限速率就越高。
+    \item {\bf 奈奎斯特定理}
+    
+    码间串扰现象：信道通过高频分量的效果往往较差，从而导致接收端接收到的信号波形失去码元之间的清晰界限。
+
+    奈奎斯特（Nyquist）定理指出：在理想低通（无噪声，带宽有限）的信道中，为了避免码间串扰，极限码元传输速率为$2W$波特，其中$W$是理想低通信道的带宽。
+
+    根据奈奎斯特定理，可以得出如下结论：
+    \begin{enumerate}
+        \item 在任何信道中，码元传输速率是有上限的。若超过此上限，就会出现严重的码间串扰问题。
+        \item 频道的频带越宽，传输码元的极限速率就越高。
+    \end{enumerate}
+
+    \item {\bf 香农定理}
+    
+    香农定理给出了带宽受限且有高斯白噪声干扰的信道的极限数据传输速率：
+    \begin{equation*}
+        \text{极限速率}C=W\text{log}_2(1+\frac{S}{N})
+    \end{equation*}
+    其中
+    \begin{itemize}
+        \item $W$为信道带宽
+        \item $S$为信道传输信号的平均功率
+        \item $N$为信号内部的高斯噪声功率
+    \end{itemize}
 \end{enumerate}
-
-\subsubsection{香农定理}
-
-香农定理给出了带宽受限且有高斯白噪声干扰的信道的极限数据传输速率：
-\begin{equation*}
-    \text{极限速率}C=W\text{log}_2(1+\frac{S}{N})
-\end{equation*}
-其中
-\begin{itemize}
-    \item $W$为信道带宽
-    \item $S$为信道传输信号的平均功率
-    \item $N$为信号内部的高斯噪声功率
-\end{itemize}
 
 根据香农定理，可以得出如下结论：
 \begin{enumerate}
@@ -588,12 +610,13 @@ TCP/IP模型和OSI模型的比较：
 
 \subsubsection{数据报与虚电路}
 
-它们都属于网络层，都是分组交换的方式。
+它们都属于网络层，都是分组交换的方式。见图\ref{comp-between-datagram-and-virtual}
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{./images/datagram_and_virtual_circuit.png}
     \caption{数据报和虚电路的比较}
+    \label{comp-between-datagram-and-virtual}
 \end{figure}
 
 \subsection{传输介质}

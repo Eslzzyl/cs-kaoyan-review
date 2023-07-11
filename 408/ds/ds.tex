@@ -328,6 +328,264 @@
 
 \subsubsection{栈的基本概念}
 
+后进先出（LIFO）
 
+$S=(a_1,a_2,a_3,a_4,a_5)$，则$a_1$是栈底，$a_5$是栈顶。
+
+$n$个不同元素进栈，出栈元素共有$\frac{1}{n+1}C_{2n}^n$种不同的排列（卡特兰数，组合数学）。
+
+基本操作：
+\begin{itemize}
+  \item \verb|InitStack(&S)|：初始化一个空栈。
+  \item \verb|StackEmpty(S)|：判断是否为空，空返回\verb|true|。
+  \item \verb|Push(&S, x)|：入栈
+  \item \verb|Pop(&S, &x)|：出栈
+  \item \verb|GetTop(S, &x)|：读栈顶元素
+  \item \verb|DestroyStack(&S)|：销毁栈并释放空间。
+\end{itemize}
+
+\subsubsection{栈的顺序存储结构}
+
+即用数组实现的栈。需要特别注意入栈时的判满，小心数组越界。
+
+还有一种共享栈，由两个栈共享同一个数组，栈底分布在数组的两端，然后向数组的中间生长。当两个栈顶指针相邻时，判为栈满。
+
+\subsubsection{栈的链式存储结构}
+
+和链表类似。
+
+\subsection{队列}
+
+\subsubsection{队列的基本概念}
+
+先进先出（FIFO）
+
+基本操作：
+\begin{itemize}
+  \item \verb|IniteQueue(&Q)|：初始化一个空队列。
+  \item \verb|QueueEmpty(Q)|：判空，若空返回\verb|true|。
+  \item \verb|EnQueue(&Q, x)|：入队
+  \item \verb|DeQueue(&Q, &x)|：出队
+  \item \verb|GetHead(Q, &x)|：获得队头元素
+\end{itemize}
+
+\subsubsection{队列的顺序存储结构}
+
+因队列本身的性质，顺序结构的队列通常设计成循环队列。设置一个队首指针\verb|Q.front|和一个尾后指针\verb|Q.rear|：
+\begin{itemize}
+  \item 初始时（也是队空条件）：\verb|Q.front == Q.rear|
+  \item 队首指针进1：\verb|Q.front = (Q.front + 1) % MaxSize|
+  \item 队尾指针进1：\verb|Q.rear = (Q.rear + 1) % MaxSize|
+  \item 队列长度：\verb|(Q.rear + MaxSize - Q.front) % MaxSize|
+  \item 队满：\verb|(Q.rear + 1) % MaxSize == Q.front|
+\end{itemize}
+
+\subsubsection{队列的链式存储结构}
+
+是一个带有头指针和尾指针的单链表。两个指针都为空时，表示队列为空。
+
+\subsubsection{双端队列}
+
+王道书写得相当复杂。
+
+双端队列出队时，先进的元素总是排在后出的元素的前面。
+
+受限的双端队列：
+\begin{itemize}
+  \item 输入受限的双端队列：允许在一端进行插入和删除，但在另一端只允许删除。
+  \item 输出受限的双端队列：允许在一端进行插入和删除，但在另一端只允许插入。
+\end{itemize}
+若进一步限制从某端插入的元素只能在这一端删除，则队列变为两个栈底相邻的栈。
+
+\subsection{栈和队列的应用}
+
+\subsubsection{栈在括号匹配中的应用}
+
+容易
+
+\subsubsection{栈在表达式求值中的应用}
+
+这里只是介绍了栈处理后缀表达式的过程，容易。
+
+\subsubsection{栈在递归中的作用}
+
+没讲什么实质的东西
+
+\subsubsection{队列在层次遍历中的应用}
+
+队列遍历二叉树：
+\begin{enumerate}
+  \item 根节点入队。
+  \item 若队空，结束，否则转3
+  \item 队列中的第一个结点出队，并访问之。若其有左孩子，则将左孩子入队；若其有右孩子，则将右孩子入队，然后返回2。
+\end{enumerate}
+
+\subsubsection{队列在计算机系统中的应用}
+
+队列可用于解决：
+\begin{itemize}
+  \item 主机和外设速度不匹配的问题：设置缓冲区队列
+  \item 多用户引起的资源竞争问题：设置请求队列
+\end{itemize}
+
+\subsection{数组和特殊矩阵}
+
+\subsubsection{数组的定义}
+
+数组是线性表的推广（数组可有多维）。一维数组可视为一个线性表，二维数组可视为其元素也是定长线性表的线性表，依此类推。数组一旦被定义，其长度就固定下来。
+
+\subsubsection{数组的存储结构}
+
+二维数组有按行优先和按列优先。
+
+\subsubsection{特殊矩阵的压缩存储}
+
+特殊矩阵指的是有许多相同的矩阵元素，且分布有一定规律的矩阵，如对称矩阵、上/下三角矩阵、对角矩阵等。
+
+\begin{enumerate}
+  \item {\bf 对称矩阵}
+  
+  对称矩阵只有一半的存储空间是有意义的。因此将其存放在一个一维数组\verb|B[n(n+1)/2]|中，即元素$a_{i,j}$存放在$b_k$中。
+
+  \item {\bf 对角矩阵}
+  
+  \item {\bf 三对角矩阵}
+  
+  \item {\bf 稀疏矩阵}
+  
+  可将非零元素及其所在的行、列构成一个三元组存放起来。这样稀疏矩阵也失去了随机存取特性。
+\end{enumerate}
+
+\section{字符串}
+
+本章的重点是模式匹配。
+
+\subsection{字符串的定义和实现}
+
+\subsubsection{字符串的定义}
+
+字符串是由零个或多个字符组成的有限序列：
+\begin{equation*}
+  S='a_1 a_2 \cdots a_n'\quad (n\geq 0)
+\end{equation*}
+
+\subsubsection{字符串的存储结构}
+
+\begin{enumerate}
+  \item {\bf 定长顺序存储表示}
+  
+  规定最大长度，超出长度时直接截断。
+
+  \item {\bf 堆分配存储表示}
+  
+  动态分配堆内存来存储。
+
+  \item {\bf 块链存储表示}
+  
+  类似链表，每个结点可以存一个字符，也可以存多个字符，每个结点称为块。最后一个结点占不满时用\verb|#|补上。
+\end{enumerate}
+
+\subsubsection{字符串的基本操作}
+
+\begin{itemize}
+  \item \verb|StrAssign(&T, chars)|：赋值操作，把字符串\verb|T|赋值为\verb|chars|。
+  \item \verb|StrCopy(&T, S)|，复制操作，将\verb|S|复制到\verb|T|。
+  \item \verb|StrEmpty(S)|：判空。若为空，返回\verb|true|。
+  \item \verb|StrCompare(S, T)|：比较。若\verb|S>T|，则返回值大于0，若等于则返回0，若小于则返回值小于0。
+  \item \verb|StrLength(S)|：求长度。
+  \item \verb|SubString(&Sub, S, pos, len)|：求子串。通过\verb|Sub|返回\verb|S|的第\verb|pos|个字符起，长度为\verb|len|的字串。
+  \item \verb|Concat(&T, S1, S2)|：将\verb|S1|和\verb|S2|拼接，通过\verb|T|返回。
+  \item \verb|Index(S, T)|：若\verb|S|中存在\verb|T|，则返回它第一次出现的位置，否则返回0。
+  \item \verb||
+\end{itemize}
+
+\subsection{字符串的模式匹配}
+
+\subsubsection{简单的模式匹配算法}
+
+\begin{lstlisting}
+  int Index(SString S, SString T) {
+    int i = 1, j = 1;
+    while (i <= S.length && j <= T.length) {
+      if (S.ch[i] == T.ch[j]) {
+        ++i;
+        ++j;
+      } else {
+        i = i - j + 2;
+        j = 1;
+      }
+    }
+    if (j > T.length)
+      return i - T.length;
+  }
+\end{lstlisting}
+
+\subsubsection{KMP算法}
+
+待补
+
+\section{树}
+
+\subsection{树的基本概念}
+
+\subsubsection{树的定义}
+
+树是$n$个结点的有限集。当树不为空时，需要满足：
+\begin{enumerate}
+  \item 有且仅有一个根节点。
+  \item $n>1$时，其余结点可分为$m$个互不相交的有限集$T_1, T_2, \cdots, T_m$，其中每个集合又是一棵树，称为根的子树。
+\end{enumerate}
+
+树的定义是递归的。
+
+\begin{itemize}
+  \item 除了根节点之外，所有结点有且仅有一个前驱（父节点）。
+  \item 所有结点可以有零个或多个后继（子节点）。
+\end{itemize}
+
+$n$个结点的树中有$n-1$条边。
+
+\subsubsection{基本术语}
+
+此处只记录一些不太熟悉的。
+
+\begin{itemize}
+  \item 一个结点的孩子的数量称为该节点的\textbf{度}。度最大的结点的度称为树的度。
+  \item 树的层次从根开始定义，根节点是第一层，然后向下是第二层，以此类推。双亲在同一层的结点互为\textbf{堂兄弟}。
+  \item 结点的深度是从根节点开始算的。
+  \item 结点的高度是从叶子节点开始算的。
+  \item 树的高度（或深度）是树中结点的最大层数。
+  \item 树中两个结点之间的路径是由这两个结点之间所经过的结点序列构成的，而路径长度是路径上经过的边的个数。
+\end{itemize}
+
+\subsubsection{树的性质}
+
+\begin{itemize}
+  \item 树中的结点数等于所有结点的度数之和加1。
+  \item 度为$m$的树中第$i$层上至多有$M^{i-1}$个结点。
+  \item 高度为$h$的$m$叉树至多有$\frac{m^h-1}{m-1}$个结点。
+  \begin{itemize}
+    \item $S=m^{h-1}+m^{h-2}+m^{h-3}+\cdots +m+1=\frac{m^h-1}{m-1}$
+  \end{itemize}
+  \item 具有$n$个结点的$m$叉树的最小高度为$\left\lceil \log_m(n(m-1)+1)\right\rceil $。
+\end{itemize}
+
+\subsection{二叉树的概念}
+
+\subsubsection{二叉树的定义及其主要特性}
+
+二叉树的左右子树顺序不能颠倒。
+
+二叉树和度为2的有序树有区别：
+\begin{itemize}
+  \item 度为2的有序树至少有3个结点，二叉树可以为空，也可以只有根结点。
+  \item 度为2的有序树的左右次序是相对于另一个孩子而言的，如果只有一个孩子，那就无需区分左右。二叉树总是要区分左右。
+\end{itemize}
+
+一些特殊的二叉树：
+\begin{itemize}
+  \item {\bf 满二叉树}。高度为$h$，结点数为$2^h-1$的二叉树是满二叉树。满二叉树可以编号，根结点为1，左孩子为2，右孩子为3。这样，对于任意一个结点，它的父节点是$\left\lfloor i/2 \right\rfloor$，左孩子是$2i$，右孩子是$2i+1$。
+  \item {\bf 完全二叉树}。
+\end{itemize}
 
 \end{document}
