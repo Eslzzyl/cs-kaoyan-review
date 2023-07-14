@@ -1,0 +1,105 @@
+% draft会跳过文档中的所有图片。正式导出时需要删掉draft参数。
+\documentclass[12pt, a4paper, oneside]{ctexart}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsopn}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{mathrsfs}
+\usepackage{geometry}
+\usepackage{framed}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{indentfirst}
+\usepackage{authblk}
+\usepackage{multicol}
+% \usepackage{draftwatermark}       % 需要应用水印时取消注释
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tikz}
+\usepackage{ulem}
+\usetikzlibrary{positioning, shapes.geometric}
+
+% 分栏线宽
+\columnseprule=0.4pt
+
+% 定制第二级无序列表的点样式
+\setlist[itemize,2]{label=$\diamond$}
+
+% 页边距
+\geometry{a4paper, scale=0.8}
+
+\pagestyle{fancy}
+
+% 调整页眉高度，用于去除警告
+\setlength{\headheight}{25pt}
+
+\fancyhf{}      % 清空页眉页脚设置
+\fancyhead[L] {
+    % 工大计算机系logo
+    \includegraphics[height=7mm]{../../../share/images/logo1.jpg}
+}
+\fancyhead[C]{精讲精练-形策部分}
+\fancyhead[R]{\leftmark}    % 右侧页眉：当前章标题
+
+% 页脚居中放置页码
+\fancyfoot[C]{\thepage}
+
+% 设置章节标题自动编号的格式
+\ctexset{
+  section/number=\chinese{section},
+%   subsection/name={,},
+%   subsection/number=\chinese{subsection}
+}
+
+% 行距。ctexart默认值为1.3
+\linespread{1.2}
+
+\lstset{
+  language=c,
+  basicstyle=\ttfamily,
+  frame=single,
+  numbers=left
+}
+
+% \SetWatermarkText{Eslzzyl整理}            % 设置水印内容
+% \SetWatermarkLightness{0.9}             % 设置水印透明度 0-1
+% \SetWatermarkScale{0.8}                   % 设置水印大小 0-1
+
+\renewcommand{\headrulewidth}{1pt}  %页眉线宽，设为0可以去页眉线
+\renewcommand{\footrulewidth}{1pt}  %脚注线的宽度
+
+\definecolor{shadecolor}{RGB}{241, 241, 255}
+
+\title{
+    \includegraphics[width=0.3\textwidth]{../../../share/images/hfut-badge.pdf}
+    
+    \vspace{20pt}
+    肖秀荣《精讲精练》\\ 之 \\ 形势与政策以及当代世界经济与政治
+}
+\author{Eslzzyl}
+\date{\today}
+
+\newcounter{problemname}
+\newenvironment{problem}{\begin{shaded}\stepcounter{problemname}\par\noindent\textbf{例题\arabic{problemname}. }}{\end{shaded}\par}
+\newenvironment{solution}{\begin{shaded}\par\noindent\textbf{解答：}}{\end{shaded}\par}
+% \newenvironment{solution}{\par\noindent\textbf{答案. }}{\par}
+% \newenvironment{note}{\par\noindent\textbf{例题\arabic{problemname}的注记. }}{\\\par}
+\newenvironment{note}{\par\noindent\textbf{注记. }}{\par}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\vspace{20pt}
+% 如果在目录处有备注，可以写在这里。
+
+\newpage
+
+\end{document}

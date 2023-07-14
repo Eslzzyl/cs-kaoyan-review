@@ -42,7 +42,7 @@
 \fancyhf{}      % 清空页眉页脚设置
 \fancyhead[L] {
     % 工大计算机系logo
-    \includegraphics[height=7mm]{./images/logo1.jpg}
+    \includegraphics[height=7mm]{../../../share/images/logo1.jpg}
 }
 \fancyhead[C]{《数据结构》复习}
 \fancyhead[R]{\leftmark}    % 右侧页眉：当前章标题
@@ -77,7 +77,7 @@
 \definecolor{shadecolor}{RGB}{241, 241, 255}
 
 \title{
-    \includegraphics[width=0.3\textwidth]{images/hfut-badge.pdf}
+    \includegraphics[width=0.3\textwidth]{../../../share/images/hfut-badge.pdf}
     
     \vspace{20pt}
     《数据结构》总复习
@@ -744,8 +744,328 @@ $n$个结点的树中有$n-1$条边。
   其最大的优点是容易实现树转换为二叉树的操作。缺点是查找父结点比较麻烦，但可以为每个结点增设一个\verb|parent|指针来解决。
 \end{enumerate}
 
-\subsubsection{树、森林于二叉树的转换}
+\subsubsection{树、森林与二叉树的转换}
 
 给定一棵树，可以找到唯一的二叉树与之对应。
+\begin{enumerate}
+  \item {\bf 树转换成二叉树}
+  
+  每个结点左指针指向它的第一个孩子，右指针指向它在树种的相邻右兄弟，即“左孩子右兄弟”规则。
+
+  根节点没有兄弟，因此形成的二叉树没有右子树。
+
+  \item {\bf 森林转换成二叉树}
+  
+  先将森林中的每棵树都转换成二叉树，然后将森林中第二棵树视为第一棵树的兄弟，作为第一棵树的右子树，依此类推。
+
+  \item {\bf 二叉树转换为森林}
+  
+  将二叉树的右子树断开，然后将右子树的右子树断开，依此类推，得到许多二叉树。将这些二叉树依次转换成树。
+\end{enumerate}
+
+\subsubsection{树和森林的遍历}
+
+\begin{enumerate}
+  \item {\bf 遍历树}
+  
+  \begin{itemize}
+    \item 先根遍历：遍历序列和对应的二叉树的先序序列一致。
+    \item 后根遍历：遍历序列和对应的二叉树的中序序列一致。
+    \item 层次遍历
+  \end{itemize}
+
+  \item {\bf 遍历森林}
+  
+  \begin{itemize}
+    \item 先序遍历：先访问第一棵树的根节点，然后先序遍历该树的子森林，然后先序遍历剩下的树构成的森林。遍历序列和二叉树的先序序列一致。
+    \item 中序遍历：先中序遍历第一棵树的子森林，然后访问第一棵树的根节点，然后中序遍历剩下的树构成的森林。遍历序列和二叉树的中序序列一致。有的教材也叫后序遍历。
+  \end{itemize}
+
+  \begin{table}
+    \centering
+    \caption{树、森林和二叉树遍历的对应关系}
+    \begin{tabular}{c|c|c}
+      \hline
+      \textbf{树} & \textbf{森林} & \textbf{二叉树} \\ \hline
+      先根遍历 & 先序遍历 & 先序遍历 \\ \hline
+      后根遍历 & 中序遍历 & 中序遍历 \\
+      \hline
+    \end{tabular}
+  \end{table}
+\end{enumerate}
+
+\subsection{树与二叉树的应用}
+
+\subsubsection{哈夫曼树与哈夫曼编码}
+
+\begin{enumerate}
+  \item {\bf 哈夫曼树的定义}
+
+  \begin{itemize}
+    \item 树中的结点常常被赋予一个有意义的值，称为该结点的\textbf{权}。
+    \item 从树的根到某个结点所经过的边数称为根到该结点的\textbf{路径长度}。
+    \item 结点的权和路径长度的乘积称为该结点的\textbf{带权路径长度}。
+    \item 树中所有\textbf{叶结点}的带权路径长度之和称为该树的\textbf{带权路径长度 WPL}。
+    \item 结点数量相同的二叉树中，WPL最小的那个称为\textbf{哈夫曼树}，也叫\textbf{最优二叉树}。
+  \end{itemize}
+
+  \item {\bf 哈夫曼树的构造}
+  
+  给定$n$个权值分别为$w_1,w_2,\cdots,w_n$的结点，可按照如下步骤构造哈夫曼树：
+  \begin{enumerate}
+    \item 选出其中权值最小的两个结点，作为左右子树构成一棵二叉树，二叉树根的权值是两个结点的权值之和。
+    \item 将二叉树的根视为一个结点，和剩余的结点重复上个步骤，直到所有结点都已经加入二叉树。
+  \end{enumerate}
+
+  哈夫曼树有如下\textbf{特点}：
+  \begin{itemize}
+    \item 所有初始结点最后都成为叶结点，且权值越小的结点距离根结点越远。
+    \item 构造过程中一共新建了$n-1$个结点，因此哈夫曼树的结点数量为$2n-1$。
+    \item 哈夫曼树中不存在度为1的结点。
+  \end{itemize}
+
+  \item {\bf 哈夫曼编码}
+  
+  哈夫曼编码是一种有压缩效果的可变长度编码。
+
+  设有一个字符序列，令每个字符对应一个结点，该结点的权是字符出现的次数，然后构造哈夫曼树。于是哈夫曼树的每个叶结点都是一个字符。从根结点开始，向左走表示0，向右走表示1，这样从根结点到叶子节点将会形成一个唯一的序列，就是对应字符的哈夫曼编码。计算哈夫曼树的带权路径长度，就是编码该字符序列的二进制长度。
+
+  如果采用固定长度编码，则要看有多少个字符，然后通过$\left\lceil \log_2 n\right\rceil$来计算编码这些字符需要的长度，最后乘以所有字符出现的总次数，得到固定长度编码的总长度。
+\end{enumerate}
+
+\subsubsection{并查集}
+
+待补
+
+\section{图}
+
+\subsection{图的基本概念}
+
+\subsubsection{图的定义}
+
+图$G$由顶点集$V$和边集$E$构成，记作$G=(V,E)$。
+\begin{itemize}
+  \item $V(G)$表示顶点的集合，一定是非空的。
+  \item $E(G)$表示边的集合，可以为空。
+  \item $\lvert V\rvert$表示顶点的个数。
+  \item $\lvert E\rvert$表示边的条数。
+\end{itemize}
+
+本书介绍的数据结构中，线性表和树都可以为空，但图不能为空。图至少包含一个顶点，但可以没有边。
+
+\begin{enumerate}
+  \item {\bf 有向图}
+  
+  一条有向边可记作$<v,w>$，称作$v$邻接到$w$。
+
+  此时，$v$（离开的顶点）称为\textbf{弧尾}，$w$（指向的顶点）称为\textbf{弧头}。
+
+  \item {\bf 无向图}
+  
+  一条无向边可记作$(v,w)$，称作$v$和$w$邻接。
+
+  \item {\bf 简单图、多重图}
+  
+  简单图需要满足：
+  \begin{itemize}
+  \item 没有重复边
+  \item 顶点没有到自身的边
+  \end{itemize}
+
+  如果不满足条件，就称为\textbf{多重图}。本书仅讨论简单图。  
+
+  \item {\bf 完全图}
+  
+  也叫简单完全图。即任意两个顶点之间都存在边的图。对于有向图，要求两个顶点之间存在方向相反的两条边。
+
+  \item {\bf 子图、生成子图}
+  
+  当一个图的边集和顶点集都是另一个图的子集时，称为\textbf{子图}。若二者的顶点集相同，则称为\textbf{生成子图}。
+
+  一个图的边集和顶点集的子集构成子图，前提条件是它们能够构成图。
+
+  \item {\bf 连通图、连通分量（无向图）}
+  
+  若\textbf{无向图}的两顶点之间有路径存在，则称它们是\textbf{连通}的。如果一个图中任意两个顶点都是连通的，则该图为\textbf{连通图}。
+
+  无向图的极大连通子图称为\textbf{连通分量}。
+
+  若一个图有$n$个顶点，而边数小于$n+1$，则此图必为非连通图。
+
+  一个图为非连通图时，边最多的情况：除一个顶点外，其他顶点构成完全图。
+
+  \item {\bf 强连通图、强连通分量（有向图）}
+  
+  若有向图的两个顶点之间互相存在路径，则称它们是\textbf{强连通}的。如果一个图中任意两个顶点都是强连通的，则该图为\textbf{强连通图}。
+
+  有向图的极大强连通子图称为\textbf{强连通分量}。
+
+  如果一个有$n$个顶点的有向图是强连通图，那么它需要至少$n$条边构成一个环路，此时构成了边最少的强连通图。
+
+  \item {\bf 生成树、生成森林}
+  
+  连通图的\textbf{生成树}是包含图中全部顶点的一个极小连通子图。若图有$n$个顶点，则它的生成树有$n-1$条边。
+
+  \item {\bf 顶点的度、入度和出度}
+  
+  在\textbf{无向图}中，顶点$v$的\textbf{度}是指和该顶点相连的边的条数，记为$\text{TD}(v)$。
+
+  无向图的全部顶点的度的和等于边数的2倍，因为每条边都连接两个顶点。
+
+  在\textbf{有向图}中，度又可分为\textbf{入度}$\text{ID}(v)$和\textbf{出度}$\text{OD}(v)$。顶点$v$的\textbf{度}等于其入度和出度之和。即$\text{TD}(v)=\text{ID}(v)+\text{OD}(v)$。
+
+  有向图的全部顶点的入度之和与出度之和相等，并且等于边数，因为每条边都有一个起点和一个终点。
+
+  \item {\bf 边的权和网}
+  
+  边可以带\textbf{权}。边带权的图称为\textbf{带权图}，又称为\textbf{网}。
+
+  \item {\bf 稠密图、稀疏图}
+  
+  \begin{itemize}
+    \item 边数很少的图称为\textbf{稀疏图}
+    \item 边数很多的图称为\textbf{稠密图}
+  \end{itemize}
+
+  这是模糊的概念，一般来说当$\lvert E\rvert <\lvert V\rvert \log \lvert V\rvert$时，认为是稀疏图。
+
+  \item {\bf 路径、路径长度和回路}
+  
+  顶点之间的\textbf{路径}由一条或多条边构成。边的数目称为\textbf{路径长度}。
+
+  第一个顶点和最后一个顶点相同的路径称为\textbf{回路}或\textbf{环}。
+
+  若一个图有$n$个顶点，并且有大于$n-1$条边，则此图一定有环。
+
+  \item {\bf 简单路径、简单回路}
+  
+  顶点没有重复的路径称为\textbf{简单路径}。
+
+  除了第一个和最后一个顶点之外，没有重复顶点的回路称为\textbf{简单回路}。
+
+  \item {\bf 距离}
+  
+  从顶点$u$到$v$的最短路径如果存在，就称该路径的长度为从$u$到$v$的\textbf{距离}。
+
+  如果$uv$之间没有路径，则认为二者之间的距离是无穷大。
+
+  \item {\bf 有向树}
+  
+  一个顶点的入度为0，其余顶点的入度均为1的有向图称为\textbf{有向树}。
+
+\end{enumerate}
+
+\subsection{图的存储及基本操作}
+
+\subsubsection{邻接矩阵法}
+
+用一个一维数组存储顶点，用一个二维数组存储顶点和顶点之间的边。1表示有边，0表示没有边。空间复杂度为$O(n^2)$。
+
+无向图的邻接矩阵是对称矩阵，实际上只存储一半就可以。对规模特大的邻接矩阵可以压缩存储。
+
+\subsubsection{邻接表法}
+
+邻接表法结合了顺序存储和链式存储，适合稀疏图。
+
+顶点表用顺序存储，边表用链式存储，顶点表的每个元素存储顶点数据和边表的头指针。边表的每个元素保存该边邻接的另一个顶点（第一个顶点即当前链表对应的顶点）
+
+在有向图中，邻接表保存的是从顶点出发的边，容易计算顶点的出度。但要计算顶点的入度，则需要遍历整个表。为此可以使用逆邻接表。
+
+\subsubsection{十字链表}
+
+仅适用于有向图。
+
+\begin{table}[h]
+  \centering
+  \caption*{弧结点}
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \verb|tailvex| & \verb|headvex| & \verb|hlink| & \verb|tlink| & \verb|(info)| \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption*{顶点结点}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \verb|data| & \verb|firstin| & \verb|firstout| \\
+    \hline
+  \end{tabular}
+\end{table}
+
+如上所示，顶点表仍然顺序存储，弧表用链式存储。
+
+\begin{itemize}
+  \item 对于弧结点：
+  \begin{itemize}
+    \item \verb|tailvex|表示弧尾（出射顶点）的序号
+    \item \verb|headvex|表示弧头（入射顶点）的序号
+    \item \verb|hlink|指向弧头相同的下一条弧的结点
+    \item \verb|tlink|指向弧尾相同的下一条弧的结点
+    \item \verb|info|（可选）保存弧的信息。
+  \end{itemize}
+  \item 对于顶点结点：
+  \begin{itemize}
+    \item \verb|data|保存信息
+    \item \verb|firstin|指向第一条指向该顶点的弧对应的结点。
+    \item \verb|firstout|指向第一条从该顶点出射的弧对应的结点。
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{邻接多重表}
+
+仅适用于无向图。
+
+思想类似十字链表。
+
+\begin{table}[h]
+  \centering
+  \caption*{边结点}
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \verb|ivex| & \verb|ilink| & \verb|jvex| & \verb|jlink| & \verb|(info)| \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption*{顶点结点}
+  \begin{tabular}{|c|c|}
+    \hline
+    \verb|data| & \verb|firstedge| \\
+    \hline
+  \end{tabular}
+\end{table}
+
+对于边结点：
+\begin{itemize}
+  \item \verb|ivex|和\verb|jvex|指向该边两端的顶点
+  \item \verb|ilink|指向下一条和\verb|ivex|连接的边
+  \item \verb|jlink|指向下一条和\verb|jvex|连接的边
+\end{itemize}
+
+这样，所有连接到同一顶点的边就串联在同一链表中。
+
+\subsubsection{图的基本操作}
+
+\begin{itemize}
+  \item \verb|Adjacent(G, x, y)|：判断图$G$是否存在边$<x, y>$（或$(x, y)$）。
+  \item \verb|Neighbors(G, x)|：列出图$G$中与顶点$x$邻接的边。
+  \item \verb|InsertVertex(G, x)|：在图$G$中插入顶点$x$。
+  \item \verb|DeleteVertex(G, x)|
+  \item \verb|AddEdge(G, x, y)|：若边$(x, y)$或弧$<x, y>$不存在，则向图中添加该边。
+  \item \verb|Remove(G, x, y)|
+  \item \verb|FirstNeighbor(G, x)|：求顶点$x$的第一个邻接点，若有返回序号，若无或根本无$x$，则返回-1
+  \item \verb|NextNeighbor(G, x, y)|：假设$x$和$y$是邻接的顶点，返回除$y$外$x$的下一个邻接点的顶点号。若$y$是$x$的最后一个邻接顶点，返回-1
+  \item \verb|Get_edge_value(G, x, y)|
+  \item \verb|Set_edge_value(G, x, y, val)|
+\end{itemize}
+
+\subsection{图的遍历}
+
+
 
 \end{document}
