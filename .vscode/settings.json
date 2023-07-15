@@ -3,5 +3,10 @@
     "latex-workshop.latex.autoBuild.run": "never",
     "editor.wordWrap": "on",
     "latex-workshop.view.pdf.invertMode.enabled": "auto",
-    "latex-workshop.view.pdf.invert": 0.9
+    "latex-workshop.view.pdf.invert": 0.9,
+    "cmake.sourceDirectory": "${workspaceFolder}/408/ds/code",
+    "cmake.buildDirectory": "${workspaceFolder}/408/ds/code/build",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/408/ds/code/build"
+    ]
 }

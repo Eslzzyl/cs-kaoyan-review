@@ -1066,6 +1066,459 @@ $n$个结点的树中有$n-1$条边。
 
 \subsection{图的遍历}
 
+遍历图时，需要使用一个\verb|visited|数组来标记访问过的顶点。
 
+\subsubsection{广度优先搜索\ BFS}
+
+用队列实现。对于图的所有连通分量，都调用一次BFS函数。
+
+代码见王道书P206
+
+\begin{itemize}
+  \item 最坏情况下空间复杂度为$O(\lvert V\rvert)$。
+  \item 采用邻接表存储时，时间复杂度为$O(\lvert V\rvert +\lvert E\rvert)$。
+  \item 采用邻接矩阵存储时，时间复杂度为$O(\lvert V\rvert ^2)$。
+\end{itemize}
+
+BFS算法可用于求解单源最短路径问题。只需要在每层BFS递归中将路径长度加一即可。
+
+使用BFS算法遍历图，得到的遍历树称为\textbf{广度优先生成树}。
+\begin{itemize}
+  \item 同一个图的邻接矩阵表示是唯一的，于是BFS生成树也是唯一的。
+  \item 同一个图可能有多个邻接表表示，于是可能有多个BFS生成树。
+\end{itemize}
+
+\subsubsection{深度优先搜索\ DFS}
+
+类似树的先序遍历。
+
+不需要依赖额外的数据结构，直接使用递归即可实现。
+
+代码见王道书P208
+
+不同存储方法的唯一性：和BFS一致。
+
+复杂度分析：和BFS完全一致。
+
+同样会产生生成树，且在邻接表存储下生成树不唯一。
+
+\subsubsection{图的遍历与图的连通性}
+
+对于无向图：
+\begin{itemize}
+  \item 若一次遍历能够访问所有顶点，则图是连通的。
+  \item 若一次遍历不能访问所有顶点，则图是非连通的。
+\end{itemize}
+
+对于有向图：
+\begin{itemize}
+  \item 若一次遍历能够访问所有顶点，则图是强连通的。
+  \item 若一次遍历不能访问所有顶点，则图是非强连通的。
+\end{itemize}
+
+\subsection{图的应用}
+
+\textcolor{red}{考察重点}
+
+\subsubsection{最小生成树}
+
+将图的生成树去掉一条边，就会使生成树变成非连通图。
+
+所谓\textbf{最小生成树}是指：所有生成树中，边的权值之和最小的那个。
+
+\begin{itemize}
+  \item 对于图$G$，最小生成树本身不是唯一的。
+  \item 但是最小生成树的权值之和是唯一的，且一定最小。
+  \item 生成树的边数为图的顶点数减1，最小生成树也是生成树。
+\end{itemize}
+
+下面介绍的求解算法都是贪心算法。
+
+通用伪代码：
+\begin{lstlisting}
+  GENERIC_MST(G) {
+    T = NULL;
+    while T 未形成一棵生成树;
+      do 找到一条最小代价边(u,v)并且加入T后不会产生回路;
+        T += (u, v);
+  }
+\end{lstlisting}
+
+\begin{enumerate}
+  \item {\bf Prim算法}
+  
+  思路和Dijkstra算法很相似。适合求解稠密图。
+
+  假设$G=\{V,E\}$是连通图，其最小生成树$T=(U,E_T)$，$E_T$是最小生成树中边的集合。按照如下步骤求解：
+  \begin{enumerate}
+    \item 初始化：向空树$T=(U,E_T)$中添加图$G$的任意一个顶点$u_0$，使得$U=\{u_0\}$，$E_T=\varnothing$。
+    \item 重复操作，直到$U=V$：从$G$中选择满足$\{(u,v)\vert u\in U,v\in V-U\}$且具有最小权值的边$(u,v)$，加入树$T$，置$U=U\cup \{v\}$，$E_T=E_T\cup \{(u,v)\}$。
+  \end{enumerate}
+
+  代码：
+  \begin{lstlisting}[mathescape]
+    void Prim(G, T) {
+      T = $\varnothing$;
+      U = {w};
+      while ((V-U) != $\varnothing$) {
+        设(u,v)是使u$\in$U与v$\in$(V-U)，且权值最小的边;
+        T = T$\cup${(u,v)};
+        U = U$\cup${v};
+      }
+    }
+  \end{lstlisting}
+
+  时间复杂度：$O(\lvert V\rvert ^2)$
+
+  \item {\bf Kruskal算法}
+  
+  适合求解边稀疏而顶点较多的图。
+
+  基本思路是，先把所有边全删了（此时所有顶点都自成一个连通分量），然后排序边表，从最短的边开始看，如果这条边能够连接图中的两个连通分量，就把边加入生成树，否则看下一条边，直到所有顶点都属于同一个连通分量。
+
+  假设$G=\{V,E\}$是连通图，其最小生成树$T=(U,E_T)$，$E_T$是最小生成树中边的集合。按照如下步骤求解：
+  \begin{itemize}
+    \item 初始化：$U=V$，$E_T=\varnothing$。
+    \item 重复，直到$T$是一棵树：按照$G$的边的权值递增顺序从$E-E_T$中选择一条边，若这条边加入$T$后不构成回路，就加入$E_T$，否则舍弃，直到$E_T$中含有$n-1$条边。
+  \end{itemize}
+
+  代码：
+  \begin{lstlisting}[mathescape]
+    void Kruskal(V,T) {
+      T = V;
+      numS = n;   // 连通分量数
+      while (numS > 1) {
+        从E中取出权值最小的边(v, u);
+        if (v和u属于T中不同的连通分量) {
+          T = T $\cup$ {(v, u)};  //边加入生成树
+          numS--;
+        }
+      }
+    }
+  \end{lstlisting}
+
+  通常用堆来存储边集，因此每次查找最短边只需要$O(\log_2\lvert E\rvert)$。可以用并查集来描述$T$，因此构造$T$的时间复杂度为$O(\lvert E\rvert\log_2\lvert E\rvert)$。
+\end{enumerate}
+
+\subsubsection{最短路径}
+
+\begin{enumerate}
+  \item {\bf Dijkstra算法求解单源最短路径}
+  \item {\bf Floyd算法求各顶点之间最短路径}
+\end{enumerate}
+
+\subsubsection{有向无环图描述表达式}
+
+\subsubsection{拓扑排序}
+
+\subsubsection{关键路径}
+
+\section{查找}
+
+\textcolor{red}{本章为命题重点}
+
+\subsection{查找的基本概念}
+
+\textbf{平均查找长度}：在所有查找过程中，进行关键字的比较次数的平均值。这是衡量查找算法效率的最主要指标。
+\begin{equation*}
+  \text{ASL}=\sum_{i=1}^{n}P_i C_i
+\end{equation*}
+
+式中，$n$是查找表的长度，$P_i$是查找第$i$个元素的概率，一般认为$P=\frac{1}{n}$；$C_i$是找到第$i$个数据元素所需进行的比较次数。
+
+\subsection{顺序查找和折半查找}
+
+\subsubsection{顺序查找}
+
+\begin{enumerate}
+  \item {\bf 一般线性表的顺序查找}
+  
+  唯一值得注意的是“哨兵”。查找时，将待查的值\verb|key|赋给0号元素，即哨兵，然后\textbf{倒序查找}。每次比较时，只要比较\verb|arr[i] != key|即可，无需判断数组是否溢出。如果之前都没有找到，那么到0时自然会遇到\verb|key|，就停止查找，返回0，表示失败。
+
+  为了支持这种算法，在查找之前要先判断0号元素是不是要查的元素，若是就直接结束，若否就把0号元素先暂存起来，然后将\verb|key|放入0号元素，查找完毕后再把0号元素还原回去。
+
+  查找成功时，若所有元素的查找概率相等，则$\text{ASL}=\frac{n+1}{2}$。
+
+  查找失败时，$\text{ASL}=n+1$。
+
+  \item {\bf 有序表的顺序查找}
+  
+  查找成功时，和一般线性表没有不同。查找失败时可以优化：
+
+  假设表按照升序排序，当第$i$个元素的关键字小于\verb|key|，而第$i+1$个元素的关键字大于\verb|key|，就直接失败，无需再查。
+
+  查找失败时$\text{ASL}=\frac{n}{2}+\frac{n}{n+1}$。
+\end{enumerate}
+
+\subsubsection{折半查找（二分查找）}
+
+仅适用于\textbf{有序}的\textbf{顺序表}（链表只能顺序查找）。
+
+\begin{lstlisting}
+  int Binary_Search(SSTable L, ElemType key) {
+    int low = 0, high = L.TableLen - 1, mid;
+    while (low <= high) {
+      mid = (low + high) / 2;
+      if (L.elem[mid] == key)
+        return mid;
+      else if (L.elem[mid] > key)
+        high = mid - 1;
+      else
+        low = mid + 1;
+    }
+    return -1;
+  }
+\end{lstlisting}
+
+一个顺序表的折半查找可用一棵二叉树来表示，称为判定树。判定树一定是平衡二叉树。
+
+查找成功时，$\text{ASL}=\log_2 (n+1)-1$。
+
+\subsubsection{分块查找（索引顺序查找）}
+
+将查找表分成若干个组。组内是无序的，组间是有序的，即一个组的最大元素应小于下一个组的最小元素。
+
+再建立一个索引表，保存每个组的最大关键字和该组的第一个元素的地址。索引表按顺序排列。
+
+查找时，先用二分查找确定组，再在组内顺序查找。
+
+\subsection{树型查找}
+
+\subsubsection{二叉排序树\ BST}
+
+BST主要是为了加快查找、插入、删除的速度。
+
+\begin{enumerate}
+  \item {\bf 定义}
+  
+  一棵BST要么是空树，要么满足：
+  \begin{itemize}
+    \item 若左子树非空，则左子树上所有结点的值都\textbf{小于}根结点。
+    \item 若右子树非空，则右子树上所有结点的值都\textbf{大于}根结点。
+  \end{itemize}
+  
+  BST的中序遍历序列是一个有序的升序序列。
+
+  \item {\bf 构造}
+  
+  即将一个序列中的元素依次插入到BST中。插入算法见下。
+
+  \item {\bf 查找}
+  
+  一个迭代实现：
+  \begin{lstlisting}
+    BSTNode *BST_Search(BiTree T, ElemType key) {
+      while (T != NULL && key != T->data) {
+        if (key < T->data)
+          T = T->lchild;
+        else
+          T = T->rchild;
+      }
+      return T;
+    }
+  \end{lstlisting}
+
+  一个自拟的递归实现：
+  \begin{lstlisting}
+    BSTNode *BST_Search(BiTree T, ElemType key) {
+      if (T == NULL || T->data == key)
+        return T;
+      if (T->data > key)
+        return BST_Search(T->lchild, key);
+      else
+        return BST_Search(T->rchild, key);
+    }
+  \end{lstlisting}
+
+  \item {\bf 插入}
+  
+  插入过程的递归定义：
+  \begin{itemize}
+    \item 若树为空，则直接插入。
+    \item 若\verb|key<data|，则插入到左子树。
+    \item 若\verb|key>data|，则插入到右子树。
+  \end{itemize}
+
+  \item {\bf 删除}
+  
+  删除时，必须维护BST的排序性。
+  \begin{itemize}
+    \item 若被删除结点$z$是叶结点，则直接删除，不会破坏BST的排序性。
+    \item 若$z$只有一棵左子树或右子树，则让这子树替代$z$的位置。
+    \item 若$z$有左右两棵子树，则令$z$的直接后继（或直接前驱）替代$z$，然后从BST中删去这个直接后继（直接前驱），这样就转换成了前两种情况。
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{平衡二叉树\ AVL}
+
+\begin{enumerate}
+  \item {\bf 定义}
+  
+  在插入和删除结点时，自动调整使任意结点的左右子树高度之差不超过1的二叉排序树，叫做\textbf{平衡二叉树（AVL树）}。
+
+  定义左右子树的高度差为该结点的\textbf{平衡因子}。AVL树的高度差只可能是-1、0或1。
+
+  \item {\bf 插入}
+  
+  首先按照二叉排序树的插入方式实施插入。
+
+  然后针对以下4种情况做调整：
+  \begin{itemize}
+    \item LL平衡旋转：在结点$A$的左孩子（L）的左子树（L）上插入新结点，导致不平衡。此时使$A$的左孩子成为新的根结点，$A$作为新根结点的右子树，原先的左孩子的右子树成为$A$的左子树。图\ref{ll-rotate}
+    \item RR平衡旋转：类比上面。图\ref{rr-rotate}
+    \item LR平衡旋转：在结点$A$的右孩子（R）的左子树（L）上插入新结点，导致不平衡。此时需要两次旋转。图\ref{lr-rotate}
+    \item RL平衡旋转：类比上面。图\ref{rl-rotate}
+  \end{itemize}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{./images/ll-rotate.png}
+    \caption{LL平衡旋转}
+    \label{ll-rotate}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{./images/rr-rotate.png}
+    \caption{RR平衡旋转}
+    \label{rr-rotate}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{./images/lr-rotate.png}
+    \caption{LR平衡旋转}
+    \label{lr-rotate}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{./images/rl-rotate.png}
+    \caption{RL平衡旋转}
+    \label{rl-rotate}
+  \end{figure}
+
+  \item {\bf 删除}
+  
+  首先按照二叉排序树的删除方式实施删除。
+
+  若导致不平衡，则从删除的结点开始向上查找，找到第一个不平衡的AVL子树，设其根结点为$z$，$y$为$z$的高度最高的子结点，$x$是$y$的高度最高的子结点。
+
+  针对以下4种情况，进行调整：
+  \begin{itemize}
+    \item $y$是$z$的左孩子，$x$是$y$的左孩子（LL）
+    \item $y$是$z$的左孩子，$x$是$y$的右孩子（LR）
+    \item $y$是$z$的右孩子，$x$是$y$的右孩子（RR）
+    \item $y$是$z$的右孩子，$x$是$y$的左孩子（RL）
+  \end{itemize}
+
+  和插入过程不一样，删除过程在调整之后，可能导致$z$的祖先结点也出现不平衡，所以要一直向上检查直到根结点。
+
+  \item {\bf 查找}
+  
+  和BST一致。
+\end{enumerate}
+
+\subsubsection{红黑树}
+
+\begin{enumerate}
+  \item {\bf 定义}
+  
+  AVL树在插入/删除后需要频繁调整，代价很大。在AVL树的基础上放宽平衡条件，得到红黑树。
+
+  一棵\textbf{红黑树}是满足如下性质的BST树：
+  \begin{itemize}
+    \item 每个结点要么是红色，要么是黑色。
+    \item 根结点、叶结点（虚构的外部节点、NULL结点）都是黑色的。
+    \item 红结点的父结点和子节点都是黑色的。
+    \item 对于每个结点，从该结点到任意一个叶结点的简单路径上，所包含的黑色结点数量相同。这数量称为该结点的\textbf{黑高}，记作bh。根结点的黑高称为红黑树的黑高。
+  \end{itemize}
+
+  引入$n+1$个虚构的外部结点（均为黑色），作为红黑树本身叶结点的子结点，这样，红黑树的所有结点都是内部结点，没有叶结点。
+
+  \textbf{结论1}：从根结点到叶结点的最长路径不大于最短路径的2倍。
+
+  \textbf{结论2}：有$n$个内部结点的红黑树的高度$h\leq 2\log_2 (n+1)$。
+
+  红黑树将AVL的高度限制放宽到：任意一个结点的左右子树的高度之差不超过2倍。
+
+  \item {\bf 插入}
+  
+  \textbf{结论3}：新插入结点的初始颜色为红色。
+
+  
+
+  \item {\bf 删除}
+  
+  本节难度较大，考察概率低。
+\end{enumerate}
+
+\subsection{B树和B+树}
+
+大纲对于B树要求较高，对于B+树则只考察基本概念。
+
+\subsubsection{B树及其基本操作}
+
+\subsubsection{B+树的基本概念}
+
+\subsection{散列表}
+
+\subsubsection{散列表的基本概念}
+
+\subsubsection{散列函数的构造方法}
+
+\subsubsection{处理冲突的方法}
+
+\subsubsection{散列查找及性能分析}
+
+\section{排序}
+
+\textcolor{red}{本章重难点是堆排序、快速排序和归并排序。}
+
+\subsection{排序的基本概念}
+
+\subsection{插入排序}
+
+\subsubsection{直接插入排序}
+
+\subsubsection{折半插入排序}
+
+\subsubsection{希尔排序}
+
+\subsection{交换排序}
+
+\subsubsection{冒泡排序}
+
+\subsubsection{快速排序}
+
+\subsection{选择排序}
+
+\subsubsection{简单选择排序}
+
+\subsubsection{堆排序}
+
+\subsection{归并排序和基数排序}
+
+\subsubsection{归并排序}
+
+\subsubsection{基数排序}
+
+\subsection{各种内部排序算法的比较及应用}
+
+\subsubsection{内部排序算法的比较}
+
+\subsubsection{内部排序算法的应用}
+
+\subsection{外部排序}
+
+\subsubsection{外部排序的基本概念}
+
+\subsubsection{外部排序的方法}
+
+\subsubsection{多路平衡归与败者树}
+
+\subsubsection{置换-选择排序（生成初始归并段）}
+
+\subsubsection{最佳归并树}
 
 \end{document}
