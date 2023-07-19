@@ -1,3 +1,5 @@
+\PassOptionsToPackage{dvipsnames}{xcolor}
+
 % draft会跳过文档中的所有图片。正式导出时需要删掉draft参数。
 \documentclass[12pt, a4paper, oneside]{ctexart}
 
@@ -8,8 +10,6 @@
 \usepackage{mathrsfs}
 \usepackage{geometry}
 \usepackage{framed}
-\usepackage{color}
-\usepackage[dvipsnames]{xcolor}
 \usepackage{caption}
 \usepackage{listings}
 \usepackage{fancyhdr}
@@ -154,7 +154,7 @@ OS是计算机系统中最基本的系统软件。
   多道程序环境下，程序的执行是走走停停的，即以不可知的速度向前推进，这就是进程的异步性。OS必须保证在相同的运行环境下，进程多次运行的结果是一致的。
 \end{itemize}
 
-并发和共享是OS的最基本特性。
+并发和共享是OS的\textbf{最基本特性}。二者是相互依存的。
 
 \subsubsection{操作系统的目标和功能}
 
@@ -194,15 +194,14 @@ OS是计算机系统中最基本的系统软件。
   \begin{itemize}
     \item 命令接口
     \begin{itemize}
-      \item 联机方式：交互式
-      \begin{itemize}
-        \item 字符式
-        \item 图形用户接口GUI
-      \end{itemize}
+      \item 联机方式：字符交互式
       \item 脱机方式：批处理式
     \end{itemize}
-    \item 程序接口：由一组系统调用组成
+    \item 程序接口：由一组\textbf{系统调用}组成
   \end{itemize}
+
+  目前最流行的GUI（图形接口）是建立在程序接口基础上的。
+
   \item 实现对计算机资源的\textbf{扩充}
 \end{enumerate}
 
@@ -217,7 +216,7 @@ OS是计算机系统中最基本的系统软件。
   \item 不断提出新的应用需求
 \end{itemize}
 
-\subsubsection{无操作系统时代}
+\subsubsection{无操作系统时代（手工操作阶段）}
 
 对计算机的所有操作采用人工操作方式完成。人工操作方式的缺点：
 \begin{itemize}
@@ -229,7 +228,7 @@ OS是计算机系统中最基本的系统软件。
 
 优点：交互性好，即用户可以得到机器的立即响应。
 
-\subsubsection{单道批处理系统}
+\subsubsection{批处理系统阶段}
 
 \textbf{批处理系统}：在计算机上加载一个专门监控软件,在其控制下,计算机
 能够自动地、成批地处理一个或多个用户的一批作业。
@@ -242,26 +241,29 @@ OS是计算机系统中最基本的系统软件。
   \item 无交互能力（缺点）
 \end{itemize}
 
-\textbf{单道批处理系统}：先把一批作业输入到磁带上，在监控程序的控制下使这批作业一个接一个地处理。
-内存中始终只保持一道作业。
+\begin{enumerate}
+  \item {\bf 单道批处理系统}
+  
+  先把一批作业输入到磁带上，在监控程序的控制下使这批作业一个接一个地处理。内存中始终只保持一道作业。
 
-代表系统：IBM的FMS（Fortran Monitoring System），1960s
+  代表系统：IBM的FMS（Fortran Monitoring System），1960s
 
-一定程度上改善了资源浪费，但失去了交互性。单个程序独占系统，程序I/O时CPU空等。
+  一定程度上改善了资源浪费，但失去了交互性。单个程序独占系统，程序I/O时CPU空等。
 
-单道批处理系统的特点：自动性、顺序性、单道性
+  单道批处理系统的特点：自动性、顺序性、单道性
 
-\subsubsection{多道批处理系统}
+  \item {\bf 多道批处理系统}
+  
+  出现的动力是希望提高资源利用率和系统吞吐量。
 
-出现的动力是希望提高资源利用率和系统吞吐量。
+  代表系统（也是第一个）：IBM的OS/360，1960s
 
-代表系统（也是第一个）：IBM的OS/360，1960s
+  由作业调度程序按照一定的算法，从后备队列中选择若干个作业调入内存，使它们共享CPU资源。
 
-由作业调度程序按照一定的算法，从后备队列中选择若干个作业调入内存，使它们共享CPU资源。
+  相比单道批处理系统，多道批处理系统的资源利用率更高，但仍然没有交互性。
 
-相比单道批处理系统，多道批处理系统的资源利用率更高，但仍然没有交互性。
-
-特点：多道性、无序性、调度性、宏观上并行、微观上串行
+  特点：多道性、无序性、调度性、宏观上并行、微观上串行
+\end{enumerate}
 
 \subsubsection{分时系统}
 
@@ -273,7 +275,7 @@ OS是计算机系统中最基本的系统软件。
 
 特点：
 \begin{itemize}
-  \item 多路性：众多联机用户可以同时使用同一台计算机
+  \item 多路性：也叫同时性。众多联机用户可以同时使用同一台计算机
   \item 独立性：各终端用户感觉到自己独占了计算机
   \item 及时性：用户的请求能在很短时间内得到响应
   \item 交互性：用户与计算机之间可进行“会话”
@@ -301,19 +303,21 @@ OS是计算机系统中最基本的系统软件。
 
 分布式计算机系统：用于管理分布式计算机系统的操作系统。
 
+\subsubsection{个人计算机操作系统}
+
 \subsection{操作系统运行环境}
 
 \subsubsection{处理器运行模式}
 
 \begin{itemize}
-  \item {\kaishu 特权指令}，指不允许用户直接使用的指令。
-  \item {\kaishu 非特权指令}，指允许用户直接使用的指令。
+  \item {\bf 特权指令}，指不允许用户直接使用的指令。
+  \item {\bf 非特权指令}，指允许用户直接使用的指令。
 \end{itemize}
 
 CPU的运行模式：
 \begin{itemize}
-  \item {\kaishu 用户态}（目态）
-  \item {\kaishu 内核态}（核心态、管态）
+  \item {\bf 用户态}（目态）
+  \item {\bf 内核态}（核心态、管态）
 \end{itemize}
 
 CPU在内核态可以执行特权指令，在用户态则只能执行非特权指令。应用程序运行在用户态，操作系统内核运行在内核态。
@@ -395,8 +399,8 @@ OS采用C/S模式提供各类操作系统服务。微内核运行在内核态，
 
 过程如下：
 \begin{enumerate}
-  \item 激活CPU，读取ROM中的boot程序，将IR设为BIOS的第一条指令，开始执行BIOS。
-  \item 硬件自检。有故障发出蜂鸣并中止启动，无故障则继续。
+  \item 激活CPU，CS:IP自动指向FFFF0H。这个地址接近内存顶部，只剩下16字节，放不下程序，于是用一条JMP指令跳转到BIOS。跳转后，读取ROM中的boot程序，将IR设为BIOS的第一条指令，开始执行BIOS。
+  \item 硬件自检。这一步称为POST（Power-on Self Test）。有故障发出蜂鸣并中止启动，无故障则继续。
   \item BIOS读取引导顺序表，CPU将表上第一位的存储设备的引导扇区加载到内存。
   \item 加载MBR。CPU顺序检查引导表，如果当前设备不可引导，就检查下一个设备。MBR的作用是指出硬盘的哪个主分区含有操作系统。
   \item 扫描硬盘的分区表，加载活动分区。
@@ -405,17 +409,23 @@ OS采用C/S模式提供各类操作系统服务。微内核运行在内核态，
   \item 加载OS。
 \end{enumerate}
 
+引导程序的可分两类：
+\begin{itemize}
+  \item 一种是位于ROM中的自举程序（是BIOS的一部分），用于启动具体的设备；
+  \item 另一种是位于装有OS的磁盘的活动分区的引导扇区中的引导程序（称为启动管理器，Boot Manager），用于引导操作系统。
+\end{itemize}
+
 \subsection{虚拟机}
 
 有两种虚拟化方法：
 \begin{itemize}
   \item 第一类虚拟机管理程序，直接运行在硬件上，其上运行操作系统。每个操作系统都认为自己运行在裸机硬件上。这种技术也叫裸金属架构。
-  \item 第二类虚拟机管理程序，其实是运行在宿主操作系统上的一个程序，但仍然伪装成一台完整的计算机。x86平台上的第一个二类虚拟机管理程序就是大名鼎鼎的VMware Workstation。这种技术也叫寄居架构。
+  \item 第二类虚拟机管理程序，其实是运行在宿主操作系统上的一个程序，但仍然伪装成一台完整的计算机。x86平台上的第一个二类虚拟机管理程序是VMware Workstation。这种技术也叫寄居架构。
 \end{itemize}
 
 \section{进程与线程}
 
-OS重点。信号量进程同步、进程调度算法、死锁容易出综合题。
+\textcolor{red}{重点。信号量进程同步、进程调度算法、死锁容易出综合题。}
 
 \subsection{进程与线程}
 
@@ -512,31 +522,37 @@ PCB包括如下4部分内容：
 
 \subsubsection{线程和多线程模型}
 
-传统进程的两个基本属性
-\begin{itemize}
+\begin{enumerate}
+  \item {\bf 传统进程的两个基本属性}
+  
+  \begin{itemize}
     \item 是拥有资源的独立单位
     \item 是调度和分派的基本单位
-\end{itemize}
+  \end{itemize}
 
-线程的特点：
-\begin{itemize}
+  \item {\bf 线程的特点}
+  
+  \begin{itemize}
     \item 是能独立运行的基本单位，且切换代价远小于进程。
     \item 线程不拥有系统资源，而是仅拥有一点必不可少的、能保证独立运行的资源。
     \item 多个线程可以共享一个进程的资源
-\end{itemize}
+  \end{itemize}
 
-线程的实现：
-\begin{itemize}
-  \item 用户级线程 ULT：无须内核支持，与内核无关，甚至内核不知道此类线程的存在。调度以进程为单位进行。
-  \item 内核级线程 KLT：在内核的支持下运行。调度以线程为单位进行。
-\end{itemize}
+  \item {\bf 线程的实现}
+  
+  \begin{itemize}
+    \item {\bf 用户级线程 ULT}：无须内核支持，与内核无关，甚至内核不知道此类线程的存在。调度以进程为单位进行。
+    \item {\bf 内核级线程 KLT}：在内核的支持下运行。调度以线程为单位进行。
+  \end{itemize}
 
-多线程模型：
-\begin{itemize}
-  \item 多对一模型，多个用户级线程映射到一个内核级线程。
-  \item 一对一模型，每个用户级线程都映射到一个内核级线程。
-  \item 多对多模型，将$n$个用户线程映射到$m$个内核级线程上，要求$n\geq m$。
-\end{itemize}
+  \item {\bf 多线程模型}
+
+  \begin{itemize}
+    \item {\bf 多对一模型}，多个用户级线程映射到一个内核级线程。线程管理在用户空间进行，效率高。但只要有线程访问内核发生阻塞后，整个进程都会阻塞。任何时刻只有一个线程能访问内核。
+    \item {\bf 一对一模型}，每个用户级线程都映射到一个内核级线程。并发性能好，但每创建一个用户线程，就要对应创建一个内核线程，开销大。
+    \item {\bf 多对多模型}，将$n$个用户线程映射到$m$个内核级线程上，要求$n\geq m$。克服了上面两种模型的缺点，汇集了上面两种模型的优点。
+  \end{itemize}
+\end{enumerate}
 
 \subsection{处理机调度}
 

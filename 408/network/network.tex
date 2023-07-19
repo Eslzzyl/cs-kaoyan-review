@@ -1,3 +1,5 @@
+\PassOptionsToPackage{dvipsnames}{xcolor}
+
 % draft会跳过文档中的所有图片。正式导出时需要删掉draft参数。
 \documentclass[12pt, a4paper, oneside]{ctexart}
 
@@ -8,7 +10,6 @@
 \usepackage{mathrsfs}
 \usepackage{geometry}
 \usepackage{framed}
-\usepackage{color}
 \usepackage{caption}
 \usepackage{listings}
 \usepackage{fancyhdr}
@@ -112,6 +113,9 @@
     \item 独立：每台计算机都可运行各自独立的操作系统，彼此地位平等，无主从之分。
     \item 数据交换是网络的最基本功能。
     \item 资源共享是网络最终目的。
+    \begin{itemize}
+        \item 计算机网络的资源：硬件资源+软件资源+数据资源
+    \end{itemize}
 \end{itemize}
 
 \subsubsection{计算机网络的组成}
@@ -169,7 +173,7 @@
         \item 点对点网络：广域网基本上都是点对点的。
         \item 二者的重要区别在于是否使用存储转发、路由选择机制。若是，则属于点对点网络。
     \end{itemize}
-    \item 按拓扑结构分类（主要指的是通信子网的拓扑结构）
+    \item 按拓扑结构分类（主要指的是\textbf{通信子网}的拓扑结构）
     \begin{itemize}
         \item 总线形网络：建网方便，但高负载时效率低下，总线对故障敏感
         \item 星形网络：依赖中央设备
@@ -337,6 +341,9 @@ OSI参考模型:
     \begin{itemize}
         \item 传输单位：比特
         \item 功能：在物理媒体上为数据端设备透明地传输原始比特流。
+        \begin{itemize}
+            \item \textcolor{blue}{物理层是最底层，所以不会封装数据。}
+        \end{itemize}
         \item 标准：EIA-232C、EIA/TIA RS-449、CCITT的X.21等
         \item 物理媒体本身不属于物理层，可以认为是第零层。
     \end{itemize}
@@ -431,6 +438,9 @@ TCP/IP模型和OSI模型的比较：
         \item 信源是产生和发送数据的源头
         \item 信宿是接收数据的终点
         \item 信道是传输信号的通路。
+        \begin{itemize}
+            \item 一条可通信的电路往往包含\textbf{两个}信道，一个发送，一个接收。
+        \end{itemize}
     \end{itemize}
     \begin{figure}[h]
         \centering
@@ -454,9 +464,10 @@ TCP/IP模型和OSI模型的比较：
     \begin{itemize}
         \item 速率指的是数据传输速率，可以用如下两种方式表示：
         \begin{itemize}
-            \item 码元传输速率（波特率）：表示通信系统传输码元的速率，单位是波特（1波特表示每秒传输一个码元），与传输的进制无关。
-            \item 信息传输速率（比特率）：表示通信系统传输\textbf{二进制}码元的速率，单位是比特/秒。
+            \item {\bf 码元传输速率（波特率）}：表示通信系统传输码元的速率，，也是每秒发生的信号变化次数。单位是波特（1波特表示每秒传输一个码元），与传输的进制无关。
+            \item {\bf 信息传输速率（比特率）}：表示通信系统传输\textbf{二进制}码元的速率，单位是比特/秒。
             \item 若一个码元携带$n$比特的信息量，则$M$波特率的码元传输速率对应的信息传输速率为$Mn$比特/秒。
+            \item 若用$V$表示每个码元的离散电平的数目，则一个码元需要的二进制位数量是$\log_2 V$，即一个码元携带$\log_2 V$比特的信息量。
         \end{itemize}
         \item 带宽：见\ref{performance_index}节。
     \end{itemize}
@@ -500,31 +511,38 @@ TCP/IP模型和OSI模型的比较：
     \item {\bf 香农定理}
     
     香农定理给出了带宽受限且有高斯白噪声干扰的信道的极限数据传输速率：
-    \begin{equation*}
+    \begin{equation}
         \text{极限速率}C=W\text{log}_2(1+\frac{S}{N})
-    \end{equation*}
+    \end{equation}
     其中
     \begin{itemize}
         \item $W$为信道带宽
         \item $S$为信道传输信号的平均功率
         \item $N$为信号内部的高斯噪声功率
     \end{itemize}
-\end{enumerate}
 
-根据香农定理，可以得出如下结论：
-\begin{enumerate}
-    \item 信道的带宽或信道中的信噪比（$S/N$）越大，信息的极限传输速率$C$就越高。$N\to 0$时，$C\to\infty$，因此无干扰信道容量为无穷大。
-    \item 对于一定的带宽和一定的信噪比，信息传送速率的上限是确定的。
-    \item 只要信息传输速率低于信道的极限速率，就能找到某种办法实现无差错的传输。
-    \item 设$N_0$为频谱密度，则有$N=N_0\times B$。当$W\to \infty$时，$C\to 1.44\frac{S}{N_0}$，并不会趋于无穷大。
+    一般称$\frac{S}{N}$是信噪比，这个值可以通过比值的方式给出，此时可以直接代入香农定理计算；还可以通过dB的单位给出，此时需要根据公式
+    \begin{equation}
+        \text{信噪比(dB)}=10\log_{10} (\frac{S}{N})
+    \end{equation}
+
+    计算，解出$\frac{S}{N}$。信噪比30dB是一个常见的值，该值对应的$\log_2 (1+\frac{S}{N})$值是10。
+
+    根据香农定理，可以得出如下结论：
+    \begin{enumerate}
+        \item 信道带宽或信道中的信噪比越大，信息的极限传输速率$C$就越高。$N\to 0$时，$C\to\infty$，因此无干扰信道容量为无穷大。
+        \item 对于一定的带宽和一定的信噪比，信息传送速率的上限是确定的。
+        \item 只要信息传输速率低于信道的极限速率，就能找到某种办法实现无差错的传输。
+        \item 该定理给出的是极限传输速率，实际上的速率要低很多。
+    \end{enumerate}
 \end{enumerate}
 
 \subsubsection{编码}
 
 \begin{enumerate}
-    \item {\bf 归零编码}。每个时钟周期的中间都要归零，提供了自同步机制，但归零要占用一点带宽。
-    \item {\bf 非归零编码}。不归零，但无法同步，需要额外的时钟线。
-    \item {\bf 反向非归零编码}。用信号的反转代表0，信号保持不变代表1，有同步且不会占用带宽。
+    \item {\bf 归零编码 RZ}。每个时钟周期的中间都要归零，提供了自同步机制，但归零要占用一点带宽。
+    \item {\bf 非归零编码 NRZ}。不归零，但无法同步，需要额外的时钟线。
+    \item {\bf 反向非归零编码 NRZI}。用信号的反转代表0，信号保持不变代表1，有同步且不会占用带宽。
     \item {\bf 曼彻斯特编码}。将一个码元分成两个相等的间隔。实际上有两种截然相反的约定，较常用的一种是：前高后低为0，1则相反。也可同步。
     \begin{itemize}
         \item 用于802.3局域网（以太网）。
@@ -537,17 +555,43 @@ TCP/IP模型和OSI模型的比较：
 
 \subsubsection{调制}
 
+\begin{itemize}
+    \item \textbf{调制}是把信号注入载波的过程，和模数转换没有关系（下同）。
+    \item \textbf{解调}是把信号从载波中分离的过程。
+\end{itemize}
+
+\begin{problem}
+    利用模拟通信信道传输数字信号的方法称为\underline{频带传输}。
+\end{problem}
+
+\begin{solution}
+    \begin{itemize}
+        \item 将基带信号直接传送到通信链路（数字信道）上，叫\textbf{基带传输}。
+        \item 将基带信号调制后送到通信链路（模拟信道）上，叫\textbf{频带传输}。
+    \end{itemize}
+\end{solution}
+
 \begin{enumerate}
     \item 数字信号转模拟信号
     \begin{itemize}
-        \item 幅移键控（ASK），又称调幅
-        \item 频移键控（FSK），又称调频
-        \item 相移键控（PSK），又称调相
-        \item 正交振幅调制（QAM）
+        \item {\bf 幅移键控 ASK}，又称调幅
+        \item {\bf 频移键控 FSK}，又称调频
+        \item {\bf 相移键控 PSK}，又称调相
+        
+        \textcolor{blue}{注意这些缩写都需要记忆。}
+
+        \item {\bf 正交振幅调制 QAM}：保持频率相同，将ASK和PSK结合起来。设波特率为$B$，采用$m$个相位，每个相位有$n$种振幅，则数据传输速率$R$为
+        \begin{equation}
+            R=B\log_2 (mn)
+        \end{equation}
     \end{itemize}
+
     \item 模拟信号转数字信号
+    
+    典型例子是用于编码音频信号的\textbf{脉冲编码调制 PCM}。其步骤如下：
+
     \begin{itemize}
-        \item 采样
+        \item 采样。设原始模拟信号的最大频率是$f$，则采样频率不得低于$2f$，这样才能完整保留原始信息。
         \item 量化
         \item 编码
     \end{itemize}
@@ -574,6 +618,7 @@ TCP/IP模型和OSI模型的比较：
         \item 建立连接时间长。
         \item 线路独占，效率低。
         \item 灵活性差。
+        \item 没有差错控制。
         \item 难以规格化。
     \end{itemize}
     \item {\bf 报文交换}
@@ -591,7 +636,7 @@ TCP/IP模型和OSI模型的比较：
         \item 由于每个节点都要存储-转发，因此会有转发时延。
         \item 要求节点有较大的缓存空间。
     \end{itemize}
-    报文交换多用于早期的电报通信网络中，现已很少用。现在常用的是分组交换。
+    报文交换多用于早期的电报通信网络中，现已很少用。
     \item {\bf 分组交换}
     
     优点：
@@ -614,6 +659,14 @@ TCP/IP模型和OSI模型的比较：
 \subsubsection{数据报与虚电路}
 
 它们都属于网络层，都是分组交换的方式。见图\ref{comp-between-datagram-and-virtual}
+
+虚电路又可分：
+\begin{itemize}
+    \item {\bf 永久性虚电路 PVC}：提前定义好的，几乎不需要建立时间，是持久的。
+    \item {\bf 交换型虚电路 SVC}：仅在需要时建立，会话结束后就销毁，是临时性的。
+\end{itemize}
+
+虚电路不需要预分配带宽。
 
 \begin{figure}
     \centering
@@ -735,6 +788,10 @@ TCP/IP模型和OSI模型的比较：
 \end{itemize}
 
 差错出现的原因可以是热噪声或冲击噪声，差错控制机制主要处理冲击噪声造成的差错。
+\begin{itemize}
+    \item 热噪声是信道固有的，产生随机差错。
+    \item 冲击噪声是来自外界的，产生突发差错。
+\end{itemize}
 
 \begin{problem}
     数据链路层协议的功能不包括（\ \ ）
@@ -796,6 +853,8 @@ CRC码有纠错功能，但数据链路层只使用了它的检错功能。
     奇偶校验码可以检测奇数位个错误，但不能检测偶数位个错误，也不能得知出错的位置。
 
     \item {\bf 循环冗余（CRC）码}
+    
+    带$r$个校验位的CRC码可以检测到所有长度$\leq r$的突发错误。
     
     模2运算：不看进位和借位，加减就是异或。
 

@@ -3,7 +3,14 @@
 
 typedef int ElemType;
 
-struct SeqList;
+const static unsigned INITSIZE = 100;
+
+// 动态分配的顺序表
+struct SeqList {
+    ElemType *data;
+    unsigned length;
+    unsigned capacity;
+};
 
 void InitList_seq(SeqList &L);
 

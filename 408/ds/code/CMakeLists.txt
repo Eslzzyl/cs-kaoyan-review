@@ -14,7 +14,13 @@ add_library(DataStructure
     ${PROJECT_SOURCE_DIR}/stack/seq_stack.h
     ${PROJECT_SOURCE_DIR}/stack/seq_stack.cpp
     ${PROJECT_SOURCE_DIR}/stack/linked_stack.h
-    ${PROJECT_SOURCE_DIR}/stack/linked_stack.h
+    ${PROJECT_SOURCE_DIR}/stack/linked_stack.cpp
+    ${PROJECT_SOURCE_DIR}/queue/seq_queue.h
+    ${PROJECT_SOURCE_DIR}/queue/seq_queue.cpp
+    ${PROJECT_SOURCE_DIR}/queue/linked_queue.h
+    ${PROJECT_SOURCE_DIR}/queue/linked_queue.cpp
+    ${PROJECT_SOURCE_DIR}/string/seq_string.h
+    ${PROJECT_SOURCE_DIR}/string/seq_string.cpp
 )
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

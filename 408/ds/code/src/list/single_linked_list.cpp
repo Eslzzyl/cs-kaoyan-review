@@ -2,16 +2,6 @@
 
 #include <iostream>
 
-struct Node {
-    ElemType data;
-    Node *next;
-};
-
-struct SingleLinkedList {
-    unsigned length;
-    Node *node;
-};
-
 // 初始化表
 void InitList_single_link(SingleLinkedList &L)
 {

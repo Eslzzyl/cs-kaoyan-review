@@ -1,3 +1,5 @@
+\PassOptionsToPackage{dvipsnames}{xcolor}
+
 % draft会跳过文档中的所有图片。正式导出时需要删掉draft参数。
 \documentclass[12pt, a4paper, oneside]{ctexart}
 
@@ -9,7 +11,6 @@
 \usepackage{mathrsfs}
 \usepackage{geometry}
 \usepackage{framed}
-\usepackage{color}
 \usepackage{caption}
 \usepackage{listings}
 \usepackage{fancyhdr}
@@ -24,6 +25,8 @@
 \usepackage{tikz}
 \usepackage{ulem}
 \usetikzlibrary{positioning, shapes.geometric}
+
+\input{../../../share/colors/pilot-juice.tex}
 
 % 分栏线宽
 \columnseprule=0.4pt
@@ -1204,7 +1207,18 @@ BFS算法可用于求解单源最短路径问题。只需要在每层BFS递归�
 
 \begin{enumerate}
   \item {\bf Dijkstra算法求解单源最短路径}
+  
+  单源最短路径：某个顶点到其他各个顶点的最短路径
+
+  本算法适合画图求解。
+
+  设置一个\verb|dist[]|数组和一个\verb|path[]|数组。\verb|dist[]|保存源顶点到其他顶点的最短路径长度，\verb|path[]|数组保存最短路径上的各个顶点。初始状态下，选定一个开始顶点，将和这个顶点邻接的顶点填入\verb|dist[]|和\verb|path[]|。对于不邻接的顶点，在\verb|dist[]|中填入无穷大。然后选取最近的顶点，将从这个新顶点出发后到达顶点的距离和原先的距离相比较，如果能更短，就更新\verb|dist[]|和\verb|path[]|中的对应元素。如此循环，直到所有顶点都被选择过一遍。
+
+  工大课本上有比较详细的步骤，以及基于邻接矩阵和邻接表的代码实现。
+
   \item {\bf Floyd算法求各顶点之间最短路径}
+  
+  
 \end{enumerate}
 
 \subsubsection{有向无环图描述表达式}
@@ -1459,66 +1473,589 @@ BST主要是为了加快查找、插入、删除的速度。
 
 \subsubsection{B树及其基本操作}
 
+待补
+
 \subsubsection{B+树的基本概念}
+
+待补
 
 \subsection{散列表}
 
 \subsubsection{散列表的基本概念}
 
+散列表建立了关键字和地址之间的一种直接映射关系。
+
+理想情况下，散列表的查找时间复杂度总是$O(1)$。
+
 \subsubsection{散列函数的构造方法}
+
+\begin{enumerate}
+  \item {\bf 直接定址法}
+  
+  直接取关键字的某个线性函数值作为地址。不会产生冲突，适合关键字比较连续的情况。如果关键字比较稀疏，那么就会造成空间的浪费。
+
+  \item {\bf 除留余数法}
+  
+  假定散列表长为$m$，娶一个不大于$m$但最接近或等于$m$的质数$p$，然后：
+  \begin{equation*}
+    H(key)=key\ \%\ p
+  \end{equation*}
+
+  \item {\bf 数字分析法}
+  
+  适用于关键字集合已知的情况。分析关键字，取每个关键字种分布比较均匀的那部分，作为散列地址。
+
+  \item {\bf 平方取中法}
+  
+  取关键字平方值中间的几位作为散列地址。
+
+\end{enumerate}
 
 \subsubsection{处理冲突的方法}
 
+下面介绍的方法都是基于上节的“除留余数法”。
+
+\begin{enumerate}
+  \item {\bf 开放定址法}
+  
+  发生冲突后，不存放到冲突的位置，而是另外寻找其他的位置：
+  \begin{equation*}
+    H_i=(H(key)+d_i)\ \%\ m
+  \end{equation*}
+  根据寻找其他位置的方式又可分为：
+  \begin{itemize}
+    \item {\bf 线性探测法}，$d_i=0,1,2,\cdots$。会造成大量元素在相邻的位置上堆积起来。
+    \item {\bf 平方探测法}，$d_i=0^2,1^2,{-1}^2,2^2,{-2}^2,\cdots,k^2,{-k}^2$。要求$k\leq m/2$且$m$是一个能够表示成$4k+3$的素数。不容易造成堆积，但不能探测到表上的所有单元（至少能探测到一半的单元）。
+    \item {\bf 双散列法}，发生冲突后用另一个散列函数再重复进行散列，直到找到一个空位。
+    \item {\bf 伪随机序列法}，令$d_i$为一个伪随机序列。
+  \end{itemize}
+  \item {\bf 拉链法}
+  
+  发生冲突后不寻找新的位置，而是在目标位置开辟一个链表，存放所有映射到该位置的关键字。
+
+  适合经常插入和删除的情况。
+
+\end{enumerate}
+
 \subsubsection{散列查找及性能分析}
+
+散列查找：即按照散列函数计算地址，如果目标地址的值和关键字不匹配，就按照选用的开放定址方法再寻找。
+
+装填因子$\alpha$：
+\begin{equation*}
+  \alpha=\frac{\text{表中记录数}n}{\text{散列表长度}m}
+\end{equation*}
 
 \section{排序}
 
 \textcolor{red}{本章重难点是堆排序、快速排序和归并排序。}
 
+\textcolor{red}{算法对比通常以选择题方式考察。}
+
 \subsection{排序的基本概念}
+
+\textbf{算法的稳定性}：对于两个有相同关键字的元素$R_i$和$R_j$，设排序前$R_i$在$R_j$的前面，若排序后，$R_i$仍然在$R_j$的前面，就说这种排序算法是\textbf{稳定的}。
+
+\textbf{内部排序}指的是数据完全在内存中的排序。
+
+\textbf{外部排序}指的是数据不完全在内存中的排序。
+
+一般来说，内部排序算法总是涉及比较和移动操作。但小部分排序算法不用比较，如基数排序。
+
+大部分内部排序算法只适用于顺序表（连续存储的线性表）。
 
 \subsection{插入排序}
 
 \subsubsection{直接插入排序}
 
+代码如下，也用到了哨兵：
+\begin{lstlisting}
+  // A[0]作为哨兵，不存放元素，元素从A[1]开始存放
+  void InsertSort(ElemType A[], int n) {
+    // 依次将A[2]到A[n]插入到前面的已排序序列
+    for (int i = 2; i <= n; ++i) {
+      if (A[i] < A[i-1]) {
+        A[0] = A[i];    // 哨兵
+        // 从后往前查找插入位置
+        for (int j = i-1; A[0] < A[j]; --j) {
+          A[j + 1] = A[j];  // 向后挪位
+        }
+        A[j + 1] = A[0];
+      }
+    }
+  }
+\end{lstlisting}
+
+\begin{itemize}
+  \item 空间复杂度：$O(1)$
+  \item 最佳时间复杂度：$O(n)$
+  \item 最坏时间复杂度：$O(n^2)$
+  \item 平均时间复杂度：$O(n^2)$
+  \item 稳定性：稳定
+  \item 适用于顺序表和链表
+\end{itemize}
+
 \subsubsection{折半插入排序}
 
-\subsubsection{希尔排序}
+改进思路：使用折半查找替代顺序查找（因为已排序序列是有序的）
+
+代码如下：
+\begin{lstlisting}
+  void InsertSort(ElemType A[], int n) {
+    int low, high, mid;
+    for (int i = 2; i <= n; ++i) {
+      A[0] = A[i];
+      low = 1;
+      high = i - 1;
+      while (low <= high) {
+        mid = (low + high) / 2;
+        if (A[mid] > A[0])
+          high = mid - 1;
+        else
+          low = mid + 1;
+      }
+      for (int j = i-1; j >= high+1; --j) {
+        A[j + 1] = A[j];
+      }
+      A[high + 1] = A[0];
+    }
+  }
+\end{lstlisting}
+
+\begin{itemize}
+  \item 空间复杂度：$O(1)$
+  \item 平均时间复杂度：$O(n^2)$（但数据量不大时，比直接插入排序快）
+  \item 稳定性：稳定
+  \item 适用于顺序表
+\end{itemize}
+
+\subsubsection{希尔排序（缩小增量排序）}
+
+容易看出，插入排序更适合基本有序和数据量不大的表。
+
+基本思想：先把表分成若干个组，组内进行插入排序，所有组排序完后再整体进行一次插入排序。
+
+过程：先取一个小于$n$的步长$d_1$，把表中的全部记录分成$d_1$组，即所有距离为$d_1$倍数的记录放在同一组（是跳跃着取的），在组内进行插入排序；然后取$d_2<d_1$，重复，直到所取的$d=1$，即所有记录在同一组中，然后进行最后一次插入排序。
+
+序列$d$对性能影响很大，但目前还没有一个公认的好的序列。
+
+代码：
+\begin{lstlisting}
+  // 该算法中A[0]不再是哨兵
+  void ShellShort(ElemType A[], int n) {
+    // 增量变化，此处每次将增量减小一半
+    for (int dk = n / 2; dk >= 1; dk /= 2) {
+      for (int i = dk + 1; i <= n; ++i) {
+        if (A[i] < A[i-dk]) {
+          A[0] = A[i];
+          for (int j = i - dk; j > 0 && A[0] < A[j]; j -= dk) {
+            A[j + dk] = A[j];
+          }
+          A[j + dk] = A[0];
+        }
+      }
+    }
+  }
+\end{lstlisting}
+
+\begin{itemize}
+  \item 空间复杂度：$O(1)$
+  \item 时间复杂度：依赖于$d$。
+  \begin{itemize}
+    \item 平均：约为$O(n^{1.3})$
+    \item 最差：$O(n^2)$
+  \end{itemize}
+  \item 稳定性：不稳定
+  \item 适用于顺序表
+\end{itemize}
 
 \subsection{交换排序}
 
 \subsubsection{冒泡排序}
 
+比较相邻两个位置的元素，使较小的元素排在前面。每趟都使最小的元素“上浮”到序列的前面。下一趟排序时，已经确定位置的最小元素不再参与。最多进行$n-1$趟就能完成排序。
+
+冒泡排序的每一趟都能确保一个元素被放置在最终位置上。
+
+代码：
+\begin{lstlisting}
+  void BubbleSort(ElemType A[], int n) {
+    for (int i = 0; i < n - 1; ++i) {
+      bool flag = false;
+      for (int j = n - 1; j > i; --j) {
+        if (A[j - 1] > A[j]) {
+          swap(A[j - 1], A[j]);
+          flag = true;
+        }
+      }
+      if (flag == false) {
+        return;   // 本趟未发生交换，说明序列已经有序
+      }
+    }
+  }
+\end{lstlisting}
+
+\begin{itemize}
+  \item 空间复杂度：$O(1)$
+  \item 时间复杂度：
+  \begin{itemize}
+    \item 最佳：$O(n)$
+    \item 最坏：$O(n^2)$
+    \item 平均：$O(n^2)$
+  \end{itemize}
+  \item 稳定性：稳定
+\end{itemize}
+
 \subsubsection{快速排序}
+
+基本思想：分治法。在待排序表中选定一个元素作为主元\verb|pivot|，通过一趟排序将表分成两部分，前半部分的所有元素小于\verb|pivot|，后半部分的所有元素大于\verb|pivot|。然后递归地对两半部分分别重复上述过程。
+
+考研采用的严蔚敏版教材中，\verb|pivot|总是选第一个元素。
+
+代码：
+\begin{lstlisting}
+  int Partition(ElemType A[], int low, int high) {
+    ElemType pivot = A[low];
+    while (low < high) {
+      while (low < high && A[high] >= pivot) {
+        --high;
+      }
+      A[low] = A[high];   // 将比pivot小的元素移动到左边
+      while (low < high && A[low] <= pivot) {
+        ++low;
+      }
+      A[high] = A[low];   // 将比pivot大的元素移动到右边
+    }
+    A[low] = pivot;
+    return low;
+  }
+
+  void QuickSort(ElemType A[], int low, int high) {
+    if (low < high) {
+      int pivot_pos = Partition(A, low, high);
+      QuickSort(A, low, pivot_pos - 1);
+      QuickSort(A, pivot_pos + 1, high);
+    }
+  }
+\end{lstlisting}
+
+\begin{itemize}
+  \item 空间复杂度：和递归调用的深度有关。
+  \begin{itemize}
+    \item 最佳：$O(\log_2 n)$
+    \item 最坏：$O(n)$
+    \item 平均：$O(\log_2 n)$
+  \end{itemize}
+  \item 时间复杂度：
+  \begin{itemize}
+    \item 最佳：$O(n\log_2 n)$
+    \item 最坏：$O(n^2)$
+    \item 平均：$O(n\log_2 n)$
+  \end{itemize}
+  
+  平均情况和最佳情况很接近。\textcolor{juice-water-blue}{快速排序是平均性能最优的内部排序算法}。
+
+  \item 稳定性：不稳定
+\end{itemize}
+
+快速排序不产生有序子序列，但每一趟排序会将最后上一趟中选定的\verb|pivot|放在最终的位置上。
 
 \subsection{选择排序}
 
 \subsubsection{简单选择排序}
 
+假设排序表为\verb|L[1..n]|，每次从\verb|L[i..n]|中选择关键字最小的元素与\verb|L[i]|交换。每次确定一个元素的最终位置，通过$n-1$趟完成排序。
+
+代码：
+\begin{lstlisting}
+  void SelectSort(ElemType A[], int n) {
+    for (int i = 0; i < n - 1; ++i) {
+      int min = i;
+      for (int j = i + 1; j < n; ++j) {
+        if (A[j] < A[min]) {
+          min = j;
+        }
+      }
+      if (min != i) {
+        swap(A[i], A[min]);
+      }
+    }
+  }
+\end{lstlisting}
+
+\begin{itemize}
+  \item 空间复杂度：$O(1)$
+  \item 时间复杂度：始终是$O(n^2)$
+  \item 稳定性：不稳定
+\end{itemize}
+
 \subsubsection{堆排序}
+
+堆可以视为一棵完全二叉树。
+
+当具有$n$个关键字的序列$L[1..n]$满足：
+\begin{enumerate}
+  \item \verb|L(i)>=L(2i)|且\verb|L(i)>=L(2i+1)|，或
+  \item \verb|L(i)<=L(2i)|且\verb|L(i)<=L(2i+1)|，（$1\leq i\leq \left\lfloor n/2\right\rfloor$）
+\end{enumerate}
+
+时，该序列是\textbf{堆}。满足条件1的是\textbf{大根堆}，满足条件2的是\textbf{小根堆}。
+
+堆排序的思路：
+\begin{enumerate}
+  \item 构建一个堆。
+  \item 取堆顶作为最大（最小）元素，剩下的元素重新调整成一个堆。
+  \item 重复。
+\end{enumerate}
+
+下面的内容参考了工大数据结构教材。王道书写得稀烂。
+\begin{enumerate}
+  \item {\bf 堆的调整}
+  
+  假设有一个大根堆，除了根结点之外，其他所有结点都满足大根堆的性质。现在要对其进行调整，使所有结点都满足大根堆的性质。
+
+  因为是大根堆，所以要求根结点大于左右子结点。将根结点和它的左右子结点进行比较：
+  \begin{itemize}
+    \item 如果根结点已经是最大的，就不用调整，直接结束。
+    \item 否则，将子结点中\textbf{较大的那个}和根结点交换，使新的根结点成为最大。
+    \begin{itemize}
+      \item 此时，交换后新形成的子树可能又不满足大根堆性质，于是对它递归地进行调整。
+    \end{itemize}
+  \end{itemize}
+
+  \item {\bf 堆的建立}
+  
+  现在通过一个无序的数组\verb|A[n]|来建立一个大根堆。这个数组天然地形成一棵二叉树。
+
+  堆的调整是根结点和子结点之间的操作，单一的叶子结点不需要调整。因此叶子层可以直接跳过，从$n/2$（即最后一个结点的父结点）开始调整。按从后往前的顺序依次对$n/2$到1的结点进行堆调整，最后形成一个初始的堆。
+
+  \item {\bf 输出根}
+  
+  （升序）排序时，总是希望最大的元素放在最后。经过初始建堆之后，堆顶是最大元素。于是将堆顶和最后一个元素交换，这样最大的元素放在了最后。此时树根可能不满足大根堆性质，于是对根结点进行调整，使整棵树重新成为大根堆。
+
+  然后，将新的根结点和倒数第二个元素交换，再次调整。如此反复，直到堆顶和第二个元素交换，调整，结束，此时整个数组是升序的。
+\end{enumerate}
+
+代码：
+\begin{lstlisting}
+  void HeapAdjust(ElemType A[], int k, int len) {
+    A[0] = A[k];
+    for (int i = 2 * k; i <= len; ++i) {
+      if (i < len && A[i] < A[i+1]) {
+        ++i;
+      }
+      if (A[0] >= A[i]) {
+        break;
+      } else {
+        A[k] = A[i];
+        k = i;
+      }
+    }
+    A[k] = A[0];
+  }
+
+  void BuildMaxHeap(ElemType A[], int len) {
+    for (int i = len / 2; i >0; --i) {
+      HeapAdjust(A, i, len);
+    }
+  }
+
+  void HeapSort(ElemType A[], int len) {
+    BuildMaxHeap(A, len);
+    for (int i = len; i > 1; --i) {
+      swap(A[i], A[1]); // 注意二叉树的数组表示是从1开始存储的
+      HeapAdjust(A, 1, i - 1);
+    }
+  }
+\end{lstlisting}
+
+\begin{itemize}
+  \item 空间复杂度：$O(1)$
+  \item 时间复杂度：
+  \begin{itemize}
+    \item 建堆：$O(n)$
+    \item 排序：$O(n\log_2 n)$
+  \end{itemize}
+  \item 稳定性：不稳定
+\end{itemize}
+
+对于数据量很大，但是只需要一小部分的最值数据的情况，如从100万个数据中选出最大的100个数据，堆排序很有用处。
+
+\subsubsection{树形选择排序（锦标赛排序）}
+
+\textcolor{juice-orange}{王道书上没有，疑似大纲没有}
+
+用一个完全二叉树记录，将待排序列放在叶子节点，没放满的叶子节点存放无穷大。从底层向顶层比较，每次都能选出较低层两个子结点中较小的那个（胜者），然后放入父结点。同时，将胜者原先的位置标记为无穷大。如此向上，则最后根部的结点是最小的。取出它。反复执行，直到所有叶子结点都变成无穷大。
+
+\begin{itemize}
+  \item 空间复杂度：$O(n)$
+  \item 时间复杂度：$O(n\log_2 n)$
+  \item 稳定性：稳定
+  \item 每趟能够确定一个元素的最终位置
+\end{itemize}
 
 \subsection{归并排序和基数排序}
 
 \subsubsection{归并排序}
 
-\subsubsection{基数排序}
+\textbf{归并}：将两个或两个以上的有序表合并成一个有序表。下面介绍的是将两个表合并成一个表的\textbf{2路归并排序}。
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth]{./images/2-way-merge-sort.png}
+  \caption{2路归并排序示例}
+\end{figure}
+
+将两个有序表合并成一个有序表是很容易的（线性表一章有类似的算法）。于是需要开辟一个和\verb|A[n]|一样长的\verb|B[n]|数组，用来暂存合并的结果，合并完后再复制回\verb|A[n]|中。
+
+\begin{lstlisting}
+  // 合并算法，假设已经创建并分配了B[n]数组
+  void Merge(ElemType A[], int low, int mid, int high) {
+    for (int k = low; k <= high; ++k) {
+      B[k] = A[k];  // 复制
+    }
+    for (int i=low, j=mid+1, k=i; i<=mid && j<=high; ++k) {
+      if (B[i] <= B[j]) {
+        A[k] = B[i++];
+      } else {
+        A[k] = B[j++];
+      }
+    }
+    while (i <= mid) {
+      A[k++] = B[k++];
+    }
+    while (j <= high) {
+      A[k++] = B[j++];
+    }
+  }
+\end{lstlisting}
+
+排序过程：
+\begin{lstlisting}
+  void MergeSort(ElemType A[], int low, int high) {
+    if (low < high) {
+      int mid = (low + high) / 2;
+      MergeSort(A, low, mid);
+      MergeSort(A, mid + 1, high);
+      Merge(A, low, mid, high);
+    }
+  }
+\end{lstlisting}
+
+\begin{itemize}
+  \item 空间复杂度：$O(n)$
+  \item 时间复杂度：$O(n\log_2 n)$
+  \item 稳定性：稳定
+\end{itemize}
+
+归并排序的并行性很好。
+
+\subsubsection{基数排序、计数排序、桶排序}
+
+这是一类非比较型的整数排序算法。基本思想是用空间效率换时间效率。
+
+\begin{enumerate}
+  \item {\bf 计数排序}
+  
+  这类算法中最简单的。
+
+  待补
+
+  \item {\bf 桶排序}
+  
+  是改进的计数排序，桶排序中多个元素可以共享一个桶。
+
+  待补
+
+  \item {\bf 基数排序}
+  
+  基本思想：将整数按位数切割成不同的数字，然后按每个位数分别比较。
+
+  根据比较的位次从高到低和从低到高不同，可以分为\textbf{最高位优先（MSD）}法和\textbf{最低位优先（LSD）法}。
+
+  以LSD法为例，先按照最低位排序，每次从序列中取出一个数字，按照它的最低位放入对应的队列中。序列中的所有元素这样排过一次之后，将所有队列按照顺序出队，形成一个新的序列，这样新队列在最低位就是有序的。
+
+  如此反复，直到所有位都排序过一次。最后取出形成的序列就是整体有序的。
+
+  \begin{itemize}
+    \item 稳定性：稳定
+  \end{itemize}
+\end{enumerate}
 
 \subsection{各种内部排序算法的比较及应用}
 
 \subsubsection{内部排序算法的比较}
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth]{./images/sort-compare.jpg}
+  \caption{各种排序算法的比较}
+\end{figure}
+
+一种常考的题型是给出原始序列和排序过程中的一个序列，问排序方法是什么。这要求对排序方法的特点比较熟悉，如冒泡排序和堆排序每趟都能产生当前的最大值或最小值，而快速排序每趟至少能确定一个一个元素的最终位置。
+
 \subsubsection{内部排序算法的应用}
+
+\begin{enumerate}
+  \item {\bf 选取排序算法时要考虑的因素}
+  
+  \begin{itemize}
+    \item 待排序的元素数目
+    \item 元素本身信息量的大小
+    \item 关键字的结构和分布情况
+    \item 稳定性的要求
+    \item 编程语言的条件、存储结构和辅助空间的大小等
+  \end{itemize}
+
+  \item {\bf 排序算法小结}
+  
+  \begin{itemize}
+    \item 若$n$较小，可以选用直接插入排序或简单选择排序。若记录本身信息量较大，占用空间大，则选用交换次数更少的简单选择排序。
+    \item 若序列已经基本有序，则可用直接插入排序或冒泡排序。
+    \item 若$n$较大，则用$O(n\log_2 n)$算法。
+    \begin{itemize}
+      \item 当关键字随机分布时，快速排序最快；
+      \item 堆排序占用的空间比快速排序少，而且不会出现快速排序的最坏情况；
+      \item 上面两个都不稳定，如果要求稳定，则用归并排序。
+    \end{itemize}
+    \item 若$n$较大而关键字位数少且可以分解时，采用基数排序较好。
+  \end{itemize}
+
+  可以证明：当关键字随机分布并且只给出偏序关系时，任何依赖于比较的算法，时间复杂度不会低于$O(n\log_2 n)$。
+
+  \textcolor{juice-water-blue}{IntroSort在前期使用mid-of-three快速排序，后期当算法出现恶化倾向时，改用堆排序，从而维持$O(n\log_2 n)$复杂度。}
+\end{enumerate}
 
 \subsection{外部排序}
 
-\subsubsection{外部排序的基本概念}
+外部排序比较复杂，不会考算法设计，但是可能会考概念、方法和排序过程。
 
 \subsubsection{外部排序的方法}
 
-\subsubsection{多路平衡归与败者树}
+磁盘比内存慢得多，因此外部排序速度的决定性因素是I/O的次数。
+
+外部排序通常都是用归并排序。先把待排序列分成若干个段，然后读入内存，使用某种方法进行排序，然后将这些顺序的段写回外存。最后用一次归并排序将它们合并起来。
+
+\begin{equation*}
+  \text{外部排序的总时间}=\text{内部排序的总时间}+\text{外存读写时间}+\text{内部归并的时间}
+\end{equation*}
+
+增大归并路数，或者减少初始归并段数，都可以减少I/O。
+
+\subsubsection{多路平衡归并与败者树}
+
+归并时需要在$k$路中选择关键字最小的那个。所以增加归并路数的同时会增加内部归并的时间。为了避免这样，引入\textbf{败者树}。
+
+败者树和锦标赛排序有点类似。用一棵完全二叉树，用$k$个叶子结点记录$k$个归并段的记录，内部结点记录“失败者”，而让胜者继续进行比较，直到根结点。
+
+后面没看懂
 
 \subsubsection{置换-选择排序（生成初始归并段）}
 
+待补
+
 \subsubsection{最佳归并树}
+
+待补
 
 \end{document}

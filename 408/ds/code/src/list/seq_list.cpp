@@ -3,15 +3,6 @@
 #include <algorithm>
 #include <iostream>
 
-const static unsigned INITSIZE = 100;
-
-// 动态分配的顺序表
-struct SeqList {
-    ElemType *data;
-    unsigned length;
-    unsigned capacity;
-};
-
 // 初始化顺序表
 void InitList_seq(SeqList &L) {
     L.length = 0;

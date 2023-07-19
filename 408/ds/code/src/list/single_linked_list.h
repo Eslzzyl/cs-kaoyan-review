@@ -3,7 +3,15 @@
 
 typedef int ElemType;
 
-struct SingleLinkedList;
+struct Node {
+    ElemType data;
+    Node *next;
+};
+
+struct SingleLinkedList {
+    unsigned length;
+    Node *node;
+};
 
 void InitList_single_link(SingleLinkedList &L);
 

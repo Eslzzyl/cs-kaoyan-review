@@ -3,7 +3,12 @@
 
 typedef int ElemType;
 
-struct SeqStack;
+const static unsigned MaxSize = 50;
+
+struct SeqStack {
+    ElemType data[MaxSize];     // 采用固定长度
+    unsigned top;
+};
 
 void InitStack_seq(SeqStack &S);
 

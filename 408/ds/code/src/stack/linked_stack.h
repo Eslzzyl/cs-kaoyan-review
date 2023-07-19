@@ -3,7 +3,15 @@
 
 typedef int ElemType;
 
-struct LinkedStack;
+struct Node {
+    ElemType data;
+    Node *next;
+};
+
+struct LinkedStack {
+    unsigned length;
+    Node *top;
+};
 
 void InitStack_linked(LinkedStack &S);
 

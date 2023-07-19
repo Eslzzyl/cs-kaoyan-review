@@ -2,13 +2,6 @@
 
 #include <iostream>
 
-const static unsigned MaxSize = 50;
-
-struct SeqStack {
-    ElemType data[MaxSize];     // 采用固定长度
-    unsigned top;
-};
-
 // 初始化栈
 void InitStack_seq(SeqStack &S)
 {
