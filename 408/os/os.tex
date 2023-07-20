@@ -622,6 +622,23 @@ PCB包括如下4部分内容：
   \item 需要完全屏蔽中断的原子操作。
 \end{itemize}
 
+\begin{problem}
+  【2012统考】【24王道书本节T24，做题本P164】若某单处理器多进程系统中有多个就绪态进程，则下列关于处理机调度的叙述中，错误的是（\ \ ）
+
+  \begin{enumerate}
+    \item [A. ] 在进程结束时能进行处理机调度
+    \item [B. ] 创建新进程后能进行处理机调度
+    \item [C. ] 在进程处于临界区时不能进行处理机调度
+    \item [D. ] 在系统调用完成并返回用户态时能进行处理机调度
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+  C. 王道书的解释是，对于C，只要不破坏临界资源的使用规则，就不影响。假设某进程正在独占打印机，就不能一直等其独占结束。
+
+  王道书称A、B、D是显然的。
+\end{solution}
+
 进程调度方式
 \begin{itemize}
   \item 非抢占式调度方式：适用于大多数批处理系统，不适用于分时系统和实时系统。
@@ -630,25 +647,46 @@ PCB包括如下4部分内容：
 
 \subsubsection{典型的调度算法}
 
-作业调度算法：
-\begin{itemize}
-  \item {\bf 先来先服务(FCFS)调度算法}：最简单的调度算法。即可用于作业调度，也可用于进程调度。
+\begin{enumerate}
+  \item {\bf 先来先服务(FCFS)调度算法}：最简单的调度算法。既可用于作业调度，也可用于进程调度。
 
   特点：
   \begin{itemize}
       \item 实现简单
-      \item 对短作业不公平
+      \item 对长作业有利，对短作业不利
+      \item 对CPU繁忙型作业有利，对I/O繁忙型作业不利
   \end{itemize}
-  \item {\bf 短作业/短进程优先(SJF/SPF)调度算法}：以作业要求的服务时间长短计算优先级。作业越短，优先级越高。
+
+  \item {\bf 短作业/短进程优先(SJF/SPF)调度算法}：以作业要求的服务时间长短计算优先级。作业越短，优先级越高。两个作业时间一样长时，按FCFS调度。
+  
+  可以抢占，也可以非抢占。
 
   特点：
   \begin{itemize}
       \item 实现困难，因为难以估计作业的执行时间。
-      \item 有利于短作业。
-      \item 对长作业不公平。
+      \item 有利于短作业，对长作业不利，容易使长作业饥饿。
       \item 完全没有考虑作业的紧迫程度。
+      \item \textbf{这种算法的平均等待时间、平均周转时间最少}。进程的执行时间是固定的，所以周转时间取决于等待时间。该算法能使等待时间最短。
   \end{itemize}
+
   \item {\bf 优先级调度算法（PSA）}：由外部赋予作业相应的优先级，根据该优先级调度。高优先级作业优先运行。
+  
+  在这种算法中，I/O繁忙型的作业要优于计算繁忙型的作业。
+
+  可以抢占，也可以非抢占。
+
+  \begin{itemize}
+    \item {\bf 静态优先级}：创建进程时确定，此后一直不变。
+    \item {\bf 动态优先级}：运行时根据情况调整优先级。有如下大致原则：
+    \begin{itemize}
+      \item 系统进程>用户进程
+      \item 交互型进程>非交互型进程
+      \item I/O密集型进程>计算密集型进程。
+      \item 进程等待时间长时，应适当提高优先级。
+      \item 进程运行时间长时，应适当降低优先级。
+    \end{itemize}
+  \end{itemize}
+  
   \item {\bf 高响应比优先调度算法（HRRN）}：基本思想是动态优先级，作业等待时间越长，优先级越高。
   
   \begin{equation*}
@@ -659,7 +697,37 @@ PCB包括如下4部分内容：
       \item 既照顾了短作业，又考虑了作业到达的先后次序，不会使长作业长期得不到服务。
       \item 每次调度之前要计算响应比，系统开销加大。
   \end{itemize}
-\end{itemize}
+
+  \item {\bf 时间片轮转调度算法(RR)}：让就绪队列上的每个进程每次运行一个时间片长度。\textbf{一定是抢占式的}。
+
+  时间片一般取略大于一次典型的交互所需要的时间，以保证及时响应。
+  \begin{itemize}
+      \item 时间片太长，则退化为FCFS算法
+      \item 时间片太短，调度频繁，浪费资源
+  \end{itemize}
+
+  RR的主要目的是：使多个交互的用户能够及时获得响应。
+
+  \item {\bf 优先级调度算法}：和作业调度的PSA一致。可以抢占，也可以非抢占。
+
+  \item {\bf 多级反馈队列(MFQ)调度算法}。有如下规则：
+  \begin{itemize}
+    \item 设置多个就绪队列，为每个队列赋予不同的优先级，第一个队列最高，第二个次之，以此类推。
+    \item 优先级越高的队列，执行时间片越小。
+    \item 每个队列都采用FCFS算法。一个新进程到来时，将其放到第一个队列的末尾。轮到它执行时，如果不能在一个时间片内完成，则放入第二队列末尾，以此类推。直到放入第n个队列，按照RR算法运行。
+    \item 仅当第1队列空闲时，调度程序才调度第2队列中的进程运行；仅当第$1\text{～}(i-1)$队列均空时，才会调度第i队列中的进程运行。
+    \item 若第i队列的进程正在执行，此时有新进程进入优先级更高的队列，则立即暂停当前进程并将其放入第i队列的末尾，转而执行新进程。
+  \end{itemize}
+\end{enumerate}
+
+常见进程调度算法的对比：见表\ref{process_handling_algorithms}
+
+\begin{table}
+  \centering
+  \caption{常见进程调度算法的对比}
+  \label{process_handling_algorithms}
+  \includegraphics[width=0.9\textwidth]{./images/process_handling_algorithms.png}
+\end{table}
 
 \begin{problem}
   5个进程A,B,C,D,E分别于0,1,2,3,4时刻到达系统，要求服务时间分别为4,3,5,2,4, 请计算：
@@ -685,34 +753,20 @@ PCB包括如下4部分内容：
   \end{enumerate}
 \end{solution}
 
-进程调度算法：
-\begin{itemize}
-  \item {\bf 时间片轮转调度算法(RR)}：让就绪队列上的每个进程每次运行一个时间片长度。
+\begin{problem}
+  【24王道书本节习题3，做题本P141】（\ \ ）有利于CPU繁忙型的作业，而不利于I/O繁忙型的作业。
 
-  时间片一般取略大于一次典型的交互所需要的时间，以保证及时响应。
-  \begin{itemize}
-      \item 时间片太长，则退化为FCFS算法
-      \item 时间片太短，调度频繁，浪费资源
-  \end{itemize}
-  \item {\bf 优先级调度算法}：和作业调度的PSA一致。可以抢占，也可以非抢占。
-  \item {\bf 多级反馈队列(MFQ)调度算法}。有如下规则：
-  \begin{itemize}
-    \item 设置多个就绪队列，为每个队列赋予不同的优先级，第一个队列最高，第二个次之，以此类推。
-    \item 优先级越高的队列，执行时间片越小。
-    \item 每个队列都采用FCFS算法。一个新进程到来时，将其放到第一个队列的末尾。轮到它执行时，如果不能在一个时间片内完成，则放入第二队列末尾，以此类推。直到放入第n个队列，按照RR算法运行。
-    \item 仅当第1队列空闲时，调度程序才调度第2队列中的进程运行；仅当第$1\text{～}(i-1)$队列均空时，才会调度第i队列中的进程运行。
-    \item 若第i队列的进程正在执行，此时有新进程进入优先级更高的队列，则立即暂停当前进程并将其放入第i队列的末尾，转而执行新进程。
-  \end{itemize}
-\end{itemize}
+  \begin{enumerate}
+    \item [A. ] 时间片轮转调度算法
+    \item [B. ] 先来先服务算法
+    \item [C. ] 短作业（进程）优先算法
+    \item [D. ] 优先权调度算法
+  \end{enumerate}
+\end{problem}
 
-常见进程调度算法的对比：见表\ref{process_handling_algorithms}
-
-\begin{table}
-  \centering
-  \caption{常见进程调度算法的对比}
-  \label{process_handling_algorithms}
-  \includegraphics[width=0.9\textwidth]{./images/process_handling_algorithms.png}
-\end{table}
+\begin{solution}
+  B. CPU繁忙型作业指的是需要长时间占用CPU的作业，它和长作业有些类似。I/O密集型作业需要频繁I/O，即会频繁放弃CPU资源，和短作业类似。FCFS有利于长作业，SJF有利于短作业，RR和优先级算法和作业长短没有关系。
+\end{solution}
 
 \subsubsection{进程切换}
 
@@ -979,7 +1033,7 @@ PCB包括如下4部分内容：
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\textwidth]{./images/resource_allocation_graph.png}
+  \includegraphics[width=0.3\textwidth]{./images/resource_allocation_graph.png}
   \caption{资源分配图示例}
   \label{resource_allocation_graph}
 \end{figure}
@@ -989,7 +1043,8 @@ PCB包括如下4部分内容：
   \item 首先找出图中可以得到申请的资源的进程。如图\ref{resource_allocation_graph}的P$_1$申请了一个R$_2$资源，该资源空闲，P$_1$可以得到该资源。如果这种进程没有因得不到资源而阻塞，那么它迟早要运行结束，释放出已经得到的资源。于是将和这种进程相连的所有边删去。
   \item 由于资源的释放，与之相关的进程也可能解除了阻塞状态，考察这些进程，如果它们能够运行结束，就同样删去所有边。
   \item 如此循环，直到不能再删为止。如果此时没有边剩下，就说这个图是可以完全简化的。
-  \item 死锁等价于资源分配图不可完全简化。这叫做死锁定理。
+  
+  死锁等价于资源分配图不可完全简化。这叫做\textbf{死锁定理}。
 \end{enumerate}
 
 一些解除死锁的方法：
@@ -1001,7 +1056,7 @@ PCB包括如下4部分内容：
 
 \subsection{本章疑难点}
 
-饥饿进程：和死锁不一样，指的是由于OS的分配策略不完美而引发某个进程一直等待的情况。例如在短进程优先调度中，短进程源源不断地进来，长进程一直排队而无法运行。如果饥饿进程被耽误的时间太长，导致即使完成也无济于事（有时效）时，称这个进程被“饿死”。
+\textbf{饥饿进程}：和死锁不一样，指的是由于OS的分配策略不完美而引发某个进程一直等待的情况。例如在短进程优先调度中，短进程源源不断地进来，长进程一直排队而无法运行。如果饥饿进程被耽误的时间太长，导致即使完成也无济于事（有时效）时，称这个进程被“饿死”。
 
 \section{内存管理}
 
@@ -1020,7 +1075,7 @@ PCB包括如下4部分内容：
 
 程序的链接：
 \begin{itemize}
-  \item 静态链接：编程时，链接所有模块
+  \item 静态链接：编译时，链接所有模块
   \item 装入时动态链接：装入时，链接所有模块
   \item 运行时动态链接：运行时，根据需要链接模块
 \end{itemize}
@@ -1043,7 +1098,7 @@ PCB包括如下4部分内容：
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.6\textwidth]{./images/process_in_memory.png}
+  \includegraphics[width=0.5\textwidth]{./images/process_in_memory.png}
   \caption{内存中的一个进程}
 \end{figure}
 
