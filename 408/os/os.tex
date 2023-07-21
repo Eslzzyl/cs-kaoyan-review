@@ -806,8 +806,8 @@ PCB包括如下4部分内容：
     \item \label{rqdd}让权等待：当进程不能进入临界区时，应释放处理机
 \end{enumerate}
 
-其中\ref{kxrj}和\ref{mzdd}是必须实现的，否则无法实现互斥；
-\ref{yxdd}和\ref{rqdd}不实现不会影响互斥，但会严重影响系统的性能。
+其中\ref{kxrj}、\ref{mzdd}和\ref{yxdd}是必须实现的，否则无法实现互斥；
+\ref{rqdd}不实现不会影响互斥，但会严重影响系统的性能。
 \end{itemize}
 
 \subsubsection{实现临界区互斥的基本方法}
@@ -831,6 +831,17 @@ PCB包括如下4部分内容：
 \subsubsection{信号量}
 
 用两个标准的原语\verb|wait(S)|和\verb|signal(S)|访问。也叫P/V操作。
+
+P/V操作是一种低级进程通信原语，不是系统调用。
+
+\begin{itemize}
+  \item 用PV操作实现进程互斥，则信号量的初值一般固定为1。
+  \item 用PV操作实现进程同步，信号量的初值一般由用户确定：
+  \begin{itemize}
+    \item 若期望的消息尚未产生，则设为0；
+    \item 若期望的消息已经存在，则设为一个大于0的整数。
+  \end{itemize}
+\end{itemize}
 
 \begin{itemize}
   \item {\bf 整型信号量}
@@ -901,6 +912,14 @@ PCB包括如下4部分内容：
   }
 \end{lstlisting}
 
+每次只允许一个进程进入管程，从而实现互斥。
+
+条件变量：每个管程可有多个条件变量，用于指出进程阻塞的原因。每个条件变量对应一个等待队列。
+\begin{itemize}
+  \item {\bf x.wait}：当x对应的条件不满足时，正在调用管程的进程使用x.wait将自己插入x的等待队列并释放管程。此时其他进程可以使用管程。
+  \item {\bf x.signal}：x对应的条件发生了变化，则调用x.signal，唤醒一个因x而阻塞的进程。
+\end{itemize}
+
 \subsubsection{经典同步问题}
 
 四大基本问题
@@ -917,28 +936,40 @@ PCB包括如下4部分内容：
 
 \subsubsection{死锁的概念}
 
-死锁的\textbf{定义}：如果一组进程中的每一个进程都在等待仅由该组进程中的其他进程才能引发的事件，那么该组进程是死锁的（Deadlock）。
+\begin{enumerate}
+  \item {\bf 死锁的定义}
+  
+  如果一组进程中的每一个进程都在等待仅由该组进程中的其他进程才能引发的事件，那么该组进程是死锁的（Deadlock）。
 
-产生死锁的原因：
-\begin{itemize}
-  \item 竞争非剥夺性资源（不可抢占资源）
-  \item 进程推进顺序不当
-\end{itemize}
+  \item {\bf 产生死锁的原因}
+  
+  \begin{itemize}
+    \item 竞争非剥夺性资源（不可抢占资源）
+    \item 进程推进顺序不当
+  \end{itemize}
 
-产生死锁的必要条件，必须同时具备才可能死锁：
-\begin{itemize}
-  \item 互斥条件：某一段时间内资源只能被一个进程使用，其他进程想用时必须等待。
-  \item 请求和保持条件：进程已经得到一部分资源，还需要另一部分资源，但请求的资源已无空闲，因此进程等待，但不释放已经占有的资源。
-  \item 不可抢占条件：进程占有资源时，资源不能抢占，只能等进程主动释放。
-  \item 循环等待条件：死锁时必然有若干个进程形成了循环等待。
-\end{itemize}
+  \item {\bf 产生死锁的必要条件}
+  
+  必须同时具备才可能死锁：
+  \begin{itemize}
+    \item 互斥条件：某一段时间内资源只能被一个进程使用，其他进程想用时必须等待。
+    \item 请求和保持条件：进程已经得到一部分资源，还需要另一部分资源，但请求的资源已无空闲，因此进程等待，但不释放已经占有的资源。
+    \item 不可抢占条件：进程占有资源时，资源不能抢占，只能等进程主动释放。
+    \item 循环等待条件：死锁时必然有若干个进程形成了循环等待。
+  \end{itemize}
 
-死锁的处理策略：
-\begin{itemize}
-  \item 预防死锁：部分或全部破坏死锁的四个条件。优点是简单，缺点是资源利用率低，效率低。
-  \item 避免死锁：进程申请资源时，检查安全性，只有安全才分配资源。优点是效率高一些，缺点是实现困难。
-  \item 检测和解除死锁：不做任何限制，定时或资源不足时检查系统中有无死锁，有则解除。优点是效率高。缺点是通过剥夺解除死锁，可能会产生问题。
-\end{itemize}
+  \item {\bf 死锁的处理策略}
+  
+  \begin{itemize}
+    \item {\bf 预防死锁}：部分或全部破坏死锁的四个条件。优点是简单，缺点是资源利用率低，效率低。
+    \item {\bf 避免死锁}：进程申请资源时，检查安全性，只有安全才分配资源。优点是效率高一些，缺点是实现困难。
+    \item {\bf 检测和解除死锁}：不做任何限制，定时或资源不足时检查系统中有无死锁，有则解除。优点是效率高。缺点是通过剥夺解除死锁，可能会产生问题。
+  \end{itemize}
+
+  预防死锁通过破坏死锁的必要条件来从根本上消除死锁。死锁没有发生的可能性。
+
+  避免死锁是动态地根据情况避免死锁。死锁仍然可能发生，但通过避免算法避开了死锁。
+\end{enumerate}
 
 \subsubsection{死锁预防}
 
@@ -1029,7 +1060,7 @@ PCB包括如下4部分内容：
 
 \subsubsection{死锁的检测和解除}
 
-资源分配图：如图\ref{resource_allocation_graph}，圆圈表示进程，方框表示资源。方框里面可以有圆圈，表示该资源有多少个。由资源指向进程的箭头表示该资源\textbf{已经}分配给进程（分配边），由进程指向资源的箭头表示该进程正在请求但\textbf{尚未}得到资源（请求边）。
+\textbf{资源分配图}：如图\ref{resource_allocation_graph}，圆圈表示进程，方框表示资源。方框里面可以有圆圈，表示该资源有多少个。由资源指向进程的箭头表示该资源\textbf{已经}分配给进程（分配边），由进程指向资源的箭头表示该进程正在请求但\textbf{尚未}得到资源（请求边）。
 
 \begin{figure}
   \centering
@@ -1049,7 +1080,10 @@ PCB包括如下4部分内容：
 
 一些解除死锁的方法：
 \begin{itemize}
-  \item {\bf 资源剥夺法}，挂起占有资源的进程，将其资源剥夺，分配给其他进程。注意不能挂起太久。
+  \item {\bf 资源剥夺法}，挂起占有资源的\textbf{死锁}进程，将其资源剥夺，分配给其他进程。注意不能挂起太久。
+  \begin{itemize}
+    \item 不能剥夺非死锁的进程所所占有的资源。
+  \end{itemize}
   \item {\bf 撤销进程法}，直接杀掉占有资源的进程，将资源分给其他进程。杀的顺序可以是进程优先级或代价的高低。
   \item {\bf 进程回退法}，OS保存进程的历史信息，要求一些进程主动回退，释放出一些资源。
 \end{itemize}
@@ -1064,47 +1098,67 @@ PCB包括如下4部分内容：
 
 \subsubsection{内存管理的基本原理和要求}
 
-内存管理的主要任务：
+内存管理的主要功能：
 \begin{itemize}
   \item 内存空间的分配和回收
   \item 地址转换
   \item 内存空间扩充
-  \item 内存共享
-  \item 存储保护
+  \item 内存共享：指多个进程访问内存的同一部分。
+  \item 存储保护：保证各道作业在各自的存储空间内运行，互不干扰。
 \end{itemize}
 
-程序的链接：
-\begin{itemize}
-  \item 静态链接：编译时，链接所有模块
-  \item 装入时动态链接：装入时，链接所有模块
-  \item 运行时动态链接：运行时，根据需要链接模块
-\end{itemize}
+\begin{enumerate}
+  \item {\bf 程序的链接和装入}
+  
+  程序的链接：
+  \begin{itemize}
+    \item 静态链接：编译时，链接所有模块
+    \item 装入时动态链接：装入时，链接所有模块
+    \item 运行时动态链接：运行时，根据需要链接模块。可加快程序的装入过程，同时节省大量的内存空间。
+  \end{itemize}
+  
+  程序的装入：
+  \begin{itemize}
+    \item \textbf{绝对装入方式}：编译时直接确定装入的内存位置，装入后无需再修改程序和数据的地址。只能用于单道程序环境。
+    \item \textbf{可重定位装入方式}：用于多道程序环境。装入时对逻辑地址修改得到物理地址，又称\textbf{静态（地址）重定位}。程序在内存中不能移动。
+    \item \textbf{动态运行时的装入方式}：相对于上面的装入时进行重定位，本方式在程序执行时才进行重定位。又称\textbf{动态（地址）重定位}。需要重定位寄存器的支持。
+  \end{itemize}
 
-程序的装入：
-\begin{itemize}
-  \item \textbf{绝对装入方式}：编译时直接确定装入的内存位置，装入后无需再修改程序和数据的地址。用于单道程序环境。
-  \item \textbf{可重定位装入方式}：用于多道程序环境。装入时对逻辑地址修改得到物理地址，又称\textbf{静态（地址）重定位}。程序在内存中不能移动。
-  \item \textbf{动态运行时的装入方式}：相对于上面的装入时进行重定位，本方式在程序执行时才进行重定位。又称\textbf{动态（地址）重定位}。需要重定位寄存器的支持。
-\end{itemize}
+  \item {\bf 进程的内存映像}
+  
+  包括：
+  \begin{itemize}
+    \item 代码段：只读
+    \item 数据段：包括全局变量和静态变量
+    \item PCB
+    \item 堆：从低地址向高地址生长。
+    \item 栈：从高地址向低地址生长。
+  \end{itemize}
+  
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./images/process_in_memory.png}
+    \caption{内存中的一个进程}
+  \end{figure}
 
-进程的内存映像包括：
-\begin{itemize}
-  \item 代码段：只读
-  \item 数据段：包括全局变量和静态变量
-  \item PCB
-  \item 堆
-  \item 栈
-\end{itemize}
+  \item {\bf 内存保护}
+  
+  有两种方法：
+  \begin{itemize}
+    \item 在CPU中设置一对上下限寄存器，存放进程地址空间的上下界。
+    \item 采用重定位寄存器（又称基地址寄存器）和界地址寄存器（又称限长寄存器）来实现。只有OS内核才能加载、修改这两个寄存器。
+  \end{itemize}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.5\textwidth]{./images/process_in_memory.png}
-  \caption{内存中的一个进程}
-\end{figure}
+  \item {\bf 内存共享}
+  
+  仅\textbf{只读}的区域才适合共享。
+
+  \textbf{可重入代码}：又叫纯代码，指允许多个进程同时访问但不允许任何修改的代码。
+\end{enumerate}
 
 \subsubsection{覆盖与交换}
 
-本节已从新大纲中删除。了解即可。参见王道OS2024版P177（书的P164）。
+本节已从新大纲中删除。了解即可。参见24版王道书P177（书的P164）。
 
 \subsubsection{连续分配管理方式}
 
@@ -1116,11 +1170,10 @@ PCB包括如下4部分内容：
   \item 外零头：未分配给进程，但因为太小而无进程能用；
 \end{itemize}
 
-\begin{itemize}
+\begin{enumerate}
   \item {\bf 单一连续分配}
   \begin{itemize}
-    \item 主要用于单用户OS。在一段时间内，只有一个进程在内存。
-    \item 基本思想：内存分为两个区域：一个供操作系统使用，一个供用户使用。
+    \item 基本思想：内存分为两个区域：一个供操作系统使用，一个供用户使用。在一段时间内，只有一个进程在内存。
     \item 三种典型的布局方式：
     \begin{itemize}
       \item 用户空间在低地址，系统空间在高地址。
@@ -1128,11 +1181,16 @@ PCB包括如下4部分内容：
       \item 系统空间在两边，把用户空间夹起来。
     \end{itemize}
     \item 实现：设置基址寄存器、限界寄存器，要求逻辑地址映射为物理地址后，物理地址必须在两者之间。
-    \item 特点：简单，适用于单任务OS
+    \item 特点：简单，适用于单用户单任务OS。有内部碎片，存储器利用率极低。
   \end{itemize}
   \item {\bf 固定分区分配}
   \begin{itemize}
-    \item 用于多道程序系统。把内存划分为固定的几个部分，维护一个分区使用表。示例见表\ref{area_table_example}。
+    \item 用于多道程序系统。把内存划分为固定的几个部分，维护一个分区使用表，按照分区大小进行排序。示例见表\ref{area_table_example}。
+    \item 划分方法：
+    \begin{itemize}
+      \item 分区大小相等
+      \item 分区大小不等，划分为多个较小的分区、适量的中等分区和较少的大分区。
+    \end{itemize}
     \item 特点：
     \begin{itemize}
       \item 最早的支持多道程序的内存管理方式。
@@ -1165,12 +1223,14 @@ PCB包括如下4部分内容：
       \end{itemize}
       \item 循环首次适应算法
       \begin{itemize}
+        \item 下一次查找时，从上一次匹配的位置继续按照首次适应的方式查找。
         \item 需要设置一个查找指针
         \item 本质是CLOCK算法
         \item 碎片分布均匀
       \end{itemize}
       \item 最佳适应算法
       \begin{itemize}
+        \item 找到一个够用且最小的分区。
         \item 需要将空闲区按照从小到大的顺序形成一个链，第一次找到的能放下的分区一定是最佳的。
         \item 碎片会迅速出现，实际上是很差劲的算法。
       \end{itemize}
@@ -1180,6 +1240,9 @@ PCB包括如下4部分内容：
         \item 碎片出现最慢，但优先使用大内存块，导致很快就没有可用的大内存块了，同样是很差劲的算法。
       \end{itemize}
     \end{itemize}
+
+    这里面最好的其实还是最简单的首次适应算法。
+
     \item 基于索引搜索的分配算法：用于大中型系统
     \begin{itemize}
       \item 快速适应算法
@@ -1191,7 +1254,7 @@ PCB包括如下4部分内容：
   \begin{itemize}
     \item 在动态分区分配的基础上引入”紧凑“机制，消除外零头。使用动态地址重定位。
   \end{itemize}
-\end{itemize}
+\end{enumerate}
 
 \begin{table}[!ht]
   \centering
@@ -1216,12 +1279,56 @@ PCB包括如下4部分内容：
   \item 段页式存储管理方式
 \end{itemize}
 
-页面不宜太大，也不宜太小，太大内存利用率低，太小又浪费内存。
+页面不宜太大，也不宜太小，太大内存利用率低，太小则会产生大量页面，导致页表很长，浪费内存。
 一般为2的整数次方，1KB-8KB。
 
-快表：待补
+\begin{enumerate}
+  \item {\bf 页表}
+  
+  每个进程都有一张。
 
-多级页表：待补
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./images/page-table.png}
+    \caption{页表的作用}
+  \end{figure}
+
+  \item {\bf 基本地址变换机构}
+  
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./images/addr-translate.png}
+    \caption{基本地址变换机构}
+  \end{figure}
+
+  系统中设置一个页表寄存器PTR，用于存储页表的起始地址F和页表长度M。这两个数据平时存在进程的PCB中，当进程运行时，调入PTR。
+
+  地址变换是由硬件自动完成的。
+
+  \item {\bf 带有TLB的地址变换机构}
+  
+  如果页表全部保存在内存中，那么取一次数据需要至少两次访存：访问页表一次，访问数据一次。
+
+  在地址变换机构中引入一个有并行查找能力的Cache——快表TLB，其中保存一些页表项。相应地称内存中的页表为慢表。
+  
+  取数据时，先到TLB中查找，若命中则直接访存取数据，若不命中则查慢表，然后取数据并把这个页表项放进TLB。TLB满时，使用适当的算法进行淘汰。
+
+  有些处理器设计成TLB和慢表同时检索，若TLB命中则停止查慢表。
+
+  TLB的命中率一般可达90\%以上。
+
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{./images/addr-translate-with-tlb.png}
+    \caption{带有TLB的地址变换机构}
+  \end{figure}
+
+  \item {\bf 两级页表}
+  
+  单级页表在内存容量较大时，会占用很多空间。故引入多级页表。
+
+  顶级页表\textbf{只能有一个页面}。
+\end{enumerate}
 
 \subsubsection{基本分段存储管理}
 
@@ -1239,6 +1346,8 @@ PCB包括如下4部分内容：
 
 地址变换时，先通过段表查找页表始址，然后通过页表查找到页帧号，最后形成物理地址，需要三次访存。
 
+段页式管理的地址空间是\textbf{二维的}。
+
 \subsection{虚拟内存管理}
 
 \subsubsection{虚拟内存的基本概念}
@@ -1251,17 +1360,17 @@ PCB包括如下4部分内容：
 
 程序运行的局部性原理：
 \begin{itemize}
-  \item 时间局部性：刚执行过的指令在不久后很可能再次被执行，或程序刚访问过的数据很可能再次被访问。典型原因是程序中的循环。
-  \item 空间局部性：程序刚访问过某存储单元，则附近的存储单元也很可能被访问。典型原因是程序的顺序执行。
+  \item {\bf 时间局部性}：刚执行过的指令在不久后很可能再次被执行，或程序刚访问过的数据很可能再次被访问。典型原因是程序中的循环。
+  \item {\bf 空间局部性}：程序刚访问过某存储单元，则附近的存储单元也很可能被访问。典型原因是程序的顺序执行。
 \end{itemize}
 
 \textbf{定义}：虚拟存储器是指具有请求调入功能和置换功能，能从逻辑上对内存容量加以扩充的一种存储器系统。其逻辑容量由内存容量和外存容量之和决定，运行速度接近内存速度，而每位的成本由接近外存。
 
 特征：
 \begin{itemize}
-  \item 多次性。程序无须一次性全部装入内存，而是可以分多次装入。
-  \item 对换性。程序和数据无须常驻内存，在必要时可以换入换出。
-  \item 虚拟性。能从逻辑上扩展内存容量，使用户看到的容量远大于实际容量。
+  \item {\bf 多次性}。程序无须一次性全部装入内存，而是可以分多次装入。
+  \item {\bf 对换性}。程序和数据无须常驻内存，在必要时可以换入换出。
+  \item {\bf 虚拟性}。能从逻辑上扩展内存容量，使用户看到的容量远大于实际容量。
 \end{itemize}
 
 实现方法：
@@ -1271,12 +1380,12 @@ PCB包括如下4部分内容：
   \item 请求段页系统
 \end{itemize}
 
-需要的硬件支持：
+三种方法都需要一定的\textbf{硬件支持}：
 \begin{itemize}
   \item 一定容量的内存和外存。
   \item 页表/段表机制，作为主要的数据结构。
-  \item 中断机构。
-  \item 地址变换机构。
+  \item 中断机构。在缺页/段时产生中断。
+  \item 地址变换机构，完成逻辑地址到物理地址的转换。
 \end{itemize}
 
 \subsubsection{请求分页管理方式}
@@ -1285,7 +1394,11 @@ PCB包括如下4部分内容：
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.9\textwidth]{./images/page_request_system.png}
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    页号 & 物理块号 & 状态位P & 访问字段A & 修改位M & 外存地址 \\
+    \hline
+  \end{tabular}
   \caption{请求分页系统中的页表项}
   \label{page_request_system}
 \end{figure}
@@ -1308,37 +1421,61 @@ PCB包括如下4部分内容：
 
 \subsubsection{页框分配}
 
-给一个进程分配的物理页框的集合，叫做这个进程的\textbf{驻留集}。
+\begin{enumerate}
+  \item {\bf 驻留集}
+  
+  给一个进程分配的物理页框的集合，叫做这个进程的驻留集。
 
-内存分配策略：所谓固定分配，是指每个进程分配一定数目的物理块，其大小在进程运行过程中不再改变。所谓全局置换，是指如果进程缺页，则从全局的空闲块中分配，不仅限于该进程自身分配的块。
-\begin{itemize}
-  \item {\bf 固定分配局部置换}
-  \item {\bf 可变分配全局置换}
-  \item {\bf 可变分配局部置换}
-  不是很明白，待补
-\end{itemize}
+  \item {\bf 内存分配策略}
+  
+  \begin{itemize}
+    \item 根据给进程分配的空间是否固定，可分为
+    \begin{itemize}
+      \item 固定分配：给进程分配的物理块数目固定
+      \item 可变分配：给进程分配的物理块数目不固定
+    \end{itemize}
+    \item 根据缺页时的置换策略，可分为
+    \begin{itemize}
+      \item 全局置换：系统从全局的空闲物理块中取出一块给进程，然后调页。
+      \item 局部置换：系统从该进程所属的空闲物理块中取出一块给进程，然后调页。
+    \end{itemize}
+  \end{itemize}
+  
+  将上面的两个维度组合，产生三种策略：
+  
+  \begin{itemize}
+    \item {\bf 固定分配局部置换}
+    \item {\bf 可变分配全局置换}
+    \item {\bf 可变分配局部置换}
+  \end{itemize}
 
-物理块调入算法：仅限于固定分配策略。
-\begin{itemize}
-  \item 平均分配算法
-  \item 按比例分配算法
-  \item 优先级分配算法
-  细节待补
-\end{itemize}
+  \item {\bf 物理块调入算法}
+  
+  仅限于固定分配策略。
+  \begin{itemize}
+    \item 平均分配算法
+    \item 按比例分配算法：按照进程的大小比例分配
+    \item 优先级分配算法：按照进程的优先级分配，优先级高的分的多。
+  \end{itemize}
 
-调入页面的时机：
-\begin{itemize}
-  \item 预调页策略
-  \item 请求调页策略
-  细节待补
-\end{itemize}
+  通常是将所有空闲物理块分成两部分：一部分按比例分，一部分按优先级分。
+  
+  \item {\bf 调入页面的时机}
+  
+  \begin{itemize}
+    \item 预调页策略
+    \item 请求调页策略
+  \end{itemize}
 
-从何处调入页面：
-\begin{itemize}
-  \item 细节待补
-\end{itemize}
-
-如何调入页面
+  \item {\bf 从何处调入页面}
+  
+  请求分页系统的外存可分为两部分，一部分是连续分配的\textbf{对换区}，一部分是离散分配的\textbf{文件区}。对换区一般比文件区快。发生缺页时：
+  \begin{itemize}
+    \item 若系统拥有足够的对换区空间，则全部从对换区调页。为此在运行前要把进程用到的文件都拷贝到对换区。
+    \item 若系统缺乏足够的对换区空间，读比写快，因此只读的文件直接从文件区调入，用完需要淘汰页时直接扔了，不再换出；对于需要修改的页，从对换区调入。
+    \item UNIX方式。
+  \end{itemize}
+\end{enumerate}
 
 \subsubsection{页面置换算法}
 
