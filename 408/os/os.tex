@@ -1690,6 +1690,19 @@ P/V操作是一种低级进程通信原语，不是系统调用。
   现代OS中多使用多级目录结构，需要对目录也做访问控制。
 \end{enumerate}
 
+\begin{table}[h]
+  \centering
+  \caption{加密保护和访问控制机制的比较}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    & \textbf{加密保护} & \textbf{访问控制} \\ \hline
+    \textbf{灵活性} & 相对低 & 相对高 \\ \hline
+    \textbf{安全性} & 相对高 & 相对低 \\ \hline
+    \textbf{实现} & 建议由用户程序实现 & 必须由OS实现 \\
+    \hline
+  \end{tabular}
+\end{table}
+
 \subsubsection{文件的逻辑结构}
 
 \begin{itemize}
@@ -1787,7 +1800,7 @@ P/V操作是一种低级进程通信原语，不是系统调用。
     
     指把链接指针拿出来放在一张表里。这个表在整个磁盘只设置一张，称为\textbf{文件分配表 FAT}。文件目录中存放文件的起始盘块号。
 
-    \begin{table}
+    \begin{figure}
       \centering
       \begin{tabular}{|c|c|}
         \hline
@@ -1805,7 +1818,7 @@ P/V操作是一种低级进程通信原语，不是系统调用。
         $\cdots$ & $\cdots$ \\ \hline
       \end{tabular}
       \caption{FAT}
-    \end{table}
+    \end{figure}
 
     可以用-1表示文件的最后一块，用-2表示空闲块。
 
@@ -1857,35 +1870,43 @@ FCB的有序集合叫做文件目录。一个FCB就是一个文件目录项。
 
   \item {\bf 两级目录结构}
   
-  将目录按照用户分类，分为主文件目录 MFD（整个系统设置一个）和用户文件目录 UFD（每个用户一个）两级。MFD记录用户名和用户的UFD所在的位置，UFD记录具体的FCB。
+  将目录按照用户分类，分为\textbf{主文件目录 MFD}（整个系统设置一个）和\textbf{用户文件目录 UFD}（每个用户一个）两级。MFD记录用户名和用户的UFD所在的位置，UFD记录具体的FCB。
 
-  提高了检索速度，解决了多用户的文件重名问题，文件系统可以在目录上实现访问限制。但是也缺乏灵活性。
+  提高了检索速度，解决了多用户的文件重名问题，文件系统可以在目录上实现访问限制。但是也缺乏灵活性，不能对文件分类。
 
   \item {\bf 树形目录结构}
   
-  这是从两级目录推广而来的。其结构广为人知，不再详述（王道书上有简单的解释）
+  这是从两级目录推广而来的。使用目录分隔符\verb|/|分隔目录，形成绝对路径或相对路径。
+
+  可以方便地对文件进行分类，层次结构清晰，也能更有效地进行文件的管理和保护。
+
+  这是目前大多数OS使用的方式。
 
   \item {\bf 无环图目录结构}
   
-  树形目录便于实现文件分类，但不便于文件共享。对树形结构加以改造，让一些共享的结点独立出来，各个目录通过引用计数和写时复制来引用节点。仅当最后一个引用被撤销后，共享结点才被删除。
+  树形目录便于实现文件分类，但不便于文件共享。
+  
+  对树形结构加以改造，让一些共享的结点独立出来，各个目录通过引用计数和写时复制来引用节点。使树形结构形成一个有向无环图。
+
+  这种方式方便地实现了文件的共享，但使得系统的管理变得更加复杂。
 \end{enumerate}
 
 \subsubsection{目录的操作}
 
 \begin{itemize}
-  \item 搜索。用户需要访问文件时，从目录中找到该文件。
-  \item 创建文件。即创建目录项，下同。
-  \item 删除文件。
-  \item 创建目录。在树形目录中还可以再创建目录。
-  \item 删除目录。有不删除非空目录和删除非空目录两种。
-  \item 移动目录。
-  \item 显示目录。即\verb|ls|。
-  \item 修改目录。即修改目录项的信息。
+  \item \textbf{搜索}。用户需要访问文件时，从目录中找到该文件。
+  \item \textbf{创建文件}。即创建目录项，下同。
+  \item \textbf{删除文件}。
+  \item \textbf{创建目录}。在树形目录中还可以再创建目录。
+  \item \textbf{删除目录}。有不删除非空目录和删除非空目录两种。
+  \item \textbf{移动目录}。
+  \item \textbf{显示目录}。即\verb|ls|。
+  \item \textbf{修改目录}。即修改目录项的信息。
 \end{itemize}
 
 \subsubsection{目录实现}
 
-本节带有星号。
+本节带有星号，但王道书没有额外的说明。
 
 常用的两种方法：
 \begin{enumerate}
@@ -1925,17 +1946,17 @@ FCB的有序集合叫做文件目录。一个FCB就是一个文件目录项。
 
 自底向上依次是：
 \begin{enumerate}
-  \item 设备。
-  \item I/O控制。包括设备驱动程序和中断处理程序。驱动程序将输入的命令翻译成底层硬件的特定指令，硬件控制器利用这些指令和系统交互。驱动程序告诉控制器对设备的什么位置采取什么操作。
-  \item 基本文件系统。负责向对应的设备驱动程序发送通用命令，以读取和写入磁盘的物理块。
-  \item 文件组织模块。主要是将文件的逻辑地址转换为物理地址。
-  \item 逻辑文件系统。管理元数据，包括文件系统的结构、目录结构等。此外还负责文件保护。
-  \item 应用程序。
+  \item {\bf 设备}。
+  \item {\bf I/O控制}。包括设备驱动程序和中断处理程序。驱动程序将输入的命令翻译成底层硬件的特定指令，硬件控制器利用这些指令和系统交互。驱动程序告诉控制器对设备的什么位置采取什么操作。
+  \item {\bf 基本文件系统}。负责向对应的设备驱动程序发送通用命令，以读取和写入磁盘的物理块。
+  \item {\bf 文件组织模块}。主要是将文件的逻辑地址转换为物理地址。
+  \item {\bf 逻辑文件系统}。管理元数据，包括文件系统的结构、目录结构等。此外还负责文件保护。
+  \item {\bf 应用程序}。
 \end{enumerate}
 
 见：图\ref{fs-layer}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[width=0.15\textwidth]{./images/fs-layer.png}
   \caption{文件系统的层次结构}
@@ -1948,7 +1969,7 @@ FCB的有序集合叫做文件目录。一个FCB就是一个文件目录项。
 
 见：图\ref{fs-layout}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[width=0.7\textwidth]{./images/fs-layout.png}
   \caption{一个可能的文件系统布局}
@@ -1956,9 +1977,9 @@ FCB的有序集合叫做文件目录。一个FCB就是一个文件目录项。
 \end{figure}
 
 \begin{itemize}
-  \item 主引导记录（MBR）：位于0号扇区，用来引导计算机。MBR后面的分区表，给出每个分区的起始地址和结束地址。系统启动时，BIOS读入并执行MBR。MBR做的第一件事就是确定活动分区，读入引导块。
-  \item 引导块：是每个分区的第一个块。
-  \item 超级块：包含FS的所有关键信息，如块的数量和大小、空闲块的数量和指针、空闲FCB的数量和FCB指针等。计算机启动时或文件系统首次被使用时，超级块被读入内存。
+  \item {\bf 主引导记录 MBR}：位于0号扇区，用来引导计算机。MBR后面的分区表，给出每个分区的起始地址和结束地址。系统启动时，BIOS读入并执行MBR。MBR做的第一件事就是确定活动分区，读入引导块。
+  \item {\bf 引导块}：是每个分区的第一个块。
+  \item {\bf 超级块}：包含FS的所有关键信息，如块的数量和大小、空闲块的数量和指针、空闲FCB的数量和FCB指针等。计算机启动时或文件系统首次被使用时，超级块被读入内存。
 \end{itemize}
 
 \subsubsection{外存空闲空间管理}
@@ -2030,9 +2051,35 @@ FCB的有序集合叫做文件目录。一个FCB就是一个文件目录项。
 
   王道书原理没看懂
 
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{./images/group-link-example.png}
+    \caption{成组链接法示意图}
+  \end{figure}
+
 \end{enumerate}
 
 \subsubsection{虚拟文件系统 VFS}
+
+VFS为用户程序提供了FS操作的统一接口，屏蔽了不同FS的实现细节。VFS不是实际存在的FS，它只存在于内存中。VFS在系统启动时建立，在系统关闭时消亡。
+
+用户程序可通过VFS的统一调用函数（如\verb|open|）等来操作不同的FS。
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth]{./images/vfs.png}
+  \caption{VFS示意图}
+\end{figure}
+
+VFS使用面向对象思想，抽象出一个通用的FS模型，定义了一些操作接口。新的FS只要实现这些接口，就可以纳入VFS工作。
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.6\textwidth]{./images/write-in-vfs.png}
+  \caption{VFS中的write系统调用}
+\end{figure}
+
+VFS的另一个作用是提高系统性能。
 
 \subsubsection{分区和安装}
 
