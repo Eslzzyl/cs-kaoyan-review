@@ -2297,6 +2297,21 @@ SPOOLing技术引入的目的是缓和CPU的高速和I/O设备的低速之间的
   \item 实现了虚拟设备功能
 \end{itemize}
 
+包括：
+\begin{itemize}
+  \item {\bf 输入井和输出井}
+  
+  是在\textbf{磁盘}上开辟出来的两块区域。输入井容纳从I/O设备输入的数据，输出井容纳用户程序的输出数据。每个进程的I/O数据保存为一个文件，所有进程的I/O数据连接成一个I/O队列。
+
+  \item {\bf 输入缓冲区和输出缓冲区}
+  
+  是在\textbf{内存}中开辟出来的两块区域。
+
+  \item {\bf 输入进程和输出进程}
+  
+  用于模拟脱机I/O时的外围控制机，负责在I/O缓冲区和I/O井之间传送数据。
+\end{itemize}
+
 \subsection{磁盘和固态硬盘}
 
 \subsubsection{磁盘}
