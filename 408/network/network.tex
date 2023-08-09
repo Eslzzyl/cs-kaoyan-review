@@ -787,7 +787,7 @@ TCP/IP模型和OSI模型的比较：
     \item {\bf 帧错}。指帧的丢失、重复、失序等错误。数据链路层引入定时器和编号机制，确保此类错误被正确解决。
 \end{itemize}
 
-差错出现的原因可以是热噪声或冲击噪声，差错控制机制主要处理冲击噪声造成的差错。
+差错出现的原因可以是\textbf{热噪声}或\textbf{冲击噪声}，差错控制机制主要处理冲击噪声造成的差错。
 \begin{itemize}
     \item 热噪声是信道固有的，产生随机差错。
     \item 冲击噪声是来自外界的，产生突发差错。
@@ -1231,42 +1231,162 @@ LLC在上，MAC在下。
 
 实际上以太网是符合DIX Ethernet V2标准的局域网，但该标准和IEEE 802.3只有很小的差别。因此通常将IEEE 802.3局域网称为以太网。
 
-以太网使用亮相措施简化通信：
+以太网使用两项措施简化通信：
 \begin{itemize}
     \item 采用无连接的工作方式，提供不可靠服务，对差错的纠正由高层完成。
     \item 数据采用曼彻斯特编码，自带同步信号。
 \end{itemize}
 
-关于以太网的常见类型见表\ref{ethernet}。题目中只会给出形如10BASE-T这种名字，不会给出其他信息。
+\begin{enumerate}
+    \item {\bf 传输介质和网卡}
+    
+    关于以太网的常见类型见表\ref{ethernet}。题目中只会给出形如10BASE-T这种名字，不会给出其他信息。
 
-\begin{table}
-    \centering
-    \caption{各种传输介质适用的情况}
-    \label{ethernet}
-    % \resizebox{\linewidth}{!}{
-    \begin{tabular}{|c|c|c|c|c|}
-        \hline
-        \textbf{参数} & \textbf{10BASE5} & \textbf{10BASE2} & \textbf{10BASE-T} & \textbf{10BASE-FL} \\
-        \hline
-        \textbf{传输媒体} & 粗同轴电缆 & 细同轴电缆 & 非屏蔽双绞线 & 850nm光纤对 \\
-        \hline
-        \textbf{编码} & \multicolumn{4}{|c|}{曼彻斯特编码} \\
-        \hline
-        \textbf{拓扑结构} & \multicolumn{2}{|c|}{总线形} & 星形 & 点对点 \\
-        \hline
-        \textbf{最大段长} & 500m & 185m & 100m & 2000m \\
-        \hline
-        \textbf{最多结点数目} & 100 & 30 & \multicolumn{2}{|c|}{2} \\
-        \hline
-    \end{tabular}
-    % }
-\end{table}
+    \begin{table}
+        \centering
+        \caption{各种传输介质适用的情况}
+        \label{ethernet}
+        % \resizebox{\linewidth}{!}{
+        \begin{tabular}{|c|c|c|c|c|}
+            \hline
+            \textbf{参数} & \textbf{10BASE5} & \textbf{10BASE2} & \textbf{10BASE-T} & \textbf{10BASE-FL} \\
+            \hline
+            \textbf{传输媒体} & 粗同轴电缆 & 细同轴电缆 & 非屏蔽双绞线 & 850nm光纤对 \\
+            \hline
+            \textbf{编码} & \multicolumn{4}{|c|}{曼彻斯特编码} \\
+            \hline
+            \textbf{拓扑结构} & \multicolumn{2}{|c|}{总线形} & 星形 & 点对点 \\
+            \hline
+            \textbf{最大段长} & 500m & 185m & 100m & 2000m \\
+            \hline
+            \textbf{最多结点数目} & 100 & 30 & \multicolumn{2}{|c|}{2} \\
+            \hline
+        \end{tabular}
+        % }
+    \end{table}
 
-计算机通过网络适配器（网卡）接入局域网。数据在局域网中以串行方式传送，但在计算机内部以并行方式传送，因此网卡需要进行串并转换。
+    10BASE-T双绞线以太网拓扑结构为星形，星形的中心为集线器，但它在逻辑上仍然是一个总线形网。
+
+    计算机通过网络适配器（网卡）接入局域网。数据在局域网中以串行方式传送，但在计算机内部以并行方式传送，因此网卡需要进行串并转换。
+
+    每块网卡出厂时都有世界唯一的\textbf{介质访问控制（MAC）地址}。MAC地址长为6字节，用12个16进制数字表示，如\verb|02-60-8c-e4-b1-21|。高3字节为分配给厂商的代码，低3字节为厂商自行确定的序列号。
+
+    \item {\bf MAC帧}
+    
+    以太网采用广播通信，因此网卡收到MAC帧后，先检查目标MAC地址是否与自己的MAC地址相符。如果相符，表示帧是发给自己的，就收下，否则丢弃。
+
+    以太网MAC帧有两种帧格式，前者较为常用：
+    \begin{itemize}
+        \item DIX Ethernet V2标准（以太网V2标准）
+        \item IEEE 802.3标准
+    \end{itemize}
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.7\textwidth]{./images/ethernet-v2-frame.png}
+        \caption{以太网V2标准的帧格式}
+        \label{ethernet-v2-frame}
+    \end{figure}
+
+    DIX V2帧格式如图\ref{ethernet-v2-frame}所示。
+    \begin{itemize}
+        \item {\bf 前导码}，共8B，使发送端和接收端时钟同步，又可分为7B的前同步码和1B的帧开始定界符。
+        \item {\bf 地址}，即6B的MAC地址。
+        \item {\bf 数据}，46-1500B。CSMA/CD限制以太网帧最小长度为64B。数据不足46B的帧必须填充。
+        \item {\bf 填充}，0-46B。
+        \item {\bf 校验码 FCS}，4B，采用32位CRC码，校验对象是从目的地址开始到数据部分结束。
+    \end{itemize}
+
+    IEEE 802.3帧格式和上面的唯一不同是用长度域替代了DIX的类型域，用于指出数据域的长度。
+
+    不考虑VLAN时，以太网帧的最大长度是1518B，考虑VLAN时要再加上4得到1522B。
+
+    {\bf 高速以太网}
+
+    以太网可以工作在半双工（使用CSMA/CD），也可以工作在全双工（不使用CSMA/CD）
+\end{enumerate}
+
+\subsubsection{IEEE 802.11无线局域网}
+
+不知道会不会考，先略了
+
+\subsubsection{VLAN}
+
+\textbf{虚拟局域网}（Virtual LAN）可以把一个较大的局域网分割成一些较小的VLAN，每个VLAN是一个广播域。
+
+802.3ac标准规定，可以在以太网帧的源地址字段和类型字段中间插入一个4B的标识符，称为\textbf{VLAN标签}。插入了VLAN标签的帧称为802.1Q帧。同时FCS也要重新计算。
+
+VLAN标签的前两个字节固定为\verb|0x8100|，后两个字节中，前4位不用，后12位是VLAN的标识符VID（可表示4096个不同的VLAN）。
+
+交换机负责进行普通MAC帧和802.1Q帧的转换。
+
+跨VLAN的帧一般通过路由器进行转发，但交换机可以通过装配特定的芯片来完成这部分工作，此时交换机实现了第3层的功能。
+
+VLAN只是一种服务，不是新型的局域网。
 
 \subsection{广域网}
 
+广域网的常见数据链路层协议是PPP和HDLC。HDLC已接近淘汰，新版大纲已经删除对应的内容。
+
+\subsubsection{PPP协议}
+
+PPP（点对点协议）是使用\textbf{串行}线路通信的、\textbf{面向字节}的协议。
+
+PPP包含三个部分：
+\begin{itemize}
+    \item {\bf 链路控制协议LCP}，用于建立、配置、测试和管理数据链路。
+    \item {\bf 网络控制协议NCP}。PPP支持多种网络层协议，每种协议对应一个NCP。
+    \item {\bf 将IP数据包封装到串行链路的方法}。
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{./images/ppp-frame.png}
+    \caption{以太网V2标准的帧格式}
+    \label{ppp-frame}
+\end{figure}
+
+PPP帧格式如图\ref{ppp-frame}所示。
+\begin{itemize}
+    \item 前3个字节固定，分别是F标志、A地址、C控制。
+    \item 协议字段表示运载的分组的种类。
+    \begin{itemize}
+        \item 0开始的表示网络层协议
+        \item 1开始的表示其他协议
+    \end{itemize}
+    \item 信息部分的长度为0-1500字节。PPP不使用CSMA/CD，因此没有最短帧长的限制。
+    \item 帧检验序列FCS采用CRC码，检验区从地址字段开始到信息字段结束（均含）。
+\end{itemize}
+
+PPP有如下\textbf{特点}：
+\begin{itemize}
+    \item 通过硬件保证无差错接收，有差错检测但不能纠错，是不可靠的协议。
+    \item 仅支持点对点链路。
+    \item 仅支持全双工链路。
+    \item PPP的两端可以运行不同的网络层协议。
+    \item 透明传输实现：
+    \begin{itemize}
+        \item 异步链路（默认）下，采用字符填充法。
+        \item 同步链路下，由硬件进行比特填充。
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{HDLC协议}
+
+略
+
 \subsection{数据链路层设备}
+
+\subsubsection{网桥}
+
+\textcolor{blue}{新版大纲已经删除对应的内容}
+
+\subsubsection{局域网交换机}
+
+\begin{enumerate}
+    \item {\bf 原理和特点}
+    \item {\bf 自学习}
+\end{enumerate}
 
 \section{网络层}
 
