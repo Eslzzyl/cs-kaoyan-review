@@ -57,7 +57,7 @@
 }
 
 % 行距。ctexart默认值为1.3
-\linespread{1.2}
+\linespread{1.5}
 
 \lstset{
   language=pascal,
@@ -658,7 +658,7 @@ TCP/IP模型和OSI模型的比较：
 
 \subsubsection{数据报与虚电路}
 
-它们都属于网络层，都是分组交换的方式。见图\ref{comp-between-datagram-and-virtual}
+它们都属于网络层，都是分组交换的方式。见表\ref{comp-between-datagram-and-virtual}
 
 虚电路又可分：
 \begin{itemize}
@@ -668,12 +668,24 @@ TCP/IP模型和OSI模型的比较：
 
 虚电路不需要预分配带宽。
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{./images/datagram_and_virtual_circuit.png}
+\begin{table}
     \caption{数据报和虚电路的比较}
     \label{comp-between-datagram-and-virtual}
-\end{figure}
+    \resizebox{\linewidth}{!}{
+        \begin{tabular}{|c|c|c|}
+            \hline
+            & \textbf{数据报服务} & \textbf{虚电路服务} \\ \hline
+            连接的建立 & 不需要 & 必须有 \\ \hline
+            目的地址 & 每个分组都有完整的目的地址 & \makecell{仅在建立连接阶段使用，\\ 之后每个分组使用虚电路号} \\ \hline
+            路由选择 & 每个分组独立进行路由选择和转发 & 属于同一条虚电路的分组按照同一路由转发 \\ \hline
+            分组顺序 & 不保证分组按顺序到达 & 保证分组按顺序到达 \\ \hline
+            可靠性 & 不保证可靠通信 & 保证可靠通信 \\ \hline
+            对网络故障的适应性 & \makecell{出故障的结点丢失分组，\\ 其他分组路径选择发生变化时可以正常传输} & 所有经过故障结点的虚电路都瘫痪 \\ \hline
+            差错处理和流量控制 & 由用户主机进行流量控制 & 可由分组交换网络负责，也可由用户负责 \\
+            \hline
+        \end{tabular}
+    }
+\end{table}
 
 \subsection{传输介质}
 
@@ -1341,7 +1353,7 @@ PPP包含三个部分：
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.7\textwidth]{./images/ppp-frame.png}
+    \includegraphics[width=0.7\textwidth]{./images/ppp-frame.jpg}
     \caption{以太网V2标准的帧格式}
     \label{ppp-frame}
 \end{figure}
@@ -1431,6 +1443,8 @@ PPP有如下\textbf{特点}：
 
 \section{网络层}
 
+\textcolor{red}{本章是历年考察的重中之重。}
+
 \subsection{网络层的功能}
 
 \subsubsection{异构网络互联}
@@ -1475,7 +1489,33 @@ PPP有如下\textbf{特点}：
 
 \subsubsection{SDN的基本概念}
 
-待补
+可以将网络层抽象地划分为：
+\begin{itemize}
+    \item 数据平面（转发平面），实现转发功能。
+    \item 控制平面，实现路由选择功能。
+\end{itemize}
+
+SDN使用\textbf{集中式的控制平面}和\textbf{分布式的数据平面}，二者相互分离。即SDN将传统路由器的路由选择部分抽出来统一管理。路由器不再相互交换信息，而是简单地根据远程控制器发来的路由表查表完成转发。控制平面中的\textbf{远程控制器}（这控制器可能由多台服务器组成）掌握整个网络的状态，为每个分组计算出最佳路由，通过\textbf{Openflow协议}将转发表（SDN中称为\textbf{流表}）下发给路由器。
+
+SDN有可编程性：
+\begin{itemize}
+    \item 对上层应用的开发者，SDN提供\textbf{北向接口}
+    \item SDN控制器和转发设备建立双向会话的接口称为\textbf{南向接口}，通过不同的南向接口协议（如Openflow），SDN控制器可以兼容不同的硬件设备。
+    \item SDN控制器集群内部的通信接口称为\textbf{东西向接口}。
+\end{itemize}
+
+SDN的优点：
+\begin{itemize}
+    \item 集中控制，有利于全局优化和高性能的网络转发。
+    \item 网络可以由专门的自动化工具以编程方式配置。
+    \item 实现网络设备的制造和功能软件的开发相分离，降低了成本。
+\end{itemize}
+
+SDN的问题：
+\begin{itemize}
+    \item 中心化管理容易受攻击，一旦崩溃，则整个网络瘫痪。
+    \item 如果网络规模扩大，则控制器可能成为性能瓶颈。
+\end{itemize}
 
 \subsubsection{拥塞控制}
 
@@ -1500,8 +1540,8 @@ PPP有如下\textbf{特点}：
 \subsubsection{静态路由与动态路由}
 
 \begin{itemize}
-    \item 静态路由算法（非自适应路由算法）：需要网络管理员手动配置路由信息，不能及时适应网络状态的变化。适用于小型网络。
-    \item 动态路由算法（自适应路由算法）：可以动态适应网络状态。又分：
+    \item {\bf 静态路由算法（非自适应路由算法）}：需要网络管理员手动配置路由信息，不能及时适应网络状态的变化。适用于小型网络。
+    \item {\bf 动态路由算法（自适应路由算法）}：可以动态适应网络状态。又分：
     \begin{itemize}
         \item 距离向量路由算法（D-V）：典例是RIP算法
         \item 链路状态路由算法（L-S）：典例是OSPF算法
@@ -1513,7 +1553,7 @@ PPP有如下\textbf{特点}：
 所有的节点都定期地将它们的整个路由表发给\textbf{相邻}的节点。这表包含：
 \begin{itemize}
     \item 每条路径的目的地（另一节点）
-    \item 路径的代价（距离）
+    \item 路径的代价（也叫距离），如RIP中的跳数
 \end{itemize}
 
 D-V协议中，好消息传得快，坏消息传得慢。当路由信息发生变化时，旧的信息可能还在网络中传递。这就是“慢收敛”。慢收敛是导致路由环路的根本原因。
@@ -1524,7 +1564,7 @@ D-V协议中，好消息传得快，坏消息传得慢。当路由信息发生�
 
 定期将自己与\textbf{相邻节点}的链路状态（如距离、时延、带宽、费用等）向全网\textbf{所有节点}泛洪。之后各节点通过Dijkstra算法生成路由表。
 
-L-S算法发送的数据链不会随着网络规模的增大而增长，因而适合大规模网络。
+L-S算法发送的数据量不会随着网络规模的增大而增长，因而适合大规模网络。
 
 \subsubsection{层次路由}
 
@@ -1533,6 +1573,8 @@ Internet将整个互联网划分为许多较小的自治系统。每个自治系
     \item 一个自治系统内部使用的路由选择协议称为\textbf{内部网关协议（IGP）}，具体包括RIP和OSPF等。
     \item 自治系统之间使用的路由选择协议称为\textbf{外部网关协议（EGP）}，如BGP协议。
 \end{itemize}
+
+使用层次路由时，OSPF将一个自治系统再划分为若干区域（Area）。采用层次划分区域的方法会使交换信息的种类增多，也会使OSPF协议更加复杂，但却能使区域内部的通信量大大减小，因而使OSPF能够用于规模很大的自治系统中。
 
 \subsection{IPv4}
 
@@ -1591,10 +1633,10 @@ IP地址::=\{<网络号>，<主机号>\}
 特殊的IP地址：
 \begin{itemize}
     \item 主机号全0表示主机所在的网络本身。
-    \item 主机号全1表示主机所在的网络的广播地址。
+    \item 主机号全1表示主机所在的网络的广播地址（直接广播地址）。
     \item 127.*.*.*保留为环回自检地址。
     \item 0.0.0.0表示本机。系统启动时用到，启动后不再使用。
-    \item 255.255.255.255表示整个网络的广播地址，实际上是本网络的广播地址。
+    \item 255.255.255.255表示整个TCP/IP网络的广播地址（受限广播地址），由于路由器分隔广播域，等效为本网络的广播地址。
 \end{itemize}
 
 网络地址转换（NAT）技术将专用地址转换为公用地址，从而大大节省了IP地址的消耗。
@@ -1628,31 +1670,62 @@ CIDR的子网号没有“不得为全0或全1”的限制。但CIDR子网内部�
 
 \subsubsection{ARP、DHCP和ICMP}
 
-地址解析协议（ARP）完成了IP地址到MAC地址的映射。ARP工作在网络层。
+\begin{enumerate}
+    \item {\bf ARP}
+    
+    地址解析协议（ARP）完成了IP地址到MAC地址的映射。ARP工作在网络层。
 
-工作过程：每台主机都设有一个ARP表，用来维护本局域网内的各个主机和路由器的IP地址到MAC地址的映射关系。假设主机A欲向本局域网内的主机B发送信息，则A首先查看自己的ARP表，查找是否有匹配的IP地址。若有，则将数据发往对应的MAC地址；若无，就广播一个ARP请求分组。B收到分组后，向A发送ARP响应分组，其中包含B的IP地址和MAC地址的映射关系。A收到响应后，就将这个映射写入ARP表，并向对应MAC地址发送数据。
+    工作过程：每台主机都设有一个ARP表，用来维护本局域网内的各个主机和路由器的IP地址到MAC地址的映射关系。假设主机A欲向本局域网内的主机B发送信息，则A首先查看自己的ARP表，查找是否有匹配的IP地址。若有，则将数据发往对应的MAC地址；若无，就广播一个ARP请求分组。B收到分组后，向A发送ARP响应分组，其中包含B的IP地址和MAC地址的映射关系。A收到响应后，就将这个映射写入ARP表，并向对应MAC地址发送数据。
+    
+    无偿ARP：主机发送ARP requset报文查询自己的IP地址。作用：
+    \begin{itemize}
+        \item 确定网络中是否有其他的主机使用了该IP地址，如果有应答则产生错误消息。
+        \item 无偿ARP可以更新ARP表项用，网络中其他主机收到该广播则在缓存中更新条目，收到主机强制更新，如果存在旧条目会将MAC更新为广播包中MAC。
+    \end{itemize}
 
-无偿ARP：主机发送ARP requset报文查询自己的IP地址。作用：
-\begin{itemize}
-    \item 确定网络中是否有其他的主机使用了该IP地址，如果有应答则产生错误消息。
-    \item 无偿ARP可以更新ARP表项用，网络中其他主机收到该广播则在缓存中更新条目，收到主机强制更新，如果存在旧条目会将MAC更新为广播包中MAC。
-\end{itemize}
+    \item {\bf DHCP}
+    
+    动态主机配置协议（DHCP）用于动态地给主机分配IP地址。它是即插即用的。
+    
+    DHCP是应用层协议，基于UDP。
 
-动态主机配置协议（DHCP）用于动态地给主机分配IP地址。
+    DHCP使用C/S方式工作，过程如下：
+    \begin{enumerate}
+        \item 需要IP地址的主机在启动时广播“DHCP发现”报文。源地址为0.0.0.0，目的地址为255.255.255.255。网络中所有主机都收到，但只有DHCP服务器会响应。
+        \item DHCP服务器分配一个IP地址，将其放入一个“DHCP提供”报文，按照和上面一样的方式广播。
+        \item 主机收到报文后，接受该IP地址，然后广播“DHCP请求”报文，方式和上面一样。
+        \item DHCP服务器最后广播“DHCP确认”报文，源地址为DHCP服务器的地址，目的地址为255.255.255.255。
+    \end{enumerate}
 
-工作过程待补
+    \item {\bf ICMP}
+    
+    网际控制报文协议（ICMP）是网络层协议。控制报文作为IP层数据，组成IP数据报发送出去。
 
-DHCP是应用层协议，基于UDP。
+    ICMP报文可分为两类
+    \begin{itemize}
+        \item ICMP差错报告报文
+        \item ICMP询问报文
+    \end{itemize}
 
-网际控制报文协议（ICMP）是IP层协议。控制报文作为IP层数据，组成IP数据报发送出去。
+    ICMP差错报告报文有以下5种常见类型：
+    \begin{itemize}
+        \item {\bf 终点不可达}，表示路由器或主机无法交付数据。
+        \item {\bf 源点抑制}（已弃用），当路由器或主机由于拥塞而丢弃数据时，就向源点发送该报文，要求源点降低发送速率。
+        \item {\bf 超时}，路由器收到TTL为0的数据报时，丢弃它，同时向源点发送一个超时报文。终点在规定时间内没有收到一个数据报的全部分片时，也送回超时报文。
+        \item {\bf 参数问题}，表示数据报首部有错误。路由器或主机将丢弃这个数据报。
+        \item {\bf 改变路由}（重定向），让源主机知道下次将数据发给其他的（一般是更好的）路由器。
+    \end{itemize}
 
-ICMP报文可分为两类
-\begin{itemize}
-    \item ICMP差错报告报文
-    \item ICMP询问报文
-\end{itemize}
+    不发送差错报告报文的情况：
+    \begin{itemize}
+        \item 对ICMP差错报告报文本身的差错。
+        \item 对第一个分片之后的所有分片。
+        \item 对具有组播地址的数据报。
+        \item 对具有特殊地址（如127.0.0.1或0.0.0.0）的数据报。
+    \end{itemize}
 
-ICMP最常见的应用是ping和traceroute。ping工作在应用层，但是跳过传输层直接使用了网络层服务；traceroute工作在网络层。
+    ICMP最常见的应用是ping和traceroute。ping工作在应用层，但是跳过传输层直接使用了网络层服务；traceroute工作在网络层。
+\end{enumerate}
 
 \subsection{IPv6}
 
@@ -1855,7 +1928,7 @@ TCP连接采用C/S模式，主动发起连接的进程是Client，被动等待�
     \item {\bf TCP连接的释放：四次挥手}
     \begin{figure}[h]
         \centering
-        \includegraphics[width=0.7\textwidth]{./images/tcp_free.png}
+        \includegraphics[width=0.7\textwidth]{./images/tcp_free.jpg}
         \caption{四次挥手过程}
     \end{figure}
     \begin{itemize}
