@@ -18,6 +18,7 @@
 \usepackage{indentfirst}
 \usepackage{authblk}
 \usepackage{multicol}
+\usepackage{multirow}
 % \usepackage{draftwatermark}       % 需要应用水印时取消注释
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
@@ -1107,17 +1108,15 @@ CRC码有纠错功能，但数据链路层只使用了它的检错功能。
         \begin{table}[h]
             \centering
             \caption{三种不同类型的CSMA协议的比较}
-            \resizebox{\linewidth}{!}{
-                \begin{tabular}{|c|c|c|c|}
-                    \hline
-                     & 1-坚持 & 非坚持 & $p$-坚持 \\
-                    \hline
-                    \textbf{空闲} & 立即发送数据 & 立即发送数据 & 以概率$p$发送数据，以概率$1-p$推迟到下一个时隙 \\
-                    \hline
-                    \textbf{忙} & 继续侦听 & 放弃，等待一个随机事件后再侦听 & 持续侦听，直至信道空闲 \\
-                    \hline
-                \end{tabular}
-            }
+            \begin{tabular}{|c|c|c|c|}
+                \hline
+                    & 1-坚持 & 非坚持 & $p$-坚持 \\
+                \hline
+                \textbf{空闲} & 立即发送数据 & 立即发送数据 & \makecell{以概率$p$发送数据，\\ 以概率$1-p$推迟到下一个时隙} \\
+                \hline
+                \textbf{忙} & 继续侦听 & \makecell{放弃，等待一个\\ 随机时间后再侦听} & 持续侦听，直至信道空闲 \\
+                \hline
+            \end{tabular}
         \end{table}
     \end{enumerate}
 
@@ -1235,6 +1234,8 @@ IEEE 802\footnote{Wiki: \href{https://en.wikipedia.org/wiki/IEEE\_802}{https://e
     \item 媒体接入控制（MAC）子层：负责向网络层提供无确认无连接、面向连接、带确认无连接、高速传送4种不同的连接服务类型。
 \end{itemize}
 
+IEEE 802对应OSI参考模型的物理层和数据链路层。
+
 LLC在上，MAC在下。
 
 \subsubsection{以太网与IEEE 802.3}
@@ -1283,6 +1284,8 @@ LLC在上，MAC在下。
 
     每块网卡出厂时都有世界唯一的\textbf{介质访问控制（MAC）地址}。MAC地址长为6字节，用12个16进制数字表示，如\verb|02-60-8c-e4-b1-21|。高3字节为分配给厂商的代码，低3字节为厂商自行确定的序列号。
 
+    同一局域网中的两个设备具有相同的静态MAC地址时，二者都不能正确通信。
+
     \item {\bf MAC帧}
     
     以太网采用广播通信，因此网卡收到MAC帧后，先检查目标MAC地址是否与自己的MAC地址相符。如果相符，表示帧是发给自己的，就收下，否则丢弃。
@@ -1324,7 +1327,7 @@ LLC在上，MAC在下。
 
 \subsubsection{VLAN}
 
-\textbf{虚拟局域网}（Virtual LAN）可以把一个较大的局域网分割成一些较小的VLAN，每个VLAN是一个广播域。
+\textbf{虚拟局域网}（Virtual LAN）可以把一个较大的局域网分割成一些较小的VLAN，每个VLAN是一个广播域。即：VLAN既可以隔离冲突域，又可以隔离广播域。
 
 802.3ac标准规定，可以在以太网帧的源地址字段和类型字段中间插入一个4B的标识符，称为\textbf{VLAN标签}。插入了VLAN标签的帧称为802.1Q帧。同时FCS也要重新计算。
 
@@ -1337,6 +1340,8 @@ VLAN标签的前两个字节固定为\verb|0x8100|，后两个字节中，前4�
 VLAN只是一种服务，不是新型的局域网。
 
 \subsection{广域网}
+
+广域网$\neq$互联网。互联网可以连接不同种类的网络，如广域网和局域网。而广域网是单一种类的网络，其中没有路由器，广域网设备使用物理地址通信。因此广域网只涉及物理层和数据链路层。
 
 广域网的常见数据链路层协议是PPP和HDLC。HDLC已接近淘汰，新版大纲已经删除对应的内容。
 
@@ -1406,7 +1411,7 @@ PPP有如下\textbf{特点}：
 \begin{enumerate}
     \item {\bf 原理和特点}
     
-    实际上是多端口的网桥。拥有$N$个端口的交换机的总容量是$N\times 10$Mb/s。
+    实际上是多端口的网桥。拥有$N$个端口的交换机的总容量是$N\times 10$Mb/s。交换机支持多对用户同时通信，因而有比集线器更好的网络性能。
 
     特点：
     \begin{itemize}
@@ -1448,6 +1453,8 @@ PPP有如下\textbf{特点}：
 \subsection{网络层的功能}
 
 \subsubsection{异构网络互联}
+
+异构网络指的是传输介质、数据编码方式、链路控制协议、数据单元格式和转发机制不同的网络，它们在物理层和数据链路层都有不同。
 
 中继系统分为以下4种：
 \begin{itemize}
@@ -1541,6 +1548,9 @@ SDN的问题：
 
 \begin{itemize}
     \item {\bf 静态路由算法（非自适应路由算法）}：需要网络管理员手动配置路由信息，不能及时适应网络状态的变化。适用于小型网络。
+    \begin{itemize}
+        \item 并不是启动后就不能更改路由表了。静态说的是不能自动更新路由表。实际上用户随时都可以更改路由表。
+    \end{itemize}
     \item {\bf 动态路由算法（自适应路由算法）}：可以动态适应网络状态。又分：
     \begin{itemize}
         \item 距离向量路由算法（D-V）：典例是RIP算法
@@ -1619,31 +1629,44 @@ IP分组=首部+数据。
 
 \subsubsection{IPv4地址与NAT}
 
-图\ref{ip_classes}示出了传统分类IP地址的分类情况。
+\begin{enumerate}
+    \item {\bf IPv4地址}
+    
+    图\ref{ip_classes}示出了传统分类IP地址的分类情况。
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{./images/ip_address.png}
-    \caption{分类的IP地址}
-    \label{ip_classes}
-\end{figure}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{./images/ip_address.png}
+        \caption{分类的IP地址}
+        \label{ip_classes}
+    \end{figure}
+    
+    IP地址::=\{<网络号>，<主机号>\}
+    
+    特殊的IP地址：
+    \begin{itemize}
+        \item 主机号全0表示主机所在的网络本身。
+        \item 主机号全1表示主机所在的网络的广播地址（直接广播地址）。
+        \item 127.*.*.*保留为环回自检地址。
+        \item 0.0.0.0表示本机。系统启动时用到，启动后不再使用。
+        \item 255.255.255.255表示整个TCP/IP网络的广播地址（受限广播地址），由于路由器分隔广播域，等效为本网络的广播地址。
+    \end{itemize}
 
-IP地址::=\{<网络号>，<主机号>\}
+    \item {\bf NAT}
+    
+    网络地址转换（NAT）技术将专用地址转换为公用地址，从而大大节省了IP地址的消耗。
 
-特殊的IP地址：
-\begin{itemize}
-    \item 主机号全0表示主机所在的网络本身。
-    \item 主机号全1表示主机所在的网络的广播地址（直接广播地址）。
-    \item 127.*.*.*保留为环回自检地址。
-    \item 0.0.0.0表示本机。系统启动时用到，启动后不再使用。
-    \item 255.255.255.255表示整个TCP/IP网络的广播地址（受限广播地址），由于路由器分隔广播域，等效为本网络的广播地址。
-\end{itemize}
+    NAT划出了部分仅限LAN使用的\textbf{私有地址}：
+    \begin{itemize}
+        \item A类：10.0.0.0\~10.255.255.255，共1个网段
+        \item B类：172.16.0.0\~172.31.255.255，共16个网段
+        \item C类：192.168.0.0\~192.168.255.255，共256个网段
+    \end{itemize}
 
-网络地址转换（NAT）技术将专用地址转换为公用地址，从而大大节省了IP地址的消耗。
-
-本地主机与外部网络通信时，NAT路由器通过NAT转换表完成本地IP和全球IP的转换。转换表的项都是\{本地IP:端口\}-\{全球IP:端口\}的形式。
-
-普通路由器在转发IP数据报时，不改变源IP地址和目的IP地址，但NAT路由器在转发时一定要改变IP地址。普通路由器工作在网络层，NAT路由器则会查看和转换传输层的端口号。
+    本地主机与外部网络通信时，NAT路由器通过NAT转换表完成本地IP和全球IP的转换。转换表的项都是\{本地IP:端口\}-\{全球IP:端口\}的形式。
+    
+    普通路由器在转发IP数据报时，不改变源IP地址和目的IP地址，但NAT路由器在转发时一定要改变IP地址。普通路由器工作在网络层，NAT路由器则会查看和转换传输层的端口号。
+\end{enumerate}
 
 \subsubsection{子网划分、子网掩码、CIDR}
 
@@ -1731,7 +1754,28 @@ CIDR的子网号没有“不得为全0或全1”的限制。但CIDR子网内部�
 
 \subsubsection{IPv6的主要特点}
 
+IPv6地址为128位（16字节）长.
+
+IPv6只有在包的源结点才能分片，是端到端的，传输路径中的路由器不能分片。
+
+IPv6首部长度必须是8B的整数倍。
+
+IPv6取消了校验和，以提高效率。
+
 \subsubsection{IPv6地址}
+
+IPv6数据报的目的地址可以是以下三种基本类型地址之一：
+\begin{itemize}
+    \item 单播
+    \item 多播
+    \item 任播，目的站是一组主机，但交付时仅交付一台主机，一般是最近的主机。
+\end{itemize}
+
+IPv6采用十六进制表示，每16位二进制（4个十六进制数字）之间用冒号分隔，一共形成8段。
+
+IPv6地址通常可以缩写。当每段开头有0时，可以略去这些0，但当这段全是0时，应该保留一个0。如4BF5:0000:0000:0000:BA5F:039A:000A:2176缩写为4BF5:0:0:0:BA5F:39A:A:2176。
+
+如果有连续的全0段，则可以进一步省略，用两个冒号表示。整个IPv6地址中只能有一个这种双冒号。如前述地址可以进一步缩写成4BF5::BA5F:39A:A:2176。
 
 \subsection{路由协议}
 
@@ -1759,13 +1803,69 @@ RIP的缺点：
 
 OSPF是网络层协议，直接通过IP数据报传送。
 
+OSPF使用Hello分组来保持与其邻居的连接。
+
 \subsubsection{边界网关协议（BGP）}
 
 BGP是基于TCP的应用层协议。
 
 其余待补
 
+\begin{table}
+    \centering
+    \caption{三种路由协议的比较}
+    \resizebox*{\linewidth}{!}{
+        \begin{tabular}{|c|c|c|c|c|}
+            \hline
+            \textbf{协议} & \textbf{RIP} & \textbf{OSPF} & \multicolumn{2}{|c|}{\textbf{BGP}} \\ \hline
+            类型 & 内部 & 内部 & \multicolumn{2}{|c|}{外部} \\ \hline
+            路由算法 & 距离-向量 & 链路状态 & \multicolumn{2}{|c|}{路径-向量} \\ \hline
+            承载协议 & UDP & IP & \multicolumn{2}{|c|}{TCP(:179)} \\ \hline
+            所属层 & 应用层 & 网络层 & \multicolumn{2}{|c|}{应用层} \\ \hline
+            路径选择 & 跳数最少 & 代价最低 & \multicolumn{2}{|c|}{较好，非最佳} \\ \hline
+            交换结点 & 和本结点相邻的路由器 & 网络中所有路由器 & \multicolumn{2}{|c|}{和本结点相邻的路由器} \\ \hline
+            \multirow{2}{*}{交换内容} & \multirow{2}{*}{自己的路由表} & \multirow{2}{*}{与自己相邻的所有路由器的链路状态} & 首次 & 整个路由表 \\ \cline{4-5}
+            & & & 非首次 & 有变化的部分 \\
+            \hline
+        \end{tabular}
+    }
+\end{table}
+
 \subsection{IP组播}
+
+\subsubsection{组播的概念}
+
+可以使用单播来仿真组播，但会引起较大的处理开销和网络上太多的交通量。
+
+组播一定仅应用于UDP，因为TCP一定是一对一的。
+
+组播的基本思路是：设定一些组，每组分配一个IP，主机使用IGMP（因特网组管理协议）加入组。主机发送数据时，仅发送一次，数据在网络的分叉处复制。
+
+能够运行组播协议的路由器称为组播路由器。
+
+\subsubsection{IP组播地址}
+
+IPv4的组播地址从D类地址中分配。D类地址范围是224.0.0.0\~ 239.255.255.255。每个D类地址标志一个组播组。并非所有的D类地址都可作为组播地址。
+
+组播数据报使用D类IP作为目的地址，并且首部中的协议字段是2，表示IGMP协议。
+
+\begin{itemize}
+    \item 组播数据报不保证可靠交付。
+    \item 组播地址只能用于目的地址，不能用于源地址。
+    \item 组播数据报不产生ICMP报文。这意味ping一个组播地址不会得到任何回复。
+\end{itemize}
+
+组播IP地址向MAC地址映射时，取后23位映射成MAC地址。
+
+\subsubsection{IGMP与组播路由算法}
+
+IGMP应视为IP的一个组成部分，其工作可分为两个阶段：
+\begin{itemize}
+    \item 主机要加入某组时，向该组的组播地址发送一个IGMP报文。本地的组播路由器将组成员关系转发给因特网上的其他组播路由器。
+    \item 本地组播路由器周期性地探询局域网的主机，以便知道这些主机是否还是某个组的成员。一旦某个组有一台主机回应，就认为该组仍然活跃；如果经过几次探询后，某组一直没有回复，就不再将该组的成员关系转发给其他组播路由器。
+\end{itemize}
+
+\subsection{移动IP}
 
 待补
 
@@ -1783,11 +1883,15 @@ BGP是基于TCP的应用层协议。
 
 若源主机和目标主机处于同一个网络，那么就\textbf{直接交付}而无需通过路由器。如果不在同一个网络，则需要路由器按照路由表将数据报转发给下一个路由器，这称为\textbf{间接交付}。
 
+间接交付的最后一个路由器是直接交付的。
+
 \subsubsection{路由表与路由转发}
 
 路由表总是用软件实现的，转发表可以用软件实现，也可以用特殊的硬件实现。
 
 路由表$\neq$转发表。分组的实际转发是靠直接查找转发表，而不是直接查找路由表。
+
+路由表中默认路由的目的地址和子网掩码都是0.0.0.0。
 
 \section{传输层}
 
@@ -1845,7 +1949,7 @@ UDP首部固定为8B长，分为4个字段，每个字段长度都是2B（16位�
     \item {\bf 源端口号}。如果不需要对方回信，可以设为全0。
     \item {\bf 目的端口号}，必须指定。
     \item {\bf 长度}。指的是首部+数据部分的长度，最小值是8（即只有首部的情况）
-    \item {\bf 校验和}。如果不希望进行校验，可以设为全0。
+    \item {\bf 校验和}。如果不希望进行校验，可以设为全0；如果校验结果就是0，则设为全1。
 \end{itemize}
 
 如果接收方发现报文中指定的端口号找不到对应的应用进程，就丢弃UDP数据报，并回传一个“端口不可达”的ICMP报文。
@@ -1857,6 +1961,8 @@ UDP首部固定为8B长，分为4个字段，每个字段长度都是2B（16位�
 IP数据报的校验和只检验IP数据报的首部，而UDP的校验和则检验整个数据报。
 
 如果数据部分不是偶数个字节长，则需要添加1个全0字节。
+
+如果校验出错，那么可以丢弃这个数据报，也可以交付给上层，但交付的同时应该告诉上层这是错误的数据报。
 
 \subsection{TCP协议}
 
@@ -1953,7 +2059,7 @@ TCP默认使用累积确认，即TCP只确认数据流中至第一个丢失字�
 
 \subsubsection{TCP流量控制}
 
-TCP提供一种基于滑动窗口协议的的流量控制机制。在通信过程中，接收方根据自己接收缓存的大小，动态地调整发送方的发送窗口大小，这称为\textbf{接收窗口rwnd}；同时，发送方根据其对网络拥塞程度的估计而切丁\textbf{拥塞窗口cwnd}的大小。
+TCP提供一种基于滑动窗口协议的的流量控制机制。在通信过程中，接收方根据自己接收缓存的大小，动态地调整发送方的发送窗口大小，这称为\textbf{接收窗口rwnd}；同时，发送方根据其对网络拥塞程度的估计而确定\textbf{拥塞窗口cwnd}的大小。
 
 \subsubsection{TCP拥塞控制}
 
@@ -1965,14 +2071,14 @@ Internet建议标准定义了进行拥塞控制的4种算法：慢开始、拥�
 \end{equation*}
 
 \begin{enumerate}
-    \item 慢开始算法
+    \item {\bf 慢开始算法}
 
     TCP连接刚刚建立时，先令拥塞窗口cwnd=1，即一个最大报文段长度MSS。每收到一个新的确认后，将cwnd加1，即增大一个MSS。
 
     需要注意当cwnd增加时，发送方一次可以发出更多报文段，则接收方的确认报文段也会增多，因此cwnd的增长速度会加快，从而呈现一种指数的趋势。所谓的“慢”指的不是cwnd增长慢，而是一开始限制cwnd到一个很小的值，从而使发送速率变得很慢。
 
     cwnd增大到一个规定的慢开始门限值ssthresh时，改用拥塞避免算法。具体来说，如果当前cwnd再次翻倍后超过了ssthresh，就将cwnd设为ssthresh，并改用拥塞避免算法。注意此时不能再翻倍cwnd了。
-    \item 拥塞避免算法
+    \item {\bf 拥塞避免算法}
 
     拥塞避免算法的思路是每经过一个RTT就让cwnd加1，而不是翻倍，这样cwnd将会按照线性增长。
     \begin{itemize}
@@ -1981,44 +2087,46 @@ Internet建议标准定义了进行拥塞控制的4种算法：慢开始、拥�
         \item cwnd = ssthresh时，两种都可用，通常用拥塞避免算法。
     \end{itemize}
     无论在慢开始阶段还是拥塞避免阶段，只要检测到网络中出现拥塞，就立即把ssthresh设置为当前cwnd的一半（但不得小于2），同时将cwnd设置为1，重新执行慢开始。这样可以迅速减少主机发送的分组数量，给路由器争取出恢复的时间。
-    \item 快重传
+    \item {\bf 快重传}
 
     快重传和快恢复算法都是对慢开始和拥塞避免算法的改进。
 
     冗余ACK也可用于网络拥塞的检测。当发送方连续收到三个重复的ACK报文时，直接重传对方尚未收到的报文段。
-    \item 快恢复
+    \item {\bf 快恢复}
 
     当发送方连续收到三个冗余ACK时，把ssthresh设置为此时发送方cwnd的一半，同时cwnd也减半（保持和ssthresh一致），然后执行\textbf{拥塞避免算法}，而不是慢开始算法。这样发送速率恢复得较快，因此叫“快恢复”。
 \end{enumerate}
 
 注意本节为了简便，忽略了接收窗口rwnd，认为发送窗口只取决于拥塞窗口（cwnd）。实际上发送窗口是由rwnd和cwnd共同决定的。
 
-\vspace{20pt}
-超时重传时间（RTO）的确定对TCP的性能有重大影响。
-\begin{itemize}
-    \item 若RTO<RTT，则会造成很多不必要的重传；
-    \item 若RTO$\gg$RTT，则会浪费资源，降低网络利用率。
-\end{itemize}
+% 以下注释的部分，是计网期末复习的内容，王道书上没有相关的内容，可认为考研不涉及。
 
-RTT是一个动态更新的值，每个连接都有独立的RTT，且同一连接在不同时刻的RTT也可能不同。
+% \vspace{20pt}
+% 超时重传时间（RTO）的确定对TCP的性能有重大影响。
+% \begin{itemize}
+%     \item 若RTO<RTT，则会造成很多不必要的重传；
+%     \item 若RTO$\gg$RTT，则会浪费资源，降低网络利用率。
+% \end{itemize}
 
-TCP使用一个名为\textbf{加权平均往返时间RTT$_S$}的参数反映往返时间。一般来说，RTO应略大于RTT$_S$。
+% RTT是一个动态更新的值，每个连接都有独立的RTT，且同一连接在不同时刻的RTT也可能不同。
 
-若是第一次测量到RTT样本，则RTT$_S$值就取为所测量到的RTT样本值；否则按照下式计算：
-\begin{equation*}
-    \text{新RTT}_S=(1-\alpha)\times\text{旧RTT}_S+\alpha\times\text{新RTT}_S\text{样本}
-\end{equation*}
-其中，$0\leq\alpha<1$。RFC 2988推荐的$\alpha$值为0.125。
+% TCP使用一个名为\textbf{加权平均往返时间RTT$_S$}的参数反映往返时间。一般来说，RTO应略大于RTT$_S$。
 
-RFC 2988建议使用下式计算RTO：
-\begin{equation*}
-    \text{RTO}=4\text{RTT}_S+4\times\text{RTT}_D
-\end{equation*}
-由此又引入RTT$_D$，若是第一次测量，RTT$_D$值取为测量到的RTT样本值的一半；否则，使用下式计算：
-\begin{equation*}
-    \text{新RTT}_D=(1-\beta)\times\text{旧RTT}_D+\beta\times\lvert\text{RTT}_S-\text{新RTT样本}\rvert
-\end{equation*}
-$\beta$的推荐值为0.25。
+% 若是第一次测量到RTT样本，则RTT$_S$值就取为所测量到的RTT样本值；否则按照下式计算：
+% \begin{equation*}
+%     \text{新RTT}_S=(1-\alpha)\times\text{旧RTT}_S+\alpha\times\text{新RTT}_S\text{样本}
+% \end{equation*}
+% 其中，$0\leq\alpha<1$。RFC 2988推荐的$\alpha$值为0.125。
+
+% RFC 2988建议使用下式计算RTO：
+% \begin{equation*}
+%     \text{RTO}=4\text{RTT}_S+4\times\text{RTT}_D
+% \end{equation*}
+% 由此又引入RTT$_D$，若是第一次测量，RTT$_D$值取为测量到的RTT样本值的一半；否则，使用下式计算：
+% \begin{equation*}
+%     \text{新RTT}_D=(1-\beta)\times\text{旧RTT}_D+\beta\times\lvert\text{RTT}_S-\text{新RTT样本}\rvert
+% \end{equation*}
+% $\beta$的推荐值为0.25。
 
 \section{应用层}
 
@@ -2097,7 +2205,9 @@ FTP的连接也分两种：
     \item 数据连接，监听20端口
 \end{itemize}
 
-文件列表是通过数据连接传送的。
+文件列表（LIST命令）是通过数据连接传送的。
+
+匿名FTP访问通常使用anonymous作为用户名，密码可以是任意字符串。
 
 \subsection{电子邮件}
 
@@ -2111,6 +2221,10 @@ FTP的连接也分两种：
 \end{itemize}
 
 POP3在传输层使用明文传送密码。
+
+SMTP只能发送，不能接收。POP3和IMAP用于接收。通过浏览器使用邮件服务时（如Gmail），发送和接收邮件都使用HTTP协议。
+
+SMTP只支持传输7比特ASCII码内容。
 
 \subsection{万维网（WWW）}
 
@@ -2143,9 +2257,9 @@ HTTP/1.1默认使用流水线的持久连接。
 \begin{table}[h]
     \centering
     \resizebox{\linewidth}{!}{
-        \begin{tabular}{c|c|c|c|c|c|c|c|c|c}
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
             \hline
-            应用程序 & FTP数据连接 & FTP控制连接 & TELNET & SMTP & DNS & TFTP & HTTP & POP3 & SNMP \\
+            应用程序 & \makecell{FTP\\ 数据连接} & \makecell{FTP\\ 控制连接} & TELNET & SMTP & DNS & TFTP & HTTP & POP3 & SNMP \\
             \hline
             使用协议 & TCP & TCP & TCP & TCP & UDP & UDP & TCP & TCP & UDP \\
             \hline
