@@ -18,6 +18,8 @@
 \usepackage{indentfirst}
 \usepackage{authblk}
 \usepackage{multicol}
+\usepackage{multirow}
+\usepackage{diagbox}
 % \usepackage{draftwatermark}       % 需要应用水印时取消注释
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
@@ -58,7 +60,7 @@
 }
 
 % 行距。ctexart默认值为1.3
-\linespread{1.2}
+\linespread{1.5}
 
 \lstset{
   language=pascal,
@@ -198,7 +200,7 @@
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.4\textwidth]{./images/computer_system_layer.png}
+  \includegraphics[width=0.4\textwidth]{./images/computer_system_layer.jpg}
   \caption{计算机系统的多级层次结构}
   \label{computer_system_layer}
 \end{figure}
@@ -438,7 +440,16 @@
   \begin{table}[!ht]
     \centering
     \caption{不同机器数算术移位后的空位添补规则}
-    \includegraphics[width=0.6\textwidth]{./images/shift_rule.png}
+    \begin{tabular}{|c|c|c|}
+      \hline
+      & 码制 & 填补代码 \\ \hline
+      正数 & 源码、反码、补码 & 0 \\ \hline
+      \multirow{4}{*}{负数} & 原码 & 0 \\ \cline{2-3}
+      & \multirow{2}{*}{补码} & 左移添0 \\ \cline{3-3}
+      & & 右移添1 \\ \cline{2-3}
+      & 反码 & 1 \\
+      \hline
+    \end{tabular}
   \end{table}
   \item {\kaishu 逻辑移位}
   
@@ -547,7 +558,15 @@ char类型为8位无符号整数，转为int时高位补0即可。
   \begin{table}
     \centering
     \caption{IEEE 754浮点数的格式}
-    \includegraphics[width=0.7\textwidth]{./images/ieee754.png}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+      \hline
+      \multirow{2}{*}{类型} & \multirow{2}{*}{数符} & \multirow{2}{*}{阶码} & \multirow{2}{*}{尾数数值} & \multirow{2}{*}{总位数} & \multicolumn{2}{|c|}{偏置值} \\ \cline{6-7}
+      & & & & & 十六进制 & 十进制 \\ \hline
+      短浮点数 & 1 & 8 & 23 & 32 & 7FH & 127 \\ \hline
+      长浮点数 & 1 & 11 & 52 & 64 & 3FFH & 1023 \\ \hline
+      临时浮点数 & 1 & 15 & 64 & 80 & 3FFFH & 16383 \\
+      \hline
+    \end{tabular}
   \end{table}
   对于短浮点数，偏置值为127；对于长浮点数，偏置值为1023。存储阶码之前，要先把真值加上偏置值；反之在解析真值时，需要将阶码减去偏置值。
 
@@ -664,7 +683,19 @@ SRAM和DRAM的比较见表\ref{sram_and_dram}。
   \centering
   \caption{SRAM和DRAM各自的特点}
   \label{sram_and_dram}
-  \includegraphics[width=0.7\textwidth]{./images/sram_and_dram.png}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \diagbox{特点}{类型} & SRAM & DRAM \\ \hline
+    存储信息 & 触发器 & 电容 \\ \hline
+    破坏性读出 & 否 & 是 \\ \hline
+    需要刷新 & 否 & 是 \\ \hline
+    送行列地址 & 同时送 & 分两次送 \\ \hline
+    运行速度 & 快 & 慢 \\ \hline
+    集成度 & 低 & 高 \\ \hline
+    存储成本 & 高 & 低 \\ \hline
+    主要用途 & 高速缓存 & 内存 \\
+    \hline
+  \end{tabular}
 \end{table}
 
 \subsubsection{只读存储器ROM}
