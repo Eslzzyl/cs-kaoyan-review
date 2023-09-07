@@ -119,7 +119,7 @@
 \subsubsection{计算机硬件}
 
 \begin{enumerate}
-  \item {\kaishu 冯·诺伊曼机基本思想}
+  \item {\bf 冯·诺伊曼机基本思想}
   
   冯·诺依曼机有如下特点：
   \begin{itemize}
@@ -135,18 +135,18 @@
     \item 指令和数据以同等地位存储在存储器中，形式上没有区别，但计算机应当能够区分它们。
     \item 指令和数据均用二进制代码表示。指令由操作码和地址码组成。
   \end{itemize}
-  \item {\kaishu 计算机的功能部件}
+  \item {\bf 计算机的功能部件}
   \begin{enumerate}
-    \item {\kaishu 输入设备}。如键盘、鼠标、扫描仪、摄像机等。
-    \item {\kaishu 输出设备}。如显示器、打印机等。
-    \item {\kaishu 存储器}
+    \item {\bf 输入设备}。如键盘、鼠标、扫描仪、摄像机等。
+    \item {\bf 输出设备}。如显示器、打印机等。
+    \item {\bf 存储器}
     
     又分主存（内存）和辅存（外存）。CPU可以直接访问主存，但不能直接访问辅存。
     
     主存的工作方式是按存储单元的地址进行存取，即\textbf{按地址存取方式}。
 
     MAR（存储器地址寄存器）、MDR（存储器数据寄存器）二者虽然属于存储器的一部分，但实际上是集成在CPU中的。
-    \item {\kaishu 运算器}
+    \item {\bf 运算器}
     
     核心是ALU。此外还包含若干通用寄存器，如：
     \begin{itemize}
@@ -159,7 +159,7 @@
       前三个是必须的。
     \end{itemize}
     运算器还包含程序状态寄存器（PSW），又称标志寄存器。
-    \item {\kaishu 控制器}
+    \item {\bf 控制器}
     
     包含如下组件：
     \begin{itemize}
@@ -173,11 +173,14 @@
 \subsubsection{计算机软件}
 
 \begin{enumerate}
-  \item {\kaishu 系统软件和应用软件}
+  \item {\bf 系统软件和应用软件}
   
-  系统软件：操作系统、数据库\textbf{管理系统}、语言处理程序、分布式软件系统、网络软件系统、标准库程序、服务性程序等。
-  应用软件：各种科学计算类程序、工程设计类程序、数据统计与处理程序等。
-  \item {\kaishu 三个级别的语言}
+  \begin{itemize}
+    \item {\bf 系统软件}：操作系统、数据库\textbf{管理系统}、语言处理程序、分布式软件系统、网络软件系统、标准库程序、服务性程序等。
+    \item {\bf 应用软件}：各种科学计算类程序、工程设计类程序、数据统计与处理程序等。
+  \end{itemize}
+
+  \item {\bf 三个级别的语言}
   \begin{enumerate}
     \item 机器语言。
     \item 汇编语言。
@@ -189,7 +192,7 @@
     \item 解释程序（解释器）
     \item 编译程序（编译器）
   \end{enumerate}
-  \item {\kaishu 软件和硬件的逻辑功能等价性}
+  \item {\bf 软件和硬件的逻辑功能等价性}
 
   对某一功能来说，既可以由硬件实现，又可以由软件实现，对于用户来说，它们在功能上是等价的。
 
@@ -200,7 +203,7 @@
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.4\textwidth]{./images/computer_system_layer.jpg}
+  \includegraphics[width=0.6\textwidth]{./images/computer_system_layer.jpg}
   \caption{计算机系统的多级层次结构}
   \label{computer_system_layer}
 \end{figure}
@@ -219,10 +222,10 @@
 \subsubsection{计算机系统的工作原理}
 
 \begin{enumerate}
-  \item {\kaishu 从源程序到可执行文件}
+  \item {\bf 从源程序到可执行文件}
   
   gcc编译流程：预处理-编译-汇编-链接
-  \item {\kaishu 指令执行过程的描述}
+  \item {\bf 指令执行过程的描述}
   \begin{enumerate}
     \item 取指令：PC$\to$MAR$\to$M$\to$MDR$\to$IR
     \item 分析指令：OP(IR)$\to$CU
@@ -272,10 +275,10 @@
 \subsubsection{计算机的主要性能指标}
 
 \begin{enumerate}
-  \item {\kaishu 字长}，指计算机进行一次整数运算所能处理的二进制数据的位数。
-  \item {\kaishu 数据通路带宽}
-  \item {\kaishu 主存容量}。MAR的位数反映了存储单元的个数，MDR的位数反映了存储单元的字长。
-  \item {\kaishu 运算速度}
+  \item {\bf 字长}，指计算机进行一次整数运算所能处理的二进制数据的位数。
+  \item {\bf 数据通路带宽}
+  \item {\bf 主存容量}。MAR的位数反映了存储单元的个数，MDR的位数反映了存储单元的字长。
+  \item {\bf 运算速度}
   \begin{enumerate}
     \item 吞吐量，主要取决于主存的存储周期。
     \item 响应时间，通常包括CPU时间和等待时间。
@@ -317,21 +320,22 @@
 \end{itemize}
 
 \begin{enumerate}
-  \item {\kaishu 进位计数法}
+  \item {\bf 进位计数法}
   
   一个$r$进制数（$K_n K_{n-1}\cdots K_0 K_{-1}\cdots K_{-m}$）的数值可表示为
   \begin{equation*}
     K_n r^n+K_{n-1}r^{n-1}+\cdots+K_0 r^0+K_{-1}r^{-1}+\cdots+K_{-m}r^{-m}=\sum_{i=n}^{-m}K_i r^i
   \end{equation*}
   式中，$r$是基数；$r^i$是第$i$位的位权（整数位最低规定为第0位）；$K_i$的取值可以是$0,1,\cdots,r-1$共$r$个数码中的任意一个。
-  \item {\kaishu 不同进制数之间的相互转换}
+  \item {\bf 不同进制数之间的相互转换}
   \begin{enumerate}
     \item 二进制转八进制和十六进制
     
-    二进制混合数（整数+小数）的整数部分，高位补0至对齐（转八进制则对齐到3位的整数倍，转十六进制则对齐到4位的整数倍）；小数部分，低位补0至对齐，然后直接转换。
+    整数部分方法略；小数部分，低位补0至对齐，然后直接转换。
 
     八、十六进制互转时，可借助二进制作为中介。
-    \item 任意进制数转为十进制数：各位数码和权值相乘然后加起来
+
+    \item 任意进制数转为十进制数：略
     \item 十进制数转为任意进制数
     
     将十进制混合数拆成整数部分和小数部分，整数部分除基取余，小数部分乘基取整，最后再拼接起来。
@@ -344,15 +348,33 @@
 
 \subsubsection{BCD码}
 
-本节已从新大纲中删除，故略。
+\textcolor{blue}{本节已从新大纲中删除。}
+
+BCD码是用4位二进制表示十进制中0-9的编码，BCD码使得二进制和十进制可以快速转换，但是必定有6种状态是冗余的。
+
+\begin{itemize}
+  \item {\bf 8421码}
+  
+  是有权码。设其各位数值为$b_3 b_2 b_1 b_0$，则对应的十进制数字是$D=8b_3+4b_2+2b_1+b_0$。
+
+  两个8421码相加时可能超过了十进制9（对应8421码为1001），此时需要加上6（0110）进行修正，然后取低4位。
+
+  \item {\bf 余3码}
+  
+  将8421码加上$(0011)_2$（十进制3）形成。
+
+  \item {\bf 2421码}
+  
+  类似8421，权值从高到低是2421。
+\end{itemize}
 
 \subsubsection{定点数的编码表示}
 
 \begin{enumerate}
-  \item 机器数的定点表示
-  \item 原码、反码、补码、移码
+  \item {\bf 机器数的定点表示}
+  \item {\bf 原码、反码、补码、移码}
   \begin{enumerate}
-    \item 原码表示法
+    \item {\bf 原码}
     
     \begin{itemize}
       \item 若字长为$n+1$，则原码\textbf{小数}的表示范围为$-(1-2^{-n})\leq x\leq 1-2^{-n}$（关于原点对称）
@@ -360,17 +382,19 @@
     \end{itemize}
 
     真值0的原码表示有两种，即+0和-0。
-    \item 补码表示法
+
+    \item {\bf 补码}
     
-    小数补码比原码多表示一个-1，整数补码比原码多表示一个-2。
+    小数补码比原码多表示一个$-1$，整数补码比原码多表示一个$-2^n$。
 
-    变形补码：又称模4补码，双符号位的补码小数，符号位00表示正，11表示负。模4补码的符号位的存储仅仅需要\textbf{一位}而不是两位，因为任何一个正确的模4补码，符号位的两位都是相同的，如果不同表示发生了溢出。
+    变形补码：又称模4补码，双符号位的补码小数，符号位00表示正，11表示负。模4补码的符号位的存储仅仅需要\textbf{一位}而不是两位，因为任何正确的模4补码，两个符号位都是相同的，如果不同表示发生了溢出。
 
-    补码真值互转：整数直接按原码转换，负数则各位取反加1。
+    补码真值互转：整数直接按原码转换，负数则符号位置1，其余各位取反加1。
 
     另一种方法：从后往前找到第一个1，该1不变，前面所有位（含符号位）取反，符号去掉即可。
-    \item 反码表示法
-    \item 移码表示法
+
+    \item {\bf 反码}
+    \item {\bf 移码}
     
     移码就是在真值上加一个偏置值：
     \begin{equation*}
@@ -380,6 +404,7 @@
     \begin{itemize}
       \item 0的表示是唯一的。
       \item 同一个真值的补码和移码只差一个符号位。补码符号位取反，数值部分不变即得移码，反之亦然。
+      \item 移码全0时对应真值的最小值$-2^n$；移码全1时对应真值的最大值$2^n-1$。
       \item 移码保持了数据的原有大小顺序，移码大真值就大，移码小真值就小。
     \end{itemize}
   \end{enumerate}
@@ -387,10 +412,7 @@
 
 \subsubsection{整数的表示}
 
-\begin{enumerate}
-  \item {\kaishu 无符号整数的表示}
-  \item {\kaishu 带符号整数的表示}
-\end{enumerate}
+略
 
 \begin{problem}
   对于相同位数（设为$N$位，不考虑符号位）的二进制补码小数和十进制小数，比值$\frac{\text{二进制小数能表示的数的个数}}{\text{十进制小数能表示的数的个数}}$为 \uline{$(0.2)^N$}
@@ -404,24 +426,24 @@
 
 \subsubsection{基本运算部件}
 
-408很少涉及本节内容。
+\textcolor{blue}{408很少涉及本节内容。}
 
 加法器是ALU的核心部件。
 
 \begin{enumerate}
-  \item {\kaishu 一位全加器}
-  \item {\kaishu 串行进位加法器}
+  \item {\bf 一位全加器}
+  \item {\bf 串行进位加法器}
   
   串行进位加法器的最长运算时间主要是由进位信号的传递时间决定的，加法器本身的求和时间只是次要因素。
-  \item {\kaishu 并行进位加法器}
-  \item {\kaishu 带标志加法器}
-  \item {\kaishu 算数逻辑单元（ALU）}
+  \item {\bf 并行进位加法器}
+  \item {\bf 带标志加法器}
+  \item {\bf 算数逻辑单元（ALU）}
 \end{enumerate}
 
 \subsubsection{定点数的移位运算}
 
 \begin{enumerate}
-  \item {\kaishu 算术移位}
+  \item {\bf 算术移位}
   
   算术移位的对象是\textbf{有符号数}。
 
@@ -451,10 +473,10 @@
       \hline
     \end{tabular}
   \end{table}
-  \item {\kaishu 逻辑移位}
+  \item {\bf 逻辑移位}
   
   逻辑移位将移位对象视为\textbf{无符号数}。无论码制、左右移，一律补0。
-  \item {\kaishu 循环移位}
+  \item {\bf 循环移位}
   
   又分带进位标志CF的循环移位和不带进位标志的循环移位。
 
@@ -468,11 +490,11 @@
 \subsubsection{定点数的加减运算}
 
 \begin{enumerate}
-  \item {\kaishu 补码的加减法运算}
-  \item {\kaishu 补码加减运算电路}
+  \item {\bf 补码的加减法运算}
+  \item {\bf 补码加减运算电路}
   
   这里有一个各标志位的含义，可能有用。待补。
-  \item {\kaishu 溢出判别方法}
+  \item {\bf 溢出判别方法}
   
   仅当两个符号相同的数相加或者两个符号相异的数相减才有可能产生溢出。判断溢出的方法有三种：
   \begin{itemize}
@@ -495,7 +517,7 @@
 
 \subsubsection{C语言中的整数类型及类型转换}
 
-本节为408常考内容。
+\textcolor{blue}{本节为408常考内容。}
 
 当大字长变量向小字长变量强制类型转换时，多余的高位直接截掉，低位直接赋值，而不是进行类似循环溢出的操作。
 
@@ -505,19 +527,19 @@
   \item 如果原数字带符号，则进行符号扩展。
 \end{itemize}
 
-char类型为8位无符号整数，转为int时高位补0即可。
+\verb|char|类型为8位无符号整数，转为\verb|int|时高位补0即可。
 
 \subsubsection{数据的存储和排列}
 
 \begin{enumerate}
-  \item {\kaishu 数据的“大端方式”和“小端方式”存储}
+  \item {\bf 数据的“大端方式”和“小端方式”存储}
   \begin{itemize}
     \item 大端：低字节放高地址
     \item 小端：低字节放低地址
   \end{itemize}
-  \item {\kaishu 数据按“边界对齐”方式存储}
+  \item {\bf 数据按“边界对齐”方式存储}
   
-  \textbf{注意}：题目涉及\textbf{结构体}的，一定要留意对齐方式（一般都是边界对齐的）！
+  \textcolor{red}{\textbf{注意}：题目涉及\textbf{结构体}的，一定要留意对齐方式（一般都是边界对齐的）！}
 \end{enumerate}
 
 \subsection{浮点数的表示与运算}
@@ -525,7 +547,7 @@ char类型为8位无符号整数，转为int时高位补0即可。
 \subsubsection{浮点数的表示}
 
 \begin{enumerate}
-  \item {\kaishu 浮点数的表示格式}
+  \item {\bf 浮点数的表示格式}
   
   通常，浮点数可表示为
   \begin{equation*}
@@ -538,13 +560,13 @@ char类型为8位无符号整数，转为int时高位补0即可。
     \item $E$是阶码，是一个二进制定点整数，通常用移码表示。
     \item $R$是隐含的基数，可取2、4、16等。
   \end{itemize}
-  \item {\kaishu 浮点数的表示范围}
+  \item {\bf 浮点数的表示范围}
   
   \begin{itemize}
     \item 数据产生上溢（正上溢、负上溢）时，计算机必须停机处理溢出。
     \item 数据产生下溢（正下溢、负下溢）时，计算机将其当作机器零处理。
   \end{itemize}
-  \item {\kaishu 浮点数的规格化}
+  \item {\bf 浮点数的规格化}
   
   \begin{itemize}
     \item 左规：尾数的最高位不是有效位，即尾数为$0.0\cdots$时，进行左规，尾数每左移一次，阶码减一（仅基数为2时）。
@@ -552,7 +574,7 @@ char类型为8位无符号整数，转为int时高位补0即可。
   \end{itemize}
 
   基数不同，浮点数的规格化形式也不同。基数为2时，原码规格化数的尾数最高位一定是1；基数为4时，原码规格化形式的尾数最高两位不全为0。
-  \item {\kaishu IEEE 754标准}
+  \item {\bf IEEE 754标准}
   
   IEEE 754规定：浮点数的基数隐含为2，尾数采用隐藏位策略的原码表示，阶码用移码表示。
   \begin{table}
@@ -571,21 +593,21 @@ char类型为8位无符号整数，转为int时高位补0即可。
   对于短浮点数，偏置值为127；对于长浮点数，偏置值为1023。存储阶码之前，要先把真值加上偏置值；反之在解析真值时，需要将阶码减去偏置值。
 
   规格化的二进制浮点数，数值最高位总是1，因此此位省略，尾数实际上能多表示一位有效位。
-  \item {\kaishu 定点、浮点表示的区别}
+  \item {\bf 定点、浮点表示的区别}
 \end{enumerate}
 
 \subsubsection{浮点数的加减运算}
 
 分为以下几步：
 \begin{enumerate}
-  \item {\kaishu 对阶}
+  \item {\bf 对阶}
   
   原则是小阶向大阶对齐，即将阶码数小的浮点数的阶码逐位增加1，同时尾数逐位右移，直到两个数阶码相等为止。
-  \item {\kaishu 尾数求和}
-  \item {\kaishu 规格化}
+  \item {\bf 尾数求和}
+  \item {\bf 规格化}
   
   尾数求和的结果不一定是规格化的，因此需要规格化。
-  \item {\kaishu 舍入}
+  \item {\bf 舍入}
   
   为保证精度，一般将右移移出的位保留下来，在最后得出结果时舍入成IEEE 754格式。
   \begin{itemize}
@@ -593,7 +615,7 @@ char类型为8位无符号整数，转为int时高位补0即可。
     \item 恒置1法：无脑将右移后的尾数末位置为1。
     \item 截断法：直接截断，最简单。
   \end{itemize}
-  \item {\kaishu 溢出判断}
+  \item {\bf 溢出判断}
 \end{enumerate}
 
 \section{存储系统}
@@ -603,13 +625,13 @@ char类型为8位无符号整数，转为int时高位补0即可。
 \subsubsection{存储器的分类}
 
 \begin{enumerate}
-  \item {\kaishu 按在计算机中的作用（层次）分类}
+  \item {\bf 按在计算机中的作用（层次）分类}
   \begin{itemize}
     \item 主存储器
     \item 辅助存储器
     \item 高速缓冲存储器（Cache）
   \end{itemize}
-  \item {\kaishu 按存储介质分类}
+  \item {\bf 按存储介质分类}
   \begin{itemize}
     \item 磁表面存储器（磁盘、磁带）
     \item 磁芯存储器
@@ -620,7 +642,7 @@ char类型为8位无符号整数，转为int时高位补0即可。
     \end{itemize}
     \item 光存储器（光盘）
   \end{itemize}
-  \item {\kaishu 按存取方式分类}
+  \item {\bf 按存取方式分类}
   \begin{itemize}
     \item 随机存储器（RAM）：又分静态RAM和动态RAM
     \item 只读存储器（ROM）：可与RAM共同作为主存的一部分，统一构成主存的地址域。\textbf{同样支持随机访问}。
@@ -630,7 +652,7 @@ char类型为8位无符号整数，转为int时高位补0即可。
       \item 直接存取存储器（如磁盘、光盘）
     \end{itemize}
   \end{itemize}
-  \item {\kaishu 按信息的可保存性分类}
+  \item {\bf 按信息的可保存性分类}
   \begin{itemize}
     \item 易失性存储器，如RAM
     \item 非易失性存储器，如ROM、磁表面存储器和光存储器。
@@ -729,10 +751,10 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 \subsubsection{多模块存储器}
 
 \begin{enumerate}
-  \item {\kaishu 单体多字存储器}
+  \item {\bf 单体多字存储器}
   
   一次并行读出$m$个字，要求指令和数据必须连续存放。
-  \item {\kaishu 多体并行存储器}
+  \item {\bf 多体并行存储器}
   \begin{itemize}
     \item 高位交叉编址（顺序方式）
     
@@ -760,13 +782,13 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 \subsubsection{主存容量的扩展}
 
 \begin{enumerate}
-  \item {\kaishu 位扩展法}
+  \item {\bf 位扩展法}
   
   各芯片连接地址线的方式相同，但连接数据线的方式不同，在某一时刻选中所有的芯片，所以片选信号要连接到所有的芯片。
-  \item {\kaishu 字扩展法}
+  \item {\bf 字扩展法}
   
   各芯片连接地址线的方式相同，连接数据线的方式也相同，在某一时刻只需选中部分芯片，所以将片选信号直接连接到相应的芯片，或者通过译码器连接。
-  \item {\kaishu 字位同时扩展法}
+  \item {\bf 字位同时扩展法}
 \end{enumerate}
 
 注意：MAR的位数应该和CPU支持的内存大小保持一致，而不是和系统安装的内存大小保持一致。
@@ -774,8 +796,8 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 \subsubsection{存储芯片的地址分配和片选}
 
 \begin{enumerate}
-  \item {\kaishu 线选法}
-  \item {\kaishu 译码片选法}
+  \item {\bf 线选法}
+  \item {\bf 译码片选法}
 \end{enumerate}
 
 \begin{problem}
@@ -832,19 +854,19 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 
 地址映射有如下三种方法：
 \begin{enumerate}
-  \item {\kaishu 直接映射}
+  \item {\bf 直接映射}
   
   \begin{equation*}
     \text{Cache行号}=\text{主存块号}\ \  mod\ \  \text{Cache总行数}
   \end{equation*}
   假设Cache有$2^c$行，主存有$2^m$块。上式表明，主存块号的低$c$位正好是它要装入的Cache行号。给每个Cache行设置一个长为$t=m-c$的标记（tag），当主存某块调入Cache后，就将其块号的高$t$位设置在对应Cache行的标记中。
-  \item {\kaishu 全相联映射}
+  \item {\bf 全相联映射}
   
   \begin{itemize}
     \item 优点：灵活，Cache块的冲突概率低，空间利用率高，命中率也高；
     \item 缺点：标记的比较速度慢，实现成本高，通常需要采用昂贵的\textbf{按内容寻址}的相联存储器进行地址映射。
   \end{itemize}
-  \item {\kaishu 组相联映射}
+  \item {\bf 组相联映射}
   
   将Cache分成若干个大小相等的组，组间采用直接映射，组内采用全相联映射。这是对上面两种方式的折中。
 
@@ -906,7 +928,7 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 \subsubsection{虚拟存储器和Cache的比较}
 
 \begin{enumerate}
-  \item {\kaishu 相同之处}
+  \item {\bf 相同之处}
   
   \begin{itemize}
     \item 都是为了提高系统性能。
@@ -914,7 +936,7 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
     \item 都有地址的映射、替换、更新策略等问题。
     \item 都利用了程序的局部性原理，将活跃数据放在相对高速的部件中。
   \end{itemize}
-  \item {\kaishu 不同之处}
+  \item {\bf 不同之处}
   
   \begin{itemize}
     \item Cache主要解决系统速度问题，虚拟存储器主要解决主存容量问题。
@@ -953,25 +975,25 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 
 根据指令的地址码数量不同，可分为：
 \begin{enumerate}
-  \item {\kaishu 零地址指令}
+  \item {\bf 零地址指令}
   
   仅有一个操作码。有两种情况：
   \begin{itemize}
     \item 不需要操作数的指令。如空操作、停机、关中断等。
     \item 运算类指令，但运算类的零地址指令只存在于堆栈计算机。两个操作数一般来自栈顶和次栈顶。
   \end{itemize}
-  \item {\kaishu 一地址指令}
+  \item {\bf 一地址指令}
   
   同样有两种情况：
   \begin{itemize}
     \item 只需要一个操作数，如加一、减一、求反、求补等。
     \item 需要两个操作数，另一个操作数是隐含的，来自累加器ACC。
   \end{itemize}
-  \item {\kaishu 二地址指令}
-  \item {\kaishu 三地址指令}
+  \item {\bf 二地址指令}
+  \item {\bf 三地址指令}
   
   除了两个操作数之外，还提供结果地址，运算结果将送入结果地址。
-  \item {\kaishu 四地址指令}
+  \item {\bf 四地址指令}
   
   除了两个操作数、结果地址之外，还提供下一条指令的地址。
 \end{enumerate}
@@ -997,11 +1019,11 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 \subsubsection{指令的操作类型}
 
 \begin{enumerate}
-  \item {\kaishu 数据传送}
-  \item {\kaishu 算术和逻辑运算}
-  \item {\kaishu 移位操作}
-  \item {\kaishu 转移操作}
-  \item {\kaishu 输入输出操作}
+  \item {\bf 数据传送}
+  \item {\bf 算术和逻辑运算}
+  \item {\bf 移位操作}
+  \item {\bf 转移操作}
+  \item {\bf 输入输出操作}
 \end{enumerate}
 
 \begin{problem}
@@ -1028,12 +1050,12 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 \subsubsection{指令寻址和数据寻址}
 
 \begin{enumerate}
-  \item {\kaishu 指令寻址}，又包括
+  \item {\bf 指令寻址}，又包括
   \begin{itemize}
     \item 顺序寻址
     \item 跳跃寻址
   \end{itemize}
-  \item {\kaishu 数据寻址}
+  \item {\bf 数据寻址}
   
   方式众多。一般在指令字中设置一个字段，指明属于哪种寻址方式。
 \end{enumerate}
@@ -1043,16 +1065,16 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 细节待补
 
 \begin{enumerate}
-  \item {\kaishu 隐含寻址}
-  \item {\kaishu 立即（数）寻址}
-  \item {\kaishu 直接寻址}
-  \item {\kaishu 间接寻址}
-  \item {\kaishu 寄存器寻址}
-  \item {\kaishu 寄存器间接寻址}
-  \item {\kaishu 相对寻址}
-  \item {\kaishu 基址寻址}
-  \item {\kaishu 变址寻址}
-  \item {\kaishu 堆栈寻址}
+  \item {\bf 隐含寻址}
+  \item {\bf 立即（数）寻址}
+  \item {\bf 直接寻址}
+  \item {\bf 间接寻址}
+  \item {\bf 寄存器寻址}
+  \item {\bf 寄存器间接寻址}
+  \item {\bf 相对寻址}
+  \item {\bf 基址寻址}
+  \item {\bf 变址寻址}
+  \item {\bf 堆栈寻址}
 \end{enumerate}
 
 \subsection{程序的机器级表示}
@@ -1130,11 +1152,11 @@ CISC对老机器的兼容性比RISC好。
 \subsubsection{CPU的功能}
 
 \begin{enumerate}
-  \item {\kaishu 指令控制}
-  \item {\kaishu 操作控制}
-  \item {\kaishu 时间控制}
-  \item {\kaishu 数据加工}
-  \item {\kaishu 中断处理}
+  \item {\bf 指令控制}
+  \item {\bf 操作控制}
+  \item {\bf 时间控制}
+  \item {\bf 数据加工}
+  \item {\bf 中断处理}
 \end{enumerate}
 
 \subsubsection{CPU的基本结构}
@@ -1142,7 +1164,7 @@ CISC对老机器的兼容性比RISC好。
 CPU=运算器+控制器
 
 \begin{enumerate}
-  \item {\kaishu 运算器}
+  \item {\bf 运算器}
   \begin{itemize}
     \item 算术逻辑单元ALU
     \item 暂存寄存器
@@ -1152,7 +1174,7 @@ CPU=运算器+控制器
     \item 移位器
     \item 计数器
   \end{itemize}
-  \item {\kaishu 控制器}
+  \item {\bf 控制器}
   \begin{itemize}
     \item 程序计数器PC
     \item 指令寄存器IR
@@ -1213,12 +1235,12 @@ CPU从主存中\textbf{取出并执行}一条指令的时间称为\textbf{指令
 \subsubsection{指令周期的数据流}
 
 \begin{enumerate}
-  \item {\kaishu 取指周期}
+  \item {\bf 取指周期}
   
   取指令的同时，PC+1。
-  \item {\kaishu 间址周期}
-  \item {\kaishu 执行周期}
-  \item {\kaishu 中断周期}
+  \item {\bf 间址周期}
+  \item {\bf 执行周期}
+  \item {\bf 中断周期}
   
   进栈操作是先修改栈顶指针，再存入数据。
 \end{enumerate}
@@ -1226,9 +1248,9 @@ CPU从主存中\textbf{取出并执行}一条指令的时间称为\textbf{指令
 \subsubsection{指令执行方案}
 
 \begin{enumerate}
-  \item {\kaishu 单指令周期}：对所有指令都用相同的时间执行，指令是串行执行的。每条指令都用一个时钟周期执行完成，因此时钟周期取决于执行时间最长的指令。
-  \item {\kaishu 多指令周期}：对不同指令使用不同数量的时钟周期执行，但指令仍然是串行执行的。
-  \item {\kaishu 流水线方案}：略
+  \item {\bf 单指令周期}：对所有指令都用相同的时间执行，指令是串行执行的。每条指令都用一个时钟周期执行完成，因此时钟周期取决于执行时间最长的指令。
+  \item {\bf 多指令周期}：对不同指令使用不同数量的时钟周期执行，但指令仍然是串行执行的。
+  \item {\bf 流水线方案}：略
 \end{enumerate}
 
 \begin{problem}
@@ -1249,9 +1271,9 @@ CPU从主存中\textbf{取出并执行}一条指令的时间称为\textbf{指令
 
 有以下几种：
 \begin{enumerate}
-  \item {\kaishu CPU内部单总线方式}，将所有寄存器的输入、输出端都连接到一条公共通路上，结构简单，但有很多冲突。
-  \item {\kaishu CPU内部多总线方式}。
-  \item {\kaishu 专用数据通路方式}。不用共享总线，而是根据数据通路设计特定的连线，性能很好，但硬件量很大。
+  \item {\bf CPU内部单总线方式}，将所有寄存器的输入、输出端都连接到一条公共通路上，结构简单，但有很多冲突。
+  \item {\bf CPU内部多总线方式}。
+  \item {\bf 专用数据通路方式}。不用共享总线，而是根据数据通路设计特定的连线，性能很好，但硬件量很大。
 \end{enumerate}
 
 单总线结构中，ALU的两个输入端不能都连接到总线，而是一端连总线，另一端通过一个寄存器间接地连接总线。输出端也必须通过一个寄存器间接连接总线。
@@ -1723,8 +1745,8 @@ CPU的控制方式:
 
 I/O端口的编址方式：
 \begin{itemize}
-  \item {\kaishu 统一编址}，又叫存储器映射方式。把I/O端口当作存储器的单元进行地址分配。无需设置I/O指令，直接通过访存指令即可访问I/O端口。
-  \item {\kaishu 独立编址}，又叫I/O映射方式。需要设置I/O指令。
+  \item {\bf 统一编址}，又叫存储器映射方式。把I/O端口当作存储器的单元进行地址分配。无需设置I/O指令，直接通过访存指令即可访问I/O端口。
+  \item {\bf 独立编址}，又叫I/O映射方式。需要设置I/O指令。
 \end{itemize}
 
 \subsection{I/O方式}
