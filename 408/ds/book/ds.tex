@@ -19,6 +19,7 @@
 \usepackage{indentfirst}
 \usepackage{authblk}
 \usepackage{multicol}
+\usepackage{multirow}
 % \usepackage{draftwatermark}       % 需要应用水印时取消注释
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
@@ -61,7 +62,7 @@
 }
 
 % 行距。ctexart默认值为1.3
-\linespread{1.2}
+\linespread{1.5}
 
 \lstset{
   language=c,
@@ -1902,7 +1903,7 @@ BST主要是为了加快查找、插入、删除的速度。
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.7\textwidth]{./images/2-way-merge-sort.png}
+  \includegraphics[width=0.7\textwidth]{./images/2-way-merge-sort.jpg}
   \caption{2路归并排序示例}
 \end{figure}
 
@@ -1986,11 +1987,25 @@ BST主要是为了加快查找、插入、删除的速度。
 
 \subsubsection{内部排序算法的比较}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.7\textwidth]{./images/sort-compare.jpg}
-  \caption{各种排序算法的比较}
-\end{figure}
+\begin{table}
+  \begin{center}
+    \caption{各种排序算法的比较}
+    \begin{tabular}{|c|c|c|c|c|c|}
+      \hline
+      \multirow{2}{*}{排序方法} & \multicolumn{3}{|c|}{时间复杂度} & \multirow{2}{*}{空间复杂度} & \multirow{2}{*}{稳定性} \\ \cline{2-4}
+      & 最好 & 最坏 & 平均 & & \\ \hline
+      直接插入 & $O(n)$ & $O(n^2)$ & $O(n^2)$ & $O(1)$ & 稳定 \\ \hline
+      希尔排序 & $O(n)$ & $O(n^2)$ & $O(n^{1.3})$ & $O(1)$ & 不稳定 \\ \hline
+      冒泡排序 & $O(n)$ & $O(n^2)$ & $O(n^2)$ & $O(1)$ & 稳定 \\ \hline
+      快速排序 & $O(n\log_2 n)$ & $O(n^2)$ & $O(n\log_2 n)$ & $O(\log_2 n)$ & 不稳定 \\ \hline
+      简单选择 & $O(n)$ & $O(n^2)$ & $O(n^2)$ & $O(1)$ & 不稳定 \\ \hline
+      堆排序 & $O(n\log_2 n)$ & $O(n\log_2 n)$ & $O(n\log_2 n)$ & $O(1)$ & 不稳定 \\ \hline
+      归并排序 & $O(n\log_2 n)$ & $O(n\log_2 n)$ & $O(n\log_2 n)$ & $O(n)$ & 稳定 \\ \hline
+      基数排序 & $O(d(n+rd))$ & $O(d(n+rd))$ & $O(d(n+rd))$ & $O(n+rd)$ & 稳定 \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
 
 一种常考的题型是给出原始序列和排序过程中的一个序列，问排序方法是什么。这要求对排序方法的特点比较熟悉，如冒泡排序和堆排序每趟都能产生当前的最大值或最小值，而快速排序每趟至少能确定一个一个元素的最终位置。
 

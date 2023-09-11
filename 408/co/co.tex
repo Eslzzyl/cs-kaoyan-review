@@ -465,7 +465,7 @@ BCD码是用4位二进制表示十进制中0-9的编码，BCD码使得二进制�
     \begin{tabular}{|c|c|c|}
       \hline
       & 码制 & 填补代码 \\ \hline
-      正数 & 源码、反码、补码 & 0 \\ \hline
+      正数 & 原码、反码、补码 & 0 \\ \hline
       \multirow{4}{*}{负数} & 原码 & 0 \\ \cline{2-3}
       & \multirow{2}{*}{补码} & 左移添0 \\ \cline{3-3}
       & & 右移添1 \\ \cline{2-3}
@@ -513,7 +513,74 @@ BCD码是用4位二进制表示十进制中0-9的编码，BCD码使得二进制�
 
 \subsubsection{定点数的乘除运算}
 
-待补
+\begin{enumerate}
+  \item {\bf 乘法}
+  
+  乘法操作由累加和右移实现。
+
+  \begin{itemize}
+    \item {\bf 原码一位乘}
+    
+    设$[X]_\text{原}=x_s x_1 x_2\cdots x_n$，$[Y]_\text{原}=y_s y_1 y_2\cdots y_n$，步骤如下：
+    \begin{enumerate}
+      \item 被乘数和乘数都取绝对值，符号通过异或得到。
+      \item 乘数的每一位$y_i$乘以被乘数，然后加上之前得到的结果，即部分积。部分积初值为0。
+      \item 从乘数的最低位$y_n$开始判断，若为1，则部分积加上被乘数（绝对值），然后右移一位；若为0，则部分积直接右移一位。
+      \item 重复上一步，判断n次。
+    \end{enumerate}
+
+    \item {\bf 补码一位乘（Booth算法）}
+    
+    设$[X]_\text{补}=x_s x_1 x_2\cdots x_n$，$[Y]_\text{补}=y_s y_1 y_2\cdots y_n$，步骤如下：
+    \begin{enumerate}
+      \item 符号位参与运算，运算的数均以补码表示。
+      \item 乘数末位增设附加位$y_{n+1}$，初值为0。
+      \item 根据$(y_n, y_{n+1})$的取值来操作，规则见表\ref{booth-algorithm}。
+      \item 移位按照补码右移规则进行（符号位为0，补0；符号位为1，补1）。
+      \item 按照上述步骤操作$n+1$次，但第$n+1$步不再移位（共进行$n+1$次累加和$n$次右移）。
+    \end{enumerate}
+
+    \begin{table}[h]
+      \begin{center}
+        \caption{Booth算法的移位规则}
+        \label{booth-algorithm}
+        \begin{tabular}{|c|c|c|}
+          \hline
+          $y_n$（高位） & $y_{n+1}$（低位） & 操作 \\ \hline
+          0 & 0 & 部分积右移一位 \\ \hline
+          0 & 1 & 部分积加$[X]_\text{补}$，右移一位 \\ \hline
+          1 & 0 & 部分积加$[-X]_\text{补}$，右移一位 \\ \hline
+          1 & 1 & 部分积右移一位 \\
+          \hline
+        \end{tabular}
+      \end{center}
+    \end{table}
+  \end{itemize}
+
+  \item {\bf 除法}
+  
+  除法运算可以分解成“累加-（逻辑）左移”运算。
+  
+  \begin{itemize}
+    \item {\bf 符号扩展}
+    
+    原码符号扩展：保持符号位不变，一律补0。
+
+    补码符号扩展：正数补0，负整数补1，负小数补0。
+
+    \item {\bf 原码除法（不恢复余数法）}
+    
+    设$[X]_\text{原}=x_s x_1 x_2\cdots x_n$，$[Y]_\text{原}=y_s y_1 y_2\cdots y_n$，步骤如下：
+    \begin{enumerate}
+      \item 被除数和除数都取绝对值，符号位通过异或得到。
+      \item 用被除数减去除数，结果（余数）为正时，商上1，余数和商左移一位，再减去除数；余数为负时，商上0，余数和商左移一位，再加上除数。
+      \item 当第$n+1$步余数为负时，需加上$|Y|$得到第$n+1$步正确的余数。
+    \end{enumerate}
+    \item {\bf 补码除法（加减交替法）}
+    
+    待补
+  \end{itemize}
+\end{enumerate}
 
 \subsubsection{C语言中的整数类型及类型转换}
 
@@ -1087,7 +1154,7 @@ AT\&T格式汇编和Intel格式汇编的比较：
   \item AT\&T的目的操作数在后，Intel的目的操作数在前。
   \item AT\&T格式中，寄存器前面要加\%，立即数前面要加\$，Intel格式则无需前缀。
   \item 内存寻址方面，AT\&T格式使用小括号，Intel格式使用中括号。
-  \item 处理复杂寻址方式时，AT\&T的"\verb|disp(base, index, scale)|"等价于Intel的“\verb|[base + index * scale + disp]|”。
+  \item 处理复杂寻址方式时，AT\&T的\verb|disp(base, index, scale)|\\ 等价于Intel的\verb|[base + index * scale + disp]|。
   \item 指定数据长度方面，AT\&t在操作码的后面紧跟一个字符，如“b”“w”等；Intel则使用“\verb|byte ptr|”“\verb|word ptr|”等。
 \end{itemize}
 
@@ -1328,7 +1395,7 @@ CPU的控制方式:
 
 \subsubsection{微程序控制器}
 
-将每条机器指令编写成一个\textbf{微程序}，每个微程序包含若干\textbf{微指令}，每条伪指令对应一个或几个\textbf{微操作命令}。
+将每条机器指令编写成一个\textbf{微程序}，每个微程序包含若干\textbf{微指令}，每条微指令对应一个或几个\textbf{微操作命令}。
 
 存放微指令的控制存储器的单元地址称为\textbf{微地址}。一条微指令通常包含：
 \begin{itemize}
@@ -1691,9 +1758,11 @@ CPU的控制方式:
 
 \subsection{I/O系统基本概念}
 
-本节已从新大纲中删除。此处仅选择少部分内容记录。
+\textcolor{blue}{本节已从新大纲中删除}
 
 \subsubsection{I/O系统}
+
+I/O系统由I/O软件和I/O硬件构成。
 
 \subsubsection{I/O控制方式}
 
@@ -1708,6 +1777,20 @@ CPU的控制方式:
 
 \subsubsection{外部设备}
 
+\begin{itemize}
+  \item 输入设备
+  
+  如键盘、鼠标。
+
+  \item 输出设备
+  
+  如显示器、打印机。
+
+  \item 外部存储器（辅存）
+
+  如磁表面存储器、SSD、光盘。
+\end{itemize}
+
 \subsection{I/O接口}
 
 \subsubsection{I/O接口的功能}
@@ -1719,6 +1802,8 @@ CPU的控制方式:
   \item 信号格式的转换
   \item 传送控制命令和状态信息
 \end{itemize}
+
+\subsubsection{I/O接口的基本结构}
 
 \subsubsection{I/O接口的类型}
 
@@ -1745,13 +1830,11 @@ CPU的控制方式:
 
 I/O端口的编址方式：
 \begin{itemize}
-  \item {\bf 统一编址}，又叫存储器映射方式。把I/O端口当作存储器的单元进行地址分配。无需设置I/O指令，直接通过访存指令即可访问I/O端口。
-  \item {\bf 独立编址}，又叫I/O映射方式。需要设置I/O指令。
+  \item {\bf 统一编址}，又叫存储器映射方式。把I/O端口当作存储器的单元进行地址分配。无需设置I/O指令，直接通过访存指令即可访问I/O端口。占用一定的内存空间，执行速度较慢。
+  \item {\bf 独立编址}，又叫I/O映射方式。需要设置专门的I/O指令。
 \end{itemize}
 
 \subsection{I/O方式}
-
-这节王道书写的稀烂，可以看唐朔飞课本。
 
 \subsubsection{程序查询方式}
 
@@ -1759,9 +1842,85 @@ CPU和I/O设备串行工作，效率很低。
 
 \subsubsection{程序中断方式}
 
-有一种中断屏蔽字的应用题，待补。
+\begin{enumerate}
+  \item {\bf 中断请求}
+  
+  对每个中断源设置中断请求标记触发器，当其为1时，表示请求中断。
+
+  通过INTR线发出的是可屏蔽中断，通过NMI线发出的是不可屏蔽中断。可屏蔽中断在关中断时不会响应，不可屏蔽中断在关中断时也会响应。
+
+  \item {\bf 中断响应判优}
+  
+  通常来说，有如下的优先级顺序：
+  \begin{itemize}
+    \item 不可屏蔽中断>内部异常>可屏蔽中断
+    \item 内部异常中，硬件故障>软件中断
+    \item DMA中断请求>I/O设备传送中断请求
+    \item 在I/O传送类中断中，高速设备>低速设备，输入设备>输出设备，实时设备>普通设备。
+  \end{itemize}
+
+  响应优先级$\neq$处理优先级。响应优先级一般不能改动，但处理优先级可以调整。
+
+  \item {\bf CPU响应中断的条件}
+  
+  \begin{itemize}
+    \item 中断源有中断请求。
+    \item CPU允许中断，且开中断（异常和不可屏蔽中断不受此限制）
+    \item 一条指令执行完毕（异常不受此限制），且没有更紧迫的任务。
+  \end{itemize}
+
+  \item {\bf 中断响应过程}
+  
+  CPU响应中断后、进入中断服务程序前，由\textbf{中断隐指令}（实际上是一组自动的硬件操作）完成以下操作：
+  \begin{itemize}
+    \item 关中断
+    \item 保存断点（PC和PSW）。对于异常，保存的PC是当前指令地址（因为需要重新执行指令）；对于中断，保存的PC是下一条指令的地址。
+    \item 识别中断源，将对应的服务程序的入口地址送PC。识别中断源有两种方法：
+    \begin{itemize}
+      \item 硬件向量法（较常用）
+      \item 软件查询法
+    \end{itemize}
+  \end{itemize}
+
+  \item {\bf 中断向量}
+  
+  中断向量指的是中断服务程序的入口地址。
+
+  \item {\bf 中断处理过程}
+  
+  一般进入中断服务程序时会先保存现场和屏蔽字，然后开中断（从而允许中断嵌套），服务程序执行完毕后关中断，然后恢复现场和屏蔽字，再开中断。也就是说，在操作现场和屏蔽字时不允许有中断。
+
+  \item {\bf 多重中断和中断屏蔽技术}
+  
+  每个中断源都有一个\textbf{屏蔽触发器}，1表示屏蔽，0表示放开。（针对的是自己）
+
+  所有屏蔽触发器组合在一起，构成\textbf{屏蔽字寄存器}，其中存放的内容叫\textbf{屏蔽字}。
+\end{enumerate}
 
 \subsubsection{DMA方式}
+
+适合磁盘、显卡、声卡、网卡等高速设备大批量数据的传送。
+
+在DMA方式中，中断的作用仅限于故障和正常传送结束时的处理。
+
+\begin{enumerate}
+  \item {\bf DMA控制器的组成}
+  
+  DMA控制器，也叫DMA接口。需要进行数据传送时，通过DMA控制器向CPU提出DMA传送请求，CPU响应之后让出系统总线，由DMA控制器接管总线并传送数据。
+
+  DMA传送数据时，CPU不能访存。
+
+  \item {\bf DMA的传送方式}
+  
+  当I/O设备和CPU同时尝试访存时，按照如下几种方法处理：
+  \begin{itemize}
+    \item {\bf 停止CPU访存}。
+    \item {\bf 周期挪用（周期窃取）}
+    \item {\bf DMA与CPU交替访存}。
+  \end{itemize}
+  \item {\bf DMA的传送过程}
+  \item {\bf DMA和中断方式的区别}
+\end{enumerate}
 
 \subsection{本章小结}
 
