@@ -58,7 +58,7 @@
 }
 
 % 行距。ctexart默认值为1.3
-\linespread{1.2}
+\linespread{1.5}
 
 \lstset{
   language=pascal,
@@ -102,6 +102,368 @@
 
 \newpage
 
+\section{行列式}
 
+\subsection{行列式的性质}
+
+行列式中的行与列具有同等的地位，行列式的性质凡是对行成立的对列也同样成立，反之亦然。
+
+\begin{enumerate}
+  \item 行列式和它的转置行列式相等。
+  \item 对换行列式的两行（列），行列式变号。
+  \begin{itemize}
+    \item 推论：如果行列式有两行（列）完全相同，则此行列式等于零。（把这两行对换，得$D=-D$）
+  \end{itemize}
+  \item 行列式的某一行（列）中所有的元素都乘以同一个数$k$，等于用$k$乘以此行列式。
+  \begin{itemize}
+    \item 推论：行列式中某一行（列）的所有元素的公因子可以提到行列式的外面。
+  \end{itemize}
+  \item 行列式中如果有两行（列）元素成比例，则此行列式等于零。（由上面的两个推论得出）
+  \item 若行列式的某一行（列）的元素都是两数之和，则行列式可以拆开。
+  \item 把行列式的某行（列）乘以同一数然后加到另一行（列）对应的元素上去，行列式不变。
+\end{enumerate}
+
+\subsection{行列式按行（列）展开}
+
+\begin{itemize}
+  \item $M_{ij}$：余子式
+  \item $A_{ij}$：代数余子式
+\end{itemize}
+
+\begin{enumerate}
+  \item 行列式等于它的任一行（列）的各元素与其对应的代数余子式乘积之和。
+  \item 行列式某一行（列）的元素与另一行（列）的对应元素的代数余子式乘积之和等于零。
+\end{enumerate}
+
+\subsection{一些特殊的行列式}
+
+\subsubsection{范德蒙德（Vandermonde）行列式}
+
+\begin{equation}
+  D_n=\begin{vmatrix}
+    1 & 1 & \cdots & 1 \\
+    x_1 & x_2 & \cdots & x_n \\
+    x_1^2 & x_2^2 & \cdots & x_n^2 \\
+    \vdots & \vdots & & \vdots \\
+    x_1^{n-1} & x_2^{n-1} & \cdots & x_n^{n-1}
+  \end{vmatrix}=\prod_{n\geq i\geq j\geq 1} (x_i-y_i)
+\end{equation}
+
+\section{矩阵及其运算}
+
+\subsection{线性方程组和矩阵}
+
+\subsubsection{线性方程组}
+
+\textbf{齐次线性方程组}：即常数项全为0的线性方程组：
+
+\begin{equation}
+  \left\{\begin{matrix}
+    a_{11}x_1+a_{12}x_2+\cdots +a_{1n}x_n=0 \\
+    a_{21}x_1+a_{22}x_2+\cdots +a_{2n}x_n=0 \\
+    \cdots \\
+    a_{m1}x_1+a_{m2}x_2+\cdots +a_{mn}x_n=0
+   \end{matrix}\right.
+\end{equation}
+
+齐次线性方程组\textbf{一定}有零解（$x_1=x_2=\cdots =x_n=0$），\textbf{可能}有非零解。
+
+\textbf{非齐次线性方程组}：即常数项不全为0的线性方程组：
+
+\begin{equation}
+  \left\{\begin{matrix}
+    a_{11}x_1+a_{12}x_2+\cdots +a_{1n}x_n=b_1 \\
+    a_{21}x_1+a_{22}x_2+\cdots +a_{2n}x_n=b_2 \\
+    \cdots \\
+    a_{m1}x_1+a_{m2}x_2+\cdots +a_{mn}x_n=b_2
+   \end{matrix}\right.
+\end{equation}
+
+\subsubsection{矩阵}
+
+行数与列数都为$n$的矩阵称为$n$阶矩阵或$n$阶方阵。$n$阶矩阵$\mathbf{A}$也记作$\mathbf{A}_n$。
+
+也就是说，只要见到“$n$阶矩阵”或者$\mathbf{A}_n$这样的说法时，就表示矩阵是方阵。
+
+\begin{itemize}
+  \item 行矩阵（行向量）：
+
+  \begin{equation*}
+    \mathbf{A}=(a_1,a_2,\cdots,a_n)
+  \end{equation*}
+
+  \item {列矩阵（列向量）}
+  
+  \begin{equation*}
+    \mathbf{B}=\begin{pmatrix}
+      b_1 \\ 
+      b_2 \\
+      \cdots \\
+      b_m 
+     \end{pmatrix}
+  \end{equation*}
+
+\end{itemize}
+
+行数列数都相等的矩阵称为\textbf{同型矩阵}。
+
+零矩阵：$\mathbf{O}$
+
+线性变换和矩阵之间存在一一对应关系。
+
+除了主对角线之外的其他所有元素均为0的矩阵叫做\textbf{对角矩阵}，记作\footnote{同济线代中对角矩阵的符号是字母A去掉一横}
+
+\begin{equation*}
+  \mathbf{A}=\text{diag}(\lambda_1, \lambda_2,\cdots,\lambda_n)
+\end{equation*}
+
+单位矩阵$\mathbf{E}$是特殊的对角矩阵。
+
+\subsection{矩阵的运算}
+
+\subsubsection{矩阵乘法}
+
+若有两个矩阵$\mathbf{A}$、$\mathbf{B}$满足$\mathbf{AB}=\mathbf{O}$，不能就此得出$\mathbf{A}=\mathbf{O}$或$\mathbf{B}=\mathbf{O}$的结论。
+
+\subsubsection{矩阵转置}
+
+矩阵的转置：$(\mathbf{AB})^T=\mathbf{B}^T \mathbf{A}^T$
+
+\subsubsection{对称矩阵}
+
+若方阵$\mathbf{A}$满足$\mathbf{A}^T=\mathbf{A}$，则称$\mathbf{A}$为对称矩阵。显然所有的对角矩阵都是对称矩阵。
+
+\subsubsection{矩阵的行列式}
+
+方阵$\mathbf{A}$的行列式：$\text{det}\ \mathbf{A}$或$|\mathbf{A}|$。
+
+有性质$|\mathbf{AB}|=|\mathbf{A}|\cdot |\mathbf{B}|$。因此，一般来说$\mathbf{AB}\neq\mathbf{BA}$，但总有$|\mathbf{AB}|=|\mathbf{BA}|$。
+
+\subsubsection{伴随矩阵}
+
+由行列式$|\mathbf{A}|$的各个元素的代数余子式$A_{ij}$所构成的矩阵
+\begin{equation*}
+  \mathbf{A}^{*}=\begin{pmatrix}
+    A_{11} & A_{21} & \cdots & A_{n1} \\
+    A_{12} & A_{22} & \cdots & A_{n2} \\
+    \vdots & \vdots & & \vdots \\
+    A_{1n} & A_{2n} & \cdots & A_{nn}
+  \end{pmatrix}
+\end{equation*}
+
+称为$\mathbf{A}$的伴随矩阵。注意这里有一个隐含的转置运算。
+
+$2\times 2$矩阵的伴随矩阵：主对角线元素交换位置，副对角线元素变号。
+
+有如下规律：
+\begin{equation*}
+  \mathbf{AA}^{*}=\mathbf{A}^{*}\mathbf{A}=|\mathbf{A}|\mathbf{E}
+\end{equation*}
+
+\subsection{逆矩阵}
+
+\subsubsection{定义、性质和求法}
+
+定义：对于$n$阶矩阵$\mathbf{A}$，如果有一个$n$阶矩阵$B$，使
+\begin{equation*}
+  \mathbf{AB}=\mathbf{BA}=\mathbf{E}
+\end{equation*}
+
+则说矩阵$\mathbf{A}$是可逆的，称$\mathbf{B}$是$\mathbf{A}$的逆矩阵。记作$\mathbf{B}=\mathbf{A}^{-1}$。此时$\mathbf{B}$是唯一的。
+
+单元素矩阵的逆矩阵仍然是一个单元素矩阵，这唯一的元素等于原矩阵中唯一元素的倒数。
+
+性质：
+\begin{enumerate}
+  \item 若$\mathbf{A}$可逆，则$|\mathbf{A}|\neq 0$，此时$\mathbf{A}$称为非奇异矩阵（反之则为奇异矩阵）。
+  \item 若$|\mathbf{A}|\neq 0$，则$\mathbf{A}$可逆，且
+  \begin{equation*}
+    \mathbf{A}^{-1}=\frac{1}{|\mathbf{A}|}\mathbf{A}^{*}。
+  \end{equation*}
+\end{enumerate}
+
+运算规律：
+\begin{enumerate}
+  \item $(\mathbf{A}^{-1})^{-1}=\mathbf{A}$
+  \item $(\lambda \mathbf{A})^{-1}=\frac{1}{\lambda}\mathbf{A}^{-1}$
+  \item $\mathbf{A}$、$\mathbf{B}$为同阶矩阵且均可逆，则有$(\mathbf{AB})^{-1}=\mathbf{B}^{-1}\mathbf{A}^{-1}$。
+  \item 若$\mathbf{A}$可逆，则$\mathbf{A}^T$亦可逆，且$(\mathbf{A}^T)^{-1}=(\mathbf{A}^{-1})^T$。
+\end{enumerate}
+
+\subsubsection{逆矩阵的初步应用}
+
+设$\varphi (x)=a_0+a_1 x+\cdots+a_m x^m$为$x$的$m$次多项式，$\mathbf{A}$为$n$阶矩阵，记
+\begin{equation*}
+  \varphi(\mathbf{A})=a_0 \mathbf{E}+a_1 \mathbf{A}+\cdots +a_m \mathbf{A}^m
+\end{equation*}
+
+$\varphi(\mathbf{A})$称为矩阵$\mathbf{A}$的$m$次多项式。
+
+\subsection{克拉默法则}
+
+如果线性方程组
+\begin{equation*}
+  \left\{\begin{matrix}
+    a_{11}x_1+a_{12}x_2+\cdots +a_{1n}x_n=b_1 \\
+    a_{21}x_1+a_{22}x_2+\cdots +a_{2n}x_n=b_2 \\
+    \cdots \\
+    a_{m1}x_1+a_{m2}x_2+\cdots +a_{mn}x_n=b_2
+   \end{matrix}\right.
+\end{equation*}
+
+的系数矩阵的行列式不等于零，即
+\begin{equation*}
+  |\mathbf{A}|=\begin{vmatrix}
+    a_{11} & \cdots & a_{1n} \\
+    \vdots & & \vdots \\
+    a_{n1} & \cdots & a_{nn}
+  \end{vmatrix}\neq 0
+\end{equation*}
+
+那么，这方程组有唯一解
+\begin{equation*}
+  x_1=\frac{|\mathbf{A}_1|}{|\mathbf{A}|},\quad x_2=\frac{|\mathbf{A}_2|}{|\mathbf{A}|},\cdots, \quad x_n=\frac{|\mathbf{A}_n|}{|\mathbf{A}|}
+\end{equation*}
+
+其中$\mathbf{A}_j$是把系数矩阵$\mathbf{A}$中第$j$列的元素用方程组右端的常数项代替后所得到的$n$阶矩阵。
+
+\subsection{矩阵分块法}
+
+\subsubsection{分块矩阵的相加和数乘}
+
+分块矩阵的相加、数乘是显然的。其中相加要求两个矩阵的行数、列数都相同，且采用相同的分块方法。
+
+\subsubsection{分块矩阵相乘}
+
+分块矩阵相乘：设$\mathbf{A}$为$m\times l$矩阵，$\mathbf{B}$为$l\times n$矩阵，分块成
+\begin{equation*}
+  \mathbf{A}=\begin{pmatrix}
+    \mathbf{A}_{11} & \cdots & \mathbf{A}_{1t} \\
+    \vdots & & \vdots \\
+    \mathbf{A}_{s1} & \cdots & \mathbf{A}_{st}
+  \end{pmatrix},\quad
+  \mathbf{B}=\begin{pmatrix}
+    \mathbf{B}_{11} & \cdots & \mathbf{B}_{1r} \\
+    \vdots & & \vdots \\
+    \mathbf{B}_{t1} & \cdots & \mathbf{B}_{tr}
+  \end{pmatrix}
+\end{equation*}
+
+其中$\mathbf{A}_{i1},\mathbf{A}_{i2},\cdots,\mathbf{A}_{it}$的列数分别等于$\mathbf{B}_{1j},\mathbf{B}_{2j},\cdots,\mathbf{B}_{tj}$的行数，那么
+\begin{equation*}
+  \mathbf{AB}=\begin{pmatrix}
+    \mathbf{C}_{11} & \cdots & \mathbf{C}_{1r} \\
+    \vdots & & \vdots \\
+    \mathbf{C}_{s1} & \cdots & \mathbf{B}_{sr}
+  \end{pmatrix}
+\end{equation*}
+
+其中
+\begin{equation*}
+  \mathbf{C}_{ij}=\sum_{k=1}^t \mathbf{A}_{ik} \mathbf{B}_{kj}\quad (i=1,\cdots,s;\ j=1,\cdots,r).
+\end{equation*}
+
+\subsubsection{分块矩阵的转置}
+
+分块矩阵的转置：矩阵本身要转置，各个子块自身也要转置。设
+\begin{equation*}
+  \mathbf{A}=\begin{pmatrix}
+    \mathbf{A}_{11} & \cdots & \mathbf{A}_{1r} \\
+    \vdots & & \vdots \\
+    \mathbf{A}_{s1} & \cdots & \mathbf{A}_{sr}
+  \end{pmatrix}
+\end{equation*}
+
+则
+\begin{equation*}
+  \mathbf{A}^T=\begin{pmatrix}
+    \mathbf{A}_{11}^T & \cdots & \mathbf{A}_{s1}^T \\
+    \vdots & & \vdots \\
+    \mathbf{A}_{1r}^T & \cdots & \mathbf{A}_{sr}^T
+  \end{pmatrix}
+\end{equation*}
+
+\subsubsection{分块对角矩阵}
+
+设$\mathbf{A}$为$n$阶方阵，若$\mathbf{A}$的分块矩阵只有在对角线上有非零子块，其余子块都是零矩阵，且在对角线上的子块都是方阵，即
+\begin{equation*}
+  \mathbf{A}=\begin{pmatrix}
+    \mathbf{A}_1 & & & \mathbf{O} \\
+    & \mathbf{A}_2 & & \\
+    & & \ddots & \\
+    \mathbf{O} & & & \mathbf{A}_s
+  \end{pmatrix}
+\end{equation*}
+
+其中$\mathbf{A}_i$都是方阵，那么称$\mathbf{A}$为分块对角矩阵。
+
+分块对角矩阵的行列式有如下性质：
+\begin{equation*}
+  |\mathbf{A}|=|\mathbf{A}_1|\ |\mathbf{A}_2|\ \cdots |\mathbf{A}_s|.
+\end{equation*}
+
+若$|\mathbf{A}_i|$均$\neq 0$，那么$|\mathbf{A}|$也$\neq 0$，且有
+\begin{equation*}
+  \mathbf{A}^{-1}=\begin{pmatrix}
+    \mathbf{A}_1^{-1} & & & \mathbf{O} \\
+    & \mathbf{A}_2^{-1} & & \\
+    & & \ddots & \\
+    \mathbf{O} & & & \mathbf{A}_s^{-1}
+  \end{pmatrix}
+\end{equation*}
+
+行向量默认要带一个转置符号，因为向量默认是竖写的，而行向量是横的。列向量则不用带转置符号。
+
+\section{矩阵的初等变换与线性方程组}
+
+\subsection{矩阵的初等变换}
+
+\subsubsection{定义}
+
+矩阵的初等行变换：
+\begin{itemize}
+  \item 对换两行
+  \item 以数$k\neq 0$乘某一行中的所有元
+  \item 把某一行所有元的$k$倍加到另一行对应的元上去。
+\end{itemize}
+
+初等列变换可以简单类比。
+
+若$\mathbf{A}$经过有限次初等行变换得到$\mathbf{B}$，就说$\mathbf{A}$与$\mathbf{B}$\textbf{行等价}，记作$\mathbf{A}\overset{r}{\sim}\mathbf{B}$。同理\textbf{列等价}记作$\mathbf{A}\overset{c}{\sim}\mathbf{B}$。
+
+矩阵的等价关系满足反身性、对称性和传递性。
+
+非零矩阵若满足：
+\begin{itemize}
+  \item 非零行在零行的上面；
+  \item 非零行的首非零元所在列在上一行（若有）的首非零元素所在列的右面
+\end{itemize}
+
+则称此矩阵为\textbf{行阶梯形矩阵}。若行阶梯形矩阵还满足：
+\begin{itemize}
+  \item 非零行的首非零元为1
+  \item 首非零元所在列的其他元均为0
+\end{itemize}
+
+则称此矩阵为\textbf{行最简形矩阵}。任意矩阵总可以经过有限次初等\textbf{行}变换，变成行最简形矩阵。
+
+对行最简形矩阵再进行初等\textbf{列}变换，使之满足条件：矩阵的左上角是一个单位矩阵，其余元素全为0。则此矩阵称为\textbf{标准形}。
+
+由单位矩阵$\mathbf{E}$经过一次初等变换得到的矩阵称为\textbf{初等矩阵}。
+
+\subsubsection{性质}
+
+设$\mathbf{A}$和$\mathbf{B}$为$m\times n$矩阵，则：
+\begin{itemize}
+  \item $\mathbf{A}\overset{r}{\sim}\mathbf{B}$的充要条件是存在$m$阶可逆矩阵$\mathbf{P}$，使得$\mathbf{PA}=\mathbf{B}$。
+  \item $\mathbf{A}\overset{c}{\sim}\mathbf{B}$的充要条件是存在$n$阶可逆矩阵$\mathbf{Q}$，使得$\mathbf{AQ}=\mathbf{B}$。
+  \item $\mathbf{A}\sim\mathbf{B}$的充要条件是存在$m$阶可逆矩阵$\mathbf{P}$及$n$阶可逆矩阵$\mathbf{Q}$，使得$\mathbf{PAQ}=\mathbf{B}$。
+\end{itemize}
+
+\section{向量组的线性相关性}
+
+\section{相似矩阵及二次型}
+
+\section{线性空间与线性变换}
 
 \end{document}

@@ -1600,7 +1600,7 @@ CPU的控制方式:
 \subsubsection{总线基本概念}
 
 \begin{itemize}
-  \item {\bf 定义}
+  \item {\bf 定义}：把握分时和共享两个特点。
   \item {\bf 总线设备}
   \begin{itemize}
     \item 主设备：获得总线控制权的设备
@@ -1608,10 +1608,10 @@ CPU的控制方式:
   \end{itemize}
   \item {\bf 总线特性}
   \begin{itemize}
-    \item 机械特性
-    \item 电气特性
-    \item 功能特性
-    \item 时间特性
+    \item 机械特性：尺寸、形状
+    \item 电气特性：传输方向、有效的电平范围
+    \item 功能特性：每根线的功能
+    \item 时间特性：信号和时序的关系
   \end{itemize}
 \end{itemize}
 
@@ -1672,28 +1672,30 @@ CPU的控制方式:
 
 \subsubsection{常见的总线标准}
 
-很长，有12个之多。只选了其中的一部分内容。详细可见王道2024组成原理P281-282
-
 \begin{enumerate}
   \item ISA，最早的微型计算机系统总线，应用在IBM的AT机上。
   \item EISA，扩展的ISA，完全兼容ISA，为32位系统设计。
   \item VESA，32位局部总线，主要用于多媒体信息如图像的传输。
-  \item PCI，32位或64位总线，支持即插即用，和处理器频率无关。
-  \item AGP，用于传输视频和三维图形数据。
+  \item PCI，32位或64位总线，支持即插即用，和处理器频率无关。属于局部总线。
+  \item AGP，用于传输视频和三维图形数据。属于局部总线。
   \item PCIe，即PCI-Express，全面取代PCI和AGP。
-  \item USB，支持即插即用、热插拔。
-  \item SATA，由Intel、IBM、Dell提出的硬盘接口规范。
+  \item RS-232C，串行通信总线。
+  \item USB，属于设备总线。支持即插即用、热插拔。
+  \item PCMCIA，多用于笔记本，支持即插即用。
+  \item IDE，更准确地称为ATA，用来连接磁盘和光驱。
+  \item SCSI，用于计算机和智能设备（硬盘、软驱）之间系统级接口的独立处理器标准。
+  \item SATA，串行的硬盘接口规范。
 \end{enumerate}
 
 \subsubsection{总线性能指标}
 
 \begin{enumerate}
   \item 总线传输周期，指一次总线操作所需的时间。由若干个总线时钟周期构成。
-  \item 总线时钟周期，就是机器的时钟周期。
+  \item 总线时钟周期，就是计算机内部统一的时钟周期。
   \item 总线工作频率，是总线传输周期的倒数。
   \item 总线时钟频率，是总线时钟周期的倒数。
   \item 总线宽度
-  \item 总线带宽，=总线工作频率$\times$(总线宽度/8)
+  \item 总线带宽，用字节表示时，=总线工作频率$\times$(总线宽度/8)
   \item 总线复用
   \item 信号线数，指地址总线、数据总线和控制总线加在一起的线路数量。
 \end{enumerate}
@@ -1714,7 +1716,7 @@ CPU的控制方式:
 
 \subsubsection{同步定时方式}
 
-使用统一时钟的同步方式。
+使用统一时钟的同步方式。适用于总线长度较短且总线连接的部件的存取时间比较接近的系统。
 
 \begin{itemize}
   \item 优点：速度快，控制简单。
@@ -1916,10 +1918,39 @@ CPU和I/O设备串行工作，效率很低。
   \begin{itemize}
     \item {\bf 停止CPU访存}。
     \item {\bf 周期挪用（周期窃取）}
-    \item {\bf DMA与CPU交替访存}。
+    \begin{itemize}
+      \item CPU正在访存时，I/O请求访存，则等待CPU存取周期结束后I/O访存。
+      \item CPU和I/O同时请求访存时，I/O的优先级更高（不立即访存则可能丢失数据）。此时I/O设备挪用一个或几个存取周期，传送完一个字的数据后立即释放总线。
+    \end{itemize}
+    \item {\bf DMA与CPU交替访存}。适合CPU工作周期比主存存取周期长的情况，此时将CPU的工作周期分为两段，一段由DMA访存，一段由CPU访存。不需要总线使用权的申请、建立和归还过程，而是通过两段工作周期分时控制。
   \end{itemize}
   \item {\bf DMA的传送过程}
+  
+  可分为三个阶段：
+  \begin{enumerate}
+    \item {\bf 预处理}
+    
+    CPU执行几条I/O指令，来测试I/O设备的状态，初始化DMA控制器。然后CPU继续执行程序，等待I/O设备准备好后，由DMA控制器发送请求。
+
+    \item {\bf 数据传送}
+    
+    完全由DMA控制器（硬件）控制。
+
+    \item {\bf 后处理}
+    
+    DMA控制器向CPU发中断请求，CPU执行中断服务程序做DMA结束处理，包括数据校验、检查传送出错、决定是否继续使用DMA等。
+
+  \end{enumerate}
+
   \item {\bf DMA和中断方式的区别}
+  \begin{itemize}
+    \item 中断需要切换程序，意味着要保护和恢复现场；DMA方式不中断现有程序，除了预处理和后处理，其他时候不占用CPU。
+    \item 中断请求的响应只能在指令周期结束后进行，DMA请求的响应可以在任意一个机器周期结束后进行。
+    \item DMA速度快。
+    \item DMA优先级高于中断请求。
+    \item 中断方式能处理异常，DMA只能传送大批量数据。
+    \item 中断方式靠程序传送，DMA方式靠硬件传送。
+  \end{itemize}
 \end{enumerate}
 
 \subsection{本章小结}
