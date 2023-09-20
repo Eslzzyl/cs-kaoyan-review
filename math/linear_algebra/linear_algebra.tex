@@ -449,8 +449,6 @@ $\varphi(\mathbf{A})$称为矩阵$\mathbf{A}$的$m$次多项式。
 
 对行最简形矩阵再进行初等\textbf{列}变换，使之满足条件：矩阵的左上角是一个单位矩阵，其余元素全为0。则此矩阵称为\textbf{标准形}。
 
-由单位矩阵$\mathbf{E}$经过一次初等变换得到的矩阵称为\textbf{初等矩阵}。
-
 \subsubsection{性质}
 
 设$\mathbf{A}$和$\mathbf{B}$为$m\times n$矩阵，则：
@@ -460,7 +458,68 @@ $\varphi(\mathbf{A})$称为矩阵$\mathbf{A}$的$m$次多项式。
   \item $\mathbf{A}\sim\mathbf{B}$的充要条件是存在$m$阶可逆矩阵$\mathbf{P}$及$n$阶可逆矩阵$\mathbf{Q}$，使得$\mathbf{PAQ}=\mathbf{B}$。
 \end{itemize}
 
+由单位矩阵$\mathbf{E}$经过一次初等变换得到的矩阵称为\textbf{初等矩阵}。初等矩阵都是可逆的，且其逆矩阵是同一类型的初等矩阵。
+\begin{itemize}
+  \item 把单位矩阵的$i$、$j$两行对换，得到的初等矩阵记作$\mathbf{E}(i,j)$。用这矩阵左乘一个相应尺寸的矩阵$\mathbf{A}$，其效果就是将$\mathbf{A}$的$i$、$j$两行对换。
+  \item 用数$k\neq 0$乘单位矩阵的第$i$行，得初等矩阵$\mathbf{E}(i(k))$。用这矩阵左乘$\mathbf{A}$，相当于用$k$乘$\mathbf{A}$的第$i$行。
+  \item 用数$k$乘单位矩阵的第$j$行加到第$i$行上，得到的矩阵记作$\mathbf{E}(ij(k))$。用这矩阵左乘$\mathbf{A}$，相当于用$k$乘$\mathbf{A}$的第$j$行加到第$i$行上。
+\end{itemize}
+
+因此，对$\mathbf{A}$施行一次初等行变换，相当于在$\mathbf{A}$的左边乘相应的初等矩阵；对$\mathbf{A}$施行一次初等列变换，相当于在$\mathbf{A}$的右边乘相应的初等矩阵。
+
+方阵$\mathbf{A}$可逆的充要条件是存在有限个初等矩阵$\mathbf{P}_1,\mathbf{P}_2,\cdots,\mathbf{P}_l$，使$\mathbf{A}=\mathbf{P}_1 \mathbf{P}_2 \cdots \mathbf{P}_l$。
+
+推论：方阵$\mathbf{A}$可逆的充要条件是$\mathbf{A}\overset{r}{\sim}\mathbf{E}$。
+
+一种求逆矩阵的方法：对矩阵$(\mathbf{A},\mathbf{E})$施行初等行变换，直到$\mathbf{A}$变成$\mathbf{E}$，此时原先的$\mathbf{E}$就变为$\mathbf{A}^{-1}$。$\mathbf{A}$能够通过初等行变换化成$\mathbf{E}$，就说明$\mathbf{A}$可逆（上面推论）。
+
+\subsection{矩阵的秩}
+
+在$m\times m$矩阵$\mathbf{A}$中，任取$k$行与$k$列（$k\leq m,k\leq n$），位于这些行列交叉处的$k^2$个元素，不改变它们在$\mathbf{A}$中所处的位置次序而得到的$k$阶行列式，称为$\mathbf{A}$的$k$阶子式。
+
+若$\mathbf{A}\overset{r}{\sim}\mathbf{B}$，则$\mathbf{A}$与$\mathbf{B}$中非零子式的最高阶数相等。
+
+$\mathbf{A}$的最高阶非零子式的阶数称为$\mathbf{A}$的秩，记作$R(\mathbf{A})$。规定零矩阵的秩为0。
+
+可逆矩阵的秩等于矩阵的阶数，因此可逆矩阵又称满秩矩阵，不可逆矩阵（奇异矩阵）又称降秩矩阵。
+
+矩阵的秩的性质：
+\begin{itemize}
+  \item $0\leq R(\mathbf{A}_{m\times n})\leq\min\{m, n\}$
+  \item $R(\mathbf{A}^T)=R(\mathbf{A})$
+  \item 若$\mathbf{A}\sim\mathbf{B}$，则$R(\mathbf{A})=R(\mathbf{B})$。
+  \begin{itemize}
+    \item 因此，将矩阵化成行阶梯形矩阵，然后查非零行的数量，得到的就是矩阵的秩。
+  \end{itemize}
+  \item 若$\mathbf{P}$、$\mathbf{Q}$可逆，则$R(\mathbf{PAQ})=R(\mathbf{A})$。
+  \item $\max\{R(\mathbf{A}),R(\mathbf{B})\}\leq R(\mathbf{A},\mathbf{B})\leq R(\mathbf{A})+R(\mathbf{B})$。
+  \begin{itemize}
+    \item 特别地，当$\mathbf{B}=\mathbf{b}$为非零列向量时，有$R(\mathbf{A})\leq R(\mathbf{A},\mathbf{b})\leq R(\mathbf{A})+1$。
+  \end{itemize}
+  \item $R(\mathbf{A}+\mathbf{B})\leq R(\mathbf{A})+R(\mathbf{B})$。
+  \item $R(\mathbf{AB})\leq\min\{R(\mathbf{A}),R(\mathbf{B})\}$。
+  \item 若$\mathbf{A}_{m\times n}\mathbf{B}_{n\times l}=\mathbf{O}$，则$R(\mathbf{A})+R(\mathbf{B})\leq n$。
+\end{itemize}
+
+\subsection{线性方程组的解}
+
+如果线性方程组有解，就说它是相容的；如果无解就说它是不相容的。
+
+定理：$n$元线性方程组$\mathbf{Ax}=\mathbf{b}$
+\begin{itemize}
+  \item 无解的充要条件的$R(\mathbf{A})<R(\mathbf{A},\mathbf{b})$；
+  \item 有唯一解的充要条件是$R(\mathbf{A})=R(\mathbf{A},\mathbf{b})=n$；
+  \item 有无限多解的充要条件是$R(\mathbf{A})=R(\mathbf{A},\mathbf{b})<n$；
+  \item 有解的充要条件是$R(\mathbf{A})=R(\mathbf{A},\mathbf{b})$。
+\end{itemize}
+
+定理：$n$元齐次线性方程组$\mathbf{Ax}=\mathbf{0}$有非零解的充要条件是$R(\mathbf{A})<n$。
+
+定理：设$\mathbf{AB}=\mathbf{C]}$，则$R(\mathbf{C})\leq \min\{R(\mathbf{A}),R(\mathbf{B})\}$。
+
 \section{向量组的线性相关性}
+
+
 
 \section{相似矩阵及二次型}
 

@@ -893,9 +893,9 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 
 \subsubsection{程序访问的局部性原理}
 
-略
-
 \subsubsection{Cache的基本工作原理}
+
+Cache通常由SRAM构成。
 
 \begin{itemize}
   \item CPU和Cache之间的数据交换以\textbf{字}为单位
@@ -924,21 +924,68 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
   \item {\bf 直接映射}
   
   \begin{equation*}
-    \text{Cache行号}=\text{主存块号}\ \  mod\ \  \text{Cache总行数}
+    \text{Cache行号}=\text{主存块号}\ \text{mod}\  \text{Cache总行数}
   \end{equation*}
   假设Cache有$2^c$行，主存有$2^m$块。上式表明，主存块号的低$c$位正好是它要装入的Cache行号。给每个Cache行设置一个长为$t=m-c$的标记（tag），当主存某块调入Cache后，就将其块号的高$t$位设置在对应Cache行的标记中。
+
+  地址结构：
+  \begin{table}[h]
+    \begin{center}
+      \begin{tabular}{|c|c|c|}
+        \hline
+        标记 & Cache行号 & 块内地址 \\
+        \hline
+      \end{tabular}
+    \end{center}
+  \end{table}
+
   \item {\bf 全相联映射}
+  
+  主存中的任何一块都可以装入Cache的任何位置，每行的标记用于指出该行取自主存的哪一块。
   
   \begin{itemize}
     \item 优点：灵活，Cache块的冲突概率低，空间利用率高，命中率也高；
     \item 缺点：标记的比较速度慢，实现成本高，通常需要采用昂贵的\textbf{按内容寻址}的相联存储器进行地址映射。
   \end{itemize}
+
+  地址结构：
+  \begin{table}[h]
+    \begin{center}
+      \begin{tabular}{|c|c|}
+        \hline
+        标记 & 块内地址 \\
+        \hline
+      \end{tabular}
+    \end{center}
+  \end{table}
+
   \item {\bf 组相联映射}
   
-  将Cache分成若干个大小相等的组，组间采用直接映射，组内采用全相联映射。这是对上面两种方式的折中。
+  将Cache分成Q个大小相等的组，组间采用直接映射，组内采用全相联映射。Q=1时为全相联映射，Q=Cache行数时为直接映射。这是对上面两种方式的折中。
 
-  组相联的成本接近直接映射，性能接近全相联映射。
+  假设每组有r个Cache行，则称为\textbf{r路组相联}。
+
+  选定适当的路数，可使组相联的成本接近直接映射，性能接近全相联映射。
+
+  地址结构：
+  \begin{table}[h]
+    \begin{center}
+      \begin{tabular}{|c|c|c|}
+        \hline
+        标记 & 组号 & 块内地址 \\
+        \hline
+      \end{tabular}
+    \end{center}
+  \end{table}
+
 \end{enumerate}
+
+当Cache大小、主存块大小一定时，
+\begin{itemize}
+  \item 直接映射的命中率最低，全相联映射的命中率最高。
+  \item 直接映射的判断开销最小、所需时间最短，全相联映射的判断开销最大、所需时间最长。
+  \item 直接映射标记所占的额外空间开销最少，全相联映射标记所占的额外空间开销最大。
+\end{itemize}
 
 \subsubsection{Cache中主存块的替换算法}
 
@@ -957,21 +1004,24 @@ ROM包括MROM、PROM、EPROM、EEPROM、Flash等。
 \begin{itemize}
   \item 写命中
   \begin{itemize}
-    \item 写直达法（write-through）：写命中时，数据同时写入Cache和主存。
+    \item 全写法（写直达法、write-through）：写命中时，数据同时写入Cache和主存。
     \begin{itemize}
       \item 优点：简单，能随时保持主存数据的正确性。
       \item 缺点：增加了访存次数，降低了Cache的效率。
     \end{itemize}
-    \item 写回法（write-back）：写命中时，仅仅把数据写入Cache，而不立即写入主存。仅当此块被换出时才写回主存。
+
+    可在Cache和主存之间设置一个FIFO的写缓冲队列，以改善速度不匹配的问题。但写过于频繁时，可能会溢出。
+
+    \item 回写法（写回法、write-back）：写命中时，仅仅把数据写入Cache，而不立即写入主存。仅当此块被换出时才写回主存。
     \begin{itemize}
       \item 优点：减少了访存次数。
-      \item 缺点：存在不一致的隐患。需要为每个Cache行设置一个脏位。
+      \item 缺点：存在不一致的隐患。需要为每个Cache行设置一个脏位。脏位为0，说明块未被修改过，替换时无需写回主存。
     \end{itemize}
   \end{itemize}
   \item 写不命中
   \begin{itemize}
     \item 写分配法（write-allocate）：加载主存中的块到Cache中，然后更新这个Cache块。
-    \item 写不分配法（not-write-through）：只写入主存，不动Cache。
+    \item 非写分配法（not-write-allocate）：只写入主存，不动Cache。
   \end{itemize}
   写不分配经常和写直达法搭配，写分配经常和写回法搭配。
 \end{itemize}
